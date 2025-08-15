@@ -43,3 +43,6 @@ android/
 ios/
 
 app.json
+
+# google configurations
+google-services/
