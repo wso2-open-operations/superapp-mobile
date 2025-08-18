@@ -37,6 +37,7 @@ import SplashModal from "@/components/SplashModal";
 import { performLogout } from "@/utils/performLogout";
 import { lockAsync, OrientationLock } from "expo-screen-orientation";
 import * as SplashScreen from "expo-splash-screen";
+import { requestUserPermission } from "@/utils/push-notification";
 
 // Component to handle app initialization
 function AppInitializer({ onReady }: { onReady: () => void }) {
@@ -117,6 +118,7 @@ export default function RootLayout() {
       }
     };
 
+    requestUserPermission();
     lockOrientation();
   }, []);
 
