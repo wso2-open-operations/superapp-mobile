@@ -44,5 +44,5 @@ ios/
 
 app.json
 
-# google configurations
+# google service(s) configuration(s)
 google-services/

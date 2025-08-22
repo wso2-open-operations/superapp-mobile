@@ -13,7 +13,6 @@ const requestUserPermissionIOS = async () => {
   const enabled =
     authStatus === AuthorizationStatus.AUTHORIZED ||
     authStatus === AuthorizationStatus.PROVISIONAL;
-  console.log("Enabled:", enabled);
   return enabled;
 };
 
@@ -33,8 +32,16 @@ export const requestUserPermission = async () => {
   }
 
   if (enabled) {
-    await getToken(messaging);
-    // TODO: Add user token to backend
+    try {
+      const fcmToken = await getToken(messaging);
+      if (fcmToken) {
+        // TODO: Add user token to backend
+      } else {
+        console.log("Failed to get FCM token.");
+      }
+    } catch (error) {
+      console.error("Error getting FCM token:", error);
+    }
   } else {
     console.log("User permission not granted");
   }
