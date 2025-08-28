@@ -13,6 +13,9 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
+import { Platform } from "react-native";
+
 export const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID ?? "";
 export const REDIRECT_URI = process.env.EXPO_PUBLIC_REDIRECT_URI ?? "";
 export const TOKEN_URL = process.env.EXPO_PUBLIC_TOKEN_URL ?? "";
@@ -25,6 +28,10 @@ export const GOOGLE_ANDROID_CLIENT_ID =
   process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ?? "";
 export const GOOGLE_WEB_CLIENT_ID =
   process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "";
+
+//Authenticator Micro App ID
+export const AUTHENTICATOR_APP_ID =
+  process.env.EXPO_PUBLIC_AUTHENTICATOR_APP_ID ?? "";
 
 export const SUCCESS = "success";
 export const APPS = "apps";
@@ -81,3 +88,6 @@ export const EVENTS_TIMESTAMP_KEY = "cached_events_timestamp";
 export const NEWS_URL = process.env.EXPO_PUBLIC_NEWS_URL ?? "";
 export const NEWS_STORAGE_KEY = "cached_news_feed";
 export const NEWS_TIMESTAMP_KEY = "cached_news_timestamp";
+
+export const isAndroid = Platform.OS === "android";
+export const isIos = Platform.OS === "ios";

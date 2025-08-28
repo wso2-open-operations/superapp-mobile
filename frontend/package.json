@@ -8,10 +8,15 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint",
+    "lint": "eslint frontend --ext .js,.jsx,.ts,.tsx",
     "write-firebase-files": "npx dotenv -e .env -- sh -c 'mkdir -p google-services && if [ -n \"$FIREBASE_IOS_PLIST_B64\" ]; then echo \"$FIREBASE_IOS_PLIST_B64\" | base64 --decode > google-services/GoogleService-Info.plist; fi; if [ -n \"$FIREBASE_ANDROID_JSON_B64\" ]; then echo \"$FIREBASE_ANDROID_JSON_B64\" | base64 --decode > google-services/google-services.json; fi'",
-    "postinstall": "npm run write-firebase-files || true",
-    "eas-build-pre-install": "npm run write-firebase-files"
+    "eas-build-pre-install": "npm run write-firebase-files",
+    "lint:fix": "eslint frontend --ext .js,.jsx,.ts,.tsx --fix",
+    "lint:ci": "eslint frontend --ext .js,.jsx,.ts,.tsx --max-warnings=0",
+    "postinstall": "npm run write-firebase-files || true && npm install --prefix .."
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --fix --max-warnings=0"
   },
   "jest": {
     "preset": "jest-expo"
@@ -88,9 +93,12 @@
     "expo-build-properties": "^0.14.8",
     "jest": "^29.2.1",
     "jest-expo": "~52.0.3",
+    "lint-staged": "^16.1.5",
     "react-native-safe-area-context": "^5.3.0",
     "react-test-renderer": "18.3.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "~8.0.1"
   },
   "private": true
 }
