@@ -171,29 +171,93 @@ EXPO_PUBLIC_TOKEN_URL=https://api.asgardeo.io/t/<asgardeo-organization-name>/oau
 EXPO_PUBLIC_LOGOUT_URL=https://api.asgardeo.io/t/<asgardeo-organization-name>/oidc/logout
 EXPO_PUBLIC_BACKEND_BASE_URL=<backend-url>         # Backend API Base URL
 
+APP_NAME=<app-name>                                # App Display name
+APP_SLUG=<app-slug>
+APP_SCHEME=<app-scheme>
+APP_VERSION=1.0.0
+APP_OWNER=<app-owner>                              # EAS App owner
+BUNDLE_IDENTIFIER=com.example.superapp
+ANDROID_PACKAGE=com.example.superapp
+EAS_PROJECT_ID=<app-eas-id>                        # EAS Project ID
+
+IOS_URL_SCHEME=com.googleusercontent.apps.xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx      # Google Sign-In (usually your REVERSED_CLIENT_ID from the iOS plist)
+
+# Firebase config as a Base64
+FIREBASE_IOS_PLIST_B64=<base-64-string>            # Google Services file as a base64 string
+FIREBASE_ANDROID_JSON_B64=<base-64-string>         # Google Services file as a base64 string
+
 ```
 
 ## 🚀 Getting Started
 
-1. Install dependencies
+Follow these steps to set up and run the project locally.
 
-   ```bash
-   npm install
-   ```
+### 1. Create and Configure the Environment File
 
-2. Set up `.env` file
+First, copy the example environment file to create your local configuration:
 
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+cp .env.example .env
+```
 
-   Fill in the necessary values.
+Next, open the newly created `.env` file and fill in the required values.
 
-3. Start the app
+### 2. Generate Base64 for Firebase Configuration
 
-   ```bash
-    npx expo start
-   ```
+To use Firebase services, you need to convert your `GoogleService-Info.plist` (iOS) and `google-services.json` (Android) files into Base64 strings.
+
+**On macOS:**
+
+```bash
+# For iOS: Encodes the file and copies the string to your clipboard
+base64 -i path/to/your/GoogleService-Info.plist | tr -d '\n' | pbcopy
+
+# For Android: Encodes the file and copies the string to your clipboard
+base64 -i path/to/your/google-services.json | tr -d '\n' | pbcopy
+```
+
+**On Linux:**
+
+```bash
+# For iOS: Encodes the file and prints the string to the terminal
+base64 -w 0 path/to/your/GoogleService-Info.plist
+
+# For Android: Encodes the file and prints the string to the terminal
+base64 -w 0 path/to/your/google-services.json
+```
+
+**On Windows (using PowerShell):**
+
+```powershell
+# For iOS:
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("path\to\your\GoogleService-Info.plist"))
+
+# For Android:
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("path\to\your\google-services.json"))
+```
+
+Paste the generated strings into the `FIREBASE_IOS_PLIST_B64` and `FIREBASE_ANDROID_JSON_B64` variables in your `.env` file.
+
+### 3. Install Dependencies
+
+With your `.env` file configured, run the following command to install all necessary packages.
+
+```bash
+npm install
+```
+
+> **Note:** The `postinstall` script will automatically run, which performs two key actions:
+>
+> 1.  It decodes the `FIREBASE_IOS_PLIST_B64` and `FIREBASE_ANDROID_JSON_B64` variables from your `.env` file and creates the `google-services/GoogleService-Info.plist` and `google-services/google-services.json` files.
+> 2.  It installs dependencies in the root directory to set up Husky for pre-commit hooks.
+
+### 4. Start the Application
+
+You are now ready to start the Expo development server:
+
+```bash
+npx expo start
+```
 
 In the output, you'll find options to open the app in a
 
@@ -221,5 +285,14 @@ You can start development by editing the files inside the **app** directory. Thi
 
 - Ensure the backend API (`EXPO_PUBLIC_BACKEND_BASE_URL`) is reachable.
 - Check storage permissions if using file system storage.
+
+### Firebase Files Not Found
+
+❌ **Problem**: The build fails with an error indicating `GoogleService-Info.plist` or `google-services.json` is missing.\
+✅ **Solution**:
+
+- Ensure the `FIREBASE_IOS_PLIST_B64` and `FIREBASE_ANDROID_JSON_B64` variables in your `.env` file are not empty and contain valid Base64 strings.
+- Try running `npm run write-firebase-files` manually to regenerate the files.
+- If the issue persists, delete the `node_modules` directory and run `npm install` again.
 
 ---
