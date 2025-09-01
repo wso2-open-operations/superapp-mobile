@@ -26,7 +26,6 @@ const profile =
   process.env.EAS_BUILD_PROFILE ??
   (process.env.NODE_ENV === "production" ? "production" : "development");
 
-// Allow forks to build by providing sensible defaults, while letting you override via env.
 const APP_NAME = process.env.APP_NAME ?? "";
 const APP_SCHEME = process.env.APP_SCHEME ?? "";
 const APP_SLUG = process.env.APP_SLUG ?? "";
@@ -37,7 +36,7 @@ const ANDROID_PACKAGE = process.env.ANDROID_PACKAGE ?? "com.example";
 const IOS_URL_SCHEME = process.env.IOS_URL_SCHEME ?? "example.scheme";
 const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? "";
 
-// Firebase files (written by scripts; kept out of git)
+// Firebase files
 const iosPlist = fileIfExists(here("google-services/GoogleService-Info.plist"));
 const androidJson = fileIfExists(here("google-services/google-services.json"));
 
