@@ -88,11 +88,11 @@ const config: ExpoConfig = {
     favicon: "./assets/images/favicon.png",
   },
   plugins: [
-    "@react-native-firebase/app",
     [
-      "expo-build-properties",
+      "@wavemaker/react-native-app-auth-expo-plugin",
       {
-        ios: { useFrameworks: "static" },
+        redirectScheme: BUNDLE_ID,
+        enableUniversalLinks: false,
       },
     ],
     [
