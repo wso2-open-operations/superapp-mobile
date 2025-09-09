@@ -49,7 +49,6 @@ export const LIBRARY_ARTICLE_FALLBACK_IMAGE =
 export const DEVELOPER_APP_DEFAULT_URL =
   process.env.EXPO_PUBLIC_DEVELOPER_APP_DEFAULT_URL ?? "";
 
-export const LIBRARY_URL = process.env.EXPO_LIBRARY_URL ?? "";
 export const LIBRARY_STORAGE_KEY = "cached_library_feed";
 export const LIBRARY_TIMESTAMP_KEY = "cached_library_timestamp";
 export const LIBRARY_ARTICLE_FETCH_LIMIT = 12;
