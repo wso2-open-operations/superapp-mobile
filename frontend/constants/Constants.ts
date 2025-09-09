@@ -21,6 +21,7 @@ export const REDIRECT_URI = process.env.EXPO_PUBLIC_REDIRECT_URI ?? "";
 export const TOKEN_URL = process.env.EXPO_PUBLIC_TOKEN_URL ?? "";
 export const LOGOUT_URL = process.env.EXPO_PUBLIC_LOGOUT_URL ?? "";
 export const BASE_URL = process.env.EXPO_PUBLIC_BACKEND_BASE_URL ?? "";
+export const MICRO_APP_STORAGE_DIR = process.env.EXPO_MICRO_APP_STORAGE_DIR ?? "";
 
 export const GOOGLE_IOS_CLIENT_ID =
   process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? "";
@@ -42,13 +43,13 @@ export const USER_CONFIGURATIONS = "user-configurations";
 export const APP_LIST_CONFIG_KEY = "superapp.apps.list";
 export const USER_INFO = "user-info";
 export const LAST_ACTIVE_PATH_KEY = "last-active-path";
-export const BASE_URL_WEB = "https://wso2.com/";
+export const BASE_URL_WEB = process.env.EXPO_BASE_URL_WEB ?? "";
 export const LIBRARY_ARTICLE_FALLBACK_IMAGE =
   process.env.EXPO_PUBLIC_LIBRARY_ARTICLE_FALLBACK_IMAGE ?? "";
 export const DEVELOPER_APP_DEFAULT_URL =
   process.env.EXPO_PUBLIC_DEVELOPER_APP_DEFAULT_URL ?? "";
 
-export const LIBRARY_URL = "https://wso2.com/library";
+export const LIBRARY_URL = process.env.EXPO_LIBRARY_URL ?? "";
 export const LIBRARY_STORAGE_KEY = "cached_library_feed";
 export const LIBRARY_TIMESTAMP_KEY = "cached_library_timestamp";
 export const LIBRARY_ARTICLE_FETCH_LIMIT = 12;
