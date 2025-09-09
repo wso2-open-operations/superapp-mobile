@@ -41,8 +41,7 @@ bal run
 | `/users/app-configs`     | POST   | Add/update user's downloaded micro app configurations | `201 Created` |
 
 ## 📦 Schema Definitions
-<br></br>
-<img src="../resources/schema.png" alt="Schema Diagram" width="700"/>
+  <img src="../resources/schema.png" alt="Schema Diagram" width="700"/>
 
 - **Micro_app table** – Stores micro app details, including micro-app ID, name, description, promo text, icon URL, and banner image URL.  
 - **Micro_app_role table** – Manages micro app accessibility based on specific user groups (e.g., Asgardeo groups), allowing apps to be specialized for certain groups.  
