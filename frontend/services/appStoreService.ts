@@ -40,6 +40,7 @@ import {
   BASE_URL,
   DOWNLOADED,
   NOT_DOWNLOADED,
+  MICRO_APP_STORAGE_DIR
 } from "@/constants/Constants";
 import { UpdateUserConfiguration } from "./userConfigService";
 
@@ -71,7 +72,7 @@ export const downloadMicroApp = async (
 
 const downloadAndSaveFile = async (appId: string, downloadUrl: string) => {
   const fileName = `${appId}.zip`;
-  const customDir = `${documentDirectory}wso2/micro-apps/`;
+  const customDir = `${documentDirectory}${MICRO_APP_STORAGE_DIR}/micro-apps/`;
 
   if (!(await getInfoAsync(customDir)).exists) {
     await makeDirectoryAsync(customDir, { intermediates: true });
@@ -84,7 +85,7 @@ const downloadAndSaveFile = async (appId: string, downloadUrl: string) => {
 const unzipFile = async (dispatch: AppDispatch, appId: string) => {
   try {
     const fileName = `${appId}.zip`;
-    const customDir = `${documentDirectory}wso2/micro-apps/`;
+    const customDir = `${documentDirectory}${MICRO_APP_STORAGE_DIR}/micro-apps/`;
     const fileUri = `${customDir}${fileName}`;
     const extractedDir = `${customDir}${appId}-extracted/`;
 
@@ -226,7 +227,7 @@ export const removeMicroApp = async (
   onLogout: () => Promise<void>
 ) => {
   try {
-    const customDir = `${documentDirectory}wso2/micro-apps/`;
+    const customDir = `${documentDirectory}${MICRO_APP_STORAGE_DIR}/micro-apps/`;
     await deleteAsync(`${customDir}/${appId}-extracted/`, {
       idempotent: true,
     });
