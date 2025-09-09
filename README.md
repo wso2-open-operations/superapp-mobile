@@ -1,7 +1,6 @@
 <h1 align="left">Super App Mobile</h1>
 
 <img src="./resources/snapshots.png" alt="Snapshot Image" width="700"/>
-<br></br>
 <p align="left">
   <a href="https://opensource.org/license/apache-2-0">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green.svg">
