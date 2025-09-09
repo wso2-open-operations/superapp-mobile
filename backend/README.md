@@ -43,8 +43,11 @@ bal run
 ## 📦 Schema Definitions
   <img src="../resources/schema.png" alt="Schema Diagram" width="700"/>
 
-- **Micro_app table** – Stores micro app details, including micro-app ID, name, description, promo text, icon URL, and banner image URL.  
-- **Micro_app_role table** – Manages micro app accessibility based on specific user groups (e.g., Asgardeo groups), allowing apps to be specialized for certain groups.  
-- **Superapp_version table** – Stores release versions, release notes, and other details about the Super App.  
-- **Micro_app_version table** – Stores release versions, release notes, and other details about micro-apps.  
-- **User_config table** – Stores user details and configurations for the Super App.  
+| Table Name             | Description                                                                                           |
+|------------------------|-------------------------------------------------------------------------------------------------------|
+| **Micro_app**          | Stores micro app details, including micro-app ID, name, description, promo text, icon URL, and banner image URL. |
+| **Micro_app_role**     | Manages micro app accessibility based on specific user groups (e.g., Asgardeo groups), allowing apps to be specialized for certain groups. |
+| **Superapp_version**   | Stores release versions, release notes, and other details about the Super App.                        |
+| **Micro_app_version**  | Stores release versions, release notes, and other details about micro-apps.                           |
+| **User_config**        | Stores user details and configurations for the Super App.                                             |
+  
