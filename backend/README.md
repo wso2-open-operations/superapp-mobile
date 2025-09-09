@@ -1,6 +1,6 @@
-# WSO2 Super App Mobile Backend
+# Super App Mobile Backend
 
-This is the Ballerina based backend for the WSO2 Superapp Mobile. It powers the mobile experience by exposing RESTful APIs, integrating with databases, and retrieving entity information from internal services. The backend is modular and designed for scalability, security, and reusability across multiple micro-apps.
+This is the Ballerina based backend for the Superapp Mobile. It powers the mobile experience by exposing RESTful APIs, integrating with databases, and retrieving entity information from internal services. The backend is modular and designed for scalability, security, and reusability across multiple micro apps.
 
 ## 🧱 Project Structure
 ```bash
@@ -45,7 +45,7 @@ bal run
 
 | Table Name             | Description                                                                                           |
 |------------------------|-------------------------------------------------------------------------------------------------------|
-| **Micro_app**          | Stores micro app details, including micro-app ID, name, description, promo text, icon URL, and banner image URL. |
+| **Micro_app**          | Stores micro app details, including micro app ID, name, description, promo text, icon URL, and banner image URL. |
 | **Micro_app_role**     | Manages micro app accessibility based on specific user groups (e.g., Asgardeo groups), allowing apps to be specialized for certain groups. |
 | **Superapp_version**   | Stores release versions, release notes, and other details about the Super App.                        |
 | **Micro_app_version**  | Stores release versions, release notes, and other details about micro-apps.                           |
