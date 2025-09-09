@@ -39,8 +39,7 @@ export const LIBRARY_ARTICLE_FALLBACK_IMAGE =
   process.env.EXPO_PUBLIC_LIBRARY_ARTICLE_FALLBACK_IMAGE ?? "";
 export const DEVELOPER_APP_DEFAULT_URL =
   process.env.EXPO_PUBLIC_DEVELOPER_APP_DEFAULT_URL ?? "";
-  
-//Authenticator Micro App ID
+// Authenticator Micro App ID
 export const AUTHENTICATOR_APP_ID =
   process.env.EXPO_PUBLIC_AUTHENTICATOR_APP_ID ?? "";
 export const GOOGLE_SCOPES = [
