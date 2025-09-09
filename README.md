@@ -1,6 +1,6 @@
-<h1 align="left">WSO2 Super App Mobile</h1>
+<h1 align="left">Super App Mobile</h1>
 
-<img src="./resources/snapshots.png" alt="Architecture Diagram" width="700"/>
+<img src="./resources/snapshots.png" alt="Snapshot Image" width="700"/>
 <br></br>
 <p align="left">
   <a href="https://opensource.org/license/apache-2-0">
@@ -8,8 +8,11 @@
   </a>
   <a href="https://twitter.com/intent/follow?screen_name=wso2" rel="nofollow"><img src="https://img.shields.io/twitter/follow/wso2.svg?style=social&amp;label=Follow%20Us" style="max-width: 100%;"></a>
 </p>
-Discover, explore, and stay connected with the latest insights and tools from the tech ecosystem through the WSO2 Mobile App. Stay up to date with WSO2 news, product announcements, and upcoming events via the Feed tab. Explore curated blogs in the Library tab to gain insights into industry trends, success stories, and expert opinions. Access a suite of purpose built micro-apps to enhance your digital experience and manage your profile effortlessly all within a single unified platform.
-<br></br>
+
+This open source project provides a unified platform powered by **micro app architecture**, allowing you to seamlessly integrate multiple applications within a single container.
+
+With this approach, you can deploy multiple React apps inside one super app while customizing its functionalities to fit your specific requirements.
+
 This repository serves as the foundation for hosting multiple micro-apps with seamless authentication, integration, and centralized management.
 
 ---
