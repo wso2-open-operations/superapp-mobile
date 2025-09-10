@@ -24,7 +24,7 @@ const LibrarySkelton = () => {
   const styles = createStyles(colorScheme ?? "light");
 
   return skeletonData.map((_, index) => (
-    <View key={`library-skelton-${index}`} style={styles.card}>
+    <View key={`library-skeleton-${index}`} style={styles.card}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Skeleton width={20} height={20} />
