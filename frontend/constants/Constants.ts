@@ -22,7 +22,7 @@ export const TOKEN_URL = process.env.EXPO_PUBLIC_TOKEN_URL ?? "";
 export const LOGOUT_URL = process.env.EXPO_PUBLIC_LOGOUT_URL ?? "";
 export const BASE_URL = process.env.EXPO_PUBLIC_BACKEND_BASE_URL ?? "";
 export const MICRO_APP_STORAGE_DIR = process.env.EXPO_MICRO_APP_STORAGE_DIR ?? "";
-export const BASE_URL_WEB = process.env.EXPO_BASE_URL_WEB ?? "";
+export const LIBRARY_URL = process.env.EXPO_LIBRARY_URL ?? "";
 export const GOOGLE_IOS_CLIENT_ID =
   process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? "";
 export const GOOGLE_ANDROID_CLIENT_ID =
