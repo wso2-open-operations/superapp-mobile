@@ -13,9 +13,9 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { StyleSheet, useColorScheme, View } from "react-native";
 import { Colors } from "@/constants/Colors";
 import React from "react";
+import { StyleSheet, useColorScheme, View } from "react-native";
 import { Skeleton } from "./Skeleton";
 
 const LibrarySkelton = () => {
@@ -24,39 +24,26 @@ const LibrarySkelton = () => {
   const styles = createStyles(colorScheme ?? "light");
 
   return skeletonData.map((_, index) => (
-    <View key={`skelton-${index}`} style={styles.card}>
-      {/* Header */}
+    <View key={`library-skeleton-${index}`} style={styles.card}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Skeleton width={20} height={20} /> {/* Skeleton for icon */}
+          <Skeleton width={20} height={20} />
           <Skeleton width={80} height={12} style={{ marginLeft: 4 }} />
-          {/* Skeleton for type */}
         </View>
-        <Skeleton width={60} height={12} /> {/* Skeleton for date */}
+        <Skeleton width={60} height={12} />
       </View>
-
-      {/* Featured Image */}
       <Skeleton style={{ width: "100%" }} height={180} borderRadius={12} />
-
-      {/* Title */}
       <Skeleton
         height={18}
         style={{ width: "100%", marginBottom: 18, marginTop: 10 }}
       />
-
-      {/* Author */}
       <View style={styles.authorContainer}>
         <Skeleton width={40} height={40} circle />
-        {/* Skeleton for author image */}
         <View style={styles.authorTextContainer}>
-          {/* Skeleton for author name */}
           <Skeleton width={120} height={12} />
-          {/* Skeleton for designation */}
           <Skeleton width={150} height={10} style={{ marginTop: 4 }} />
         </View>
       </View>
-
-      {/* Tags */}
       <View style={styles.tagContainer}>
         <Skeleton
           width={60}
