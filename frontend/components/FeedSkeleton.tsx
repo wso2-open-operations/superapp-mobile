@@ -13,16 +13,16 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import { Colors } from "@/constants/Colors";
 import React, { useMemo } from "react";
 import {
-  View,
-  StyleSheet,
-  useColorScheme,
   Dimensions,
   ScrollView,
+  StyleSheet,
+  useColorScheme,
+  View,
 } from "react-native";
 import { Skeleton } from "./Skeleton";
-import { Colors } from "@/constants/Colors";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -33,14 +33,11 @@ const FeedSkeleton = () => {
 
   return (
     <View style={{ padding: 16, marginTop: 5 }}>
-      {/* Banner image */}
       <Skeleton
         style={{ width: "100%" }}
         borderRadius={12}
         height={(screenWidth - 32) * (22 / 35)}
       />
-
-      {/* Events section */}
       <View style={{ marginTop: 20 }}>
         <Skeleton width={100} height={30} />
         <ScrollView
@@ -52,34 +49,25 @@ const FeedSkeleton = () => {
             <View style={styles.card} key={index}>
               <View style={styles.header}>
                 <View style={styles.headerLeft}>
-                  <Skeleton width={20} height={20} /> {/* Skeleton for icon */}
+                  <Skeleton width={20} height={20} />
                   <Skeleton width={80} height={12} style={{ marginLeft: 4 }} />
-                  {/* Skeleton for type */}
                 </View>
-                <Skeleton width={60} height={12} /> {/* Skeleton for date */}
+                <Skeleton width={60} height={12} />
               </View>
-
-              {/* Featured Image */}
               <Skeleton
                 style={{ width: "100%" }}
                 height={180}
                 borderRadius={12}
               />
-
-              {/* Title */}
               <Skeleton
                 height={18}
                 style={{ width: "100%", marginBottom: 18, marginTop: 10 }}
               />
-
-              {/* Description */}
               <View style={styles.descriptionContainer}>
                 <Skeleton width={250} height={10} style={{ marginTop: 4 }} />
                 <Skeleton width={250} height={10} style={{ marginTop: 1 }} />
                 <Skeleton width={150} height={10} style={{ marginTop: 1 }} />
               </View>
-
-              {/* More info button */}
               <View
                 style={{
                   flexDirection: "row",
@@ -90,31 +78,23 @@ const FeedSkeleton = () => {
                 }}
               >
                 <Skeleton width={80} height={12} />
-                {/* Skeleton for icon */}
                 <Skeleton width={15} height={15} />
               </View>
             </View>
           ))}
         </ScrollView>
       </View>
-
-      {/* News section */}
       <View style={{ marginTop: 20 }}>
         <Skeleton width={100} height={30} />
-
         {skeletonData.map((index) => (
           <View style={styles.card}>
-            {/* Header */}
             <View style={styles.header}>
               <View style={styles.headerLeft}>
-                <Skeleton width={20} height={20} /> {/* Skeleton for icon */}
+                <Skeleton width={20} height={20} />
                 <Skeleton width={80} height={12} style={{ marginLeft: 4 }} />
-                {/* Skeleton for type */}
               </View>
-              <Skeleton width={60} height={12} /> {/* Skeleton for date */}
+              <Skeleton width={60} height={12} />
             </View>
-
-            {/* Title */}
             <Skeleton
               height={18}
               style={{ width: "100%", marginBottom: 6, marginTop: 10 }}
@@ -123,15 +103,11 @@ const FeedSkeleton = () => {
               height={18}
               style={{ width: "60%", marginBottom: 18, marginTop: 1 }}
             />
-
-            {/* Description */}
             <View style={styles.descriptionContainer}>
               <Skeleton width={320} height={10} style={{ marginTop: 4 }} />
               <Skeleton width={320} height={10} />
               <Skeleton width={150} height={10} />
             </View>
-
-            {/* More info button */}
             <View
               style={{
                 flexDirection: "row",
@@ -142,7 +118,6 @@ const FeedSkeleton = () => {
               }}
             >
               <Skeleton width={80} height={12} />
-              {/* Skeleton for icon */}
               <Skeleton width={15} height={15} />
             </View>
           </View>
