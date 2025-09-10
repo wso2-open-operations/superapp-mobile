@@ -87,7 +87,7 @@ const FeedSkeleton = () => {
       <View style={{ marginTop: 20 }}>
         <Skeleton width={100} height={30} />
         {skeletonData.map((index) => (
-          <View style={styles.card}>
+          <View style={styles.card} key={`feed-skelton-${index}`}>
             <View style={styles.header}>
               <View style={styles.headerLeft}>
                 <Skeleton width={20} height={20} />
