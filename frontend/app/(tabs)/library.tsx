@@ -32,7 +32,7 @@ import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
 import { ScreenPaths } from "@/constants/ScreenPaths";
 import { fetchLibraryArticles } from "@/services/libraryService";
 import {
-  BASE_URL_WEB,
+  ARTICLE_BASE_URL,
   LIBRARY_ARTICLE_FETCH_LIMIT,
 } from "@/constants/Constants";
 import { LibraryArticle } from "@/types/library.types";
@@ -125,7 +125,7 @@ const Library = () => {
 
     return (
       <TouchableOpacity
-        onPress={() => Linking.openURL(BASE_URL_WEB + article.url)}
+        onPress={() => Linking.openURL(ARTICLE_BASE_URL + article.url)}
         style={styles.card}
         activeOpacity={0.8}
       >
@@ -155,7 +155,7 @@ const Library = () => {
           {article.author_img && (
             <Image
               source={{
-                uri: `${BASE_URL_WEB}files/pictures/${article.author_img}`,
+                uri: `${ARTICLE_BASE_URL}files/pictures/${article.author_img}`,
               }}
               style={styles.authorImage}
               resizeMode="cover"

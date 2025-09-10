@@ -14,8 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 import {
-  BASE_URL_WEB,
   LIBRARY_ARTICLE_FETCH_LIMIT,
+  LIBRARY_URL,
 } from "@/constants/Constants";
 import { LibraryArticle } from "@/types/library.types";
 import axios from "axios";
@@ -37,7 +37,7 @@ export const fetchLibraryArticles = async (
 ): Promise<LibraryArticle[]> => {
   try {
     const response = await axios.post(
-      `${BASE_URL_WEB}library/search-library-content-v2/`,
+      `${LIBRARY_URL}`,
       new URLSearchParams({
         search: debouncedQuery,
         start: isInitial ? "0" : start.toString(),
