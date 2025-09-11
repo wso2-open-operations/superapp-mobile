@@ -116,7 +116,13 @@ const Library = () => {
     handleQuery();
   }, [debouncedQuery]);
 
-  const renderArticle = ({ item: article }: { item: LibraryArticle }) => {
+  const renderArticle = ({
+    item: article,
+    index,
+  }: {
+    item: LibraryArticle;
+    index: number;
+  }) => {
     const isWebinar = article.content_name === WEBINAR;
     const iconName = isWebinar ? "videocam-outline" : "reader-outline";
     const label = isWebinar
@@ -128,6 +134,7 @@ const Library = () => {
         onPress={() => Linking.openURL(ARTICLE_BASE_URL + article.url)}
         style={styles.card}
         activeOpacity={0.8}
+        accessibilityLabel={`library_article_${index}`}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -208,10 +215,11 @@ const Library = () => {
         <LibrarySkelton />
       ) : (
         <FlatList
+          accessibilityLabel="library_flat_list"
           contentContainerStyle={styles.flatListContent}
           data={articles}
           keyExtractor={(_, index) => index.toString()}
-          renderItem={renderArticle}
+          renderItem={({ item, index }) => renderArticle({ item, index })}
           onEndReached={() => fetchArticles(false)}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
@@ -225,7 +233,12 @@ const Library = () => {
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No search results found</Text>
+              <Text
+                style={styles.emptyText}
+                accessibilityLabel="library_empty_text"
+              >
+                No search results found
+              </Text>
             </View>
           }
         />
