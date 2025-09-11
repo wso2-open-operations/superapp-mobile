@@ -129,8 +129,10 @@ sequenceDiagram
 npx create-react-app microapp_name
 ```
 
-3. Communication with a micro app happens using a **native bridge**. Topics are used to establish a secure two way communication stream between the web based micro app and the super app. The native bridge can be found in the following path:  
-   - utils/bridge.ts  
+3. Communication with a micro app happens using a **native bridge**. Topics are used to establish a secure two way communication stream between the web based micro app and the super app. The native bridge can be found in the following path:
+
+   - utils/bridge.ts
+   
 4. After creating your micro app, build it:
 
 ```shell
