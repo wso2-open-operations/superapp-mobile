@@ -13,35 +13,35 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import React, { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
-  Image,
-  ActivityIndicator,
-  FlatList,
-  Linking,
-  Dimensions,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import RemoteFallbackImage from "@/components/RemoteFallbackImage";
+import SearchBar from "@/components/SearchBar";
 import { Colors } from "@/constants/Colors";
-import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
-import { ScreenPaths } from "@/constants/ScreenPaths";
-import { fetchLibraryArticles } from "@/services/libraryService";
 import {
   ARTICLE_BASE_URL,
   LIBRARY_ARTICLE_FETCH_LIMIT,
 } from "@/constants/Constants";
-import { LibraryArticle } from "@/types/library.types";
-import LibrarySkelton from "../../components/LibrarySkelton";
-import { capitalizeName } from "@/utils/capitalizeName";
-import SearchBar from "@/components/SearchBar";
+import { ScreenPaths } from "@/constants/ScreenPaths";
 import useDebounce from "@/hooks/useDebounce";
-import RemoteFallbackImage from "@/components/RemoteFallbackImage";
+import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
+import { fetchLibraryArticles } from "@/services/libraryService";
+import { LibraryArticle } from "@/types/library.types";
+import { capitalizeName } from "@/utils/capitalizeName";
+import { Ionicons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Image,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
+import LibrarySkelton from "../../components/LibrarySkeleton";
 
 const screenWidth = Dimensions.get("window").width;
 const WEBINAR = "Webinar";
