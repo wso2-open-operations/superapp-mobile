@@ -50,4 +50,6 @@ bal run
 | **Superapp_version**   | Stores release versions, release notes, and other details about the Super App.                        |
 | **Micro_app_version**  | Stores release versions, release notes, and other details about micro-apps.                           |
 | **User_config**        | Stores user details and configurations for the Super App.                                             |
+
+---
   

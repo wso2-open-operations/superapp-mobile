@@ -65,7 +65,7 @@ This Super App serves as a **container** for multiple micro-apps. It:
 
 ### Super App Mobile Loading Sequence
 
-```
+```mermaid
 sequenceDiagram
     actor User
     participant Super App
@@ -98,7 +98,7 @@ sequenceDiagram
 
 ### Micro App Loading
 
-```
+```mermaid
 sequenceDiagram
     actor User
     participant Super App
@@ -181,14 +181,15 @@ build/
 7. Update the database tables `micro_app` and `micro_app_version` with details such as:  
      
    - Micro-app ID, name, description, icon URL, banner image URL, download URL, etc.
-
+   <br></br>
     <img src="../resources/micro_app_version.png" alt="Micro App Version Database Table" width="700"/> 
       
 
      
 8. After this, you should see the deployed app in the **store**.  
      
-9. Additionally , you can restrict micro-app visibility by groups using the `micro_app_role` table and mentioning groups in the role column.   
+9. Additionally , you can restrict micro-app visibility by groups using the `micro_app_role` table and mentioning groups in the role column.
+   <br></br>   
     <img src="../resources/micro_app_role.png" alt="Micro App Role Database Table" width="700"/>
     
 
