@@ -234,25 +234,6 @@ build/
 - Redux Slices: `camelCaseSlice.ts` (e.g., `authSlice.ts`)  
 - Constants: `PascalCase.ts` (e.g., `Colors.ts`, `Constants.ts`)
 
-## ⚙️ Environment Variables (`.env`)
-
-Create a `.env` file and set up the required environment variables:
-
-```dotenv
-EXPO_PUBLIC_CLIENT_ID=<asgardeo-project-client-id> # Asgardeo Client ID
-EXPO_PUBLIC_REDIRECT_URI=<redirect-uri>            # Redirect URI for authentication flow
-EXPO_PUBLIC_TOKEN_URL=https://api.asgardeo.io/t/<asgardeo-organization>/oauth2/token
-EXPO_PUBLIC_LOGOUT_URL=https://api.asgardeo.io/t/<asgardeo-organization>/oidc/logout
-EXPO_PUBLIC_BACKEND_BASE_URL=<backend-url>         # Backend API Base URL
-EXPO_PUBLIC_MICRO_APP_STORAGE_DIR=<directory-name-to-store-microapps>
-
-# Feed tab URLs
-EXPO_PUBLIC_LIBRARY_ARTICLE_FALLBACK_IMAGE=<fallback-image-url-for-library>
-EXPO_PUBLIC_EVENTS_URL=<events-url>
-EXPO_PUBLIC_NEWS_URL=<news-url>
-EXPO_PUBLIC_LIBRARY_URL=<base-url-for-library-related-operations>
-EXPO_PUBLIC_ARTICLE_BASE_URL=<base-url-for-article-related-operations>
-
 ```
 
 ## 🚀 Getting Started
@@ -269,12 +250,7 @@ npm install
 cp .env.example .env
 ```
 
-   Fill in the necessary values.
-
-   
-
-3. If you do not plan to use the `@react-native-google-signin/google-signin` plugin, please remove the following code block from `app.json`. If you are using it, update the `iosUrlScheme` value accordingly.  
- 
+      This will create a .env file. Make sure to update the values according to your project requirements.
 
 
 ```shell
@@ -307,10 +283,13 @@ You can start development by editing the files inside the **app** directory. Thi
 
 ## Deployment
 
-1. Update `app.json`  
-- Modify values such as app name, version, slug, package name, etc., according to your project.  
-2. Follow the official Expo documentation for the next steps  
-- https://docs.expo.dev/build/setup/
+1. Update `app.json`.
+
+   - Modify values such as app name, version, slug, package name, etc., according to your project.
+
+2. Follow the official Expo documentation for the next steps.
+
+   - https://docs.expo.dev/build/setup/
 
 ---
 
