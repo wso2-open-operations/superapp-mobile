@@ -36,7 +36,7 @@ bal run
 | `/user-info`             | GET    | Fetch user information of the logged-in user          | `Employee`    |
 | `/micro-apps`            | GET    | Retrieve all micro apps available to the user         | `MicroApp[]`  |
 | `/micro-apps/{appId}`    | GET    | Retrieve details of a specific micro app by App ID    | `MicroApp`    |
-| `/versions?platform=ios` | GET    | Retrieve Super App version info for a platform        | `Version[]`   |
+| `/versions?platform={ios/android}` | GET    | Retrieve Super App version info for a platform        | `Version[]`   |
 | `/users/app-configs`     | GET    | Fetch user's downloaded micro app configurations      | `AppConfig[]` |
 | `/users/app-configs`     | POST   | Add/update user's downloaded micro app configurations | `201 Created` |
 
