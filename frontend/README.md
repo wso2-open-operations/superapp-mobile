@@ -238,7 +238,7 @@ build/
 
 Create a `.env` file and set up the required environment variables:
 
-```
+```dotenv
 EXPO_PUBLIC_CLIENT_ID=<asgardeo-project-client-id> # Asgardeo Client ID
 EXPO_PUBLIC_REDIRECT_URI=<redirect-uri>            # Redirect URI for authentication flow
 EXPO_PUBLIC_TOKEN_URL=https://api.asgardeo.io/t/<asgardeo-organization>/oauth2/token
