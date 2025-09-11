@@ -234,7 +234,7 @@ build/
 - Redux Slices: `camelCaseSlice.ts` (e.g., `authSlice.ts`)  
 - Constants: `PascalCase.ts` (e.g., `Colors.ts`, `Constants.ts`)
 
-```
+---
 
 ## 🚀 Getting Started
 
@@ -250,7 +250,7 @@ npm install
 cp .env.example .env
 ```
 
-      This will create a .env file. Make sure to update the values according to your project requirements.
+   - This will create a .env file. Make sure to update the values according to your project requirements.
 
 
 ```shell
