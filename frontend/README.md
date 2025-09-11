@@ -244,30 +244,14 @@ EXPO_PUBLIC_REDIRECT_URI=<redirect-uri>            # Redirect URI for authentica
 EXPO_PUBLIC_TOKEN_URL=https://api.asgardeo.io/t/<asgardeo-organization>/oauth2/token
 EXPO_PUBLIC_LOGOUT_URL=https://api.asgardeo.io/t/<asgardeo-organization>/oidc/logout
 EXPO_PUBLIC_BACKEND_BASE_URL=<backend-url>         # Backend API Base URL
-
-EXPO_PUBLIC_LIBRARY_ARTICLE_FALLBACK_IMAGE=
-EXPO_PUBLIC_DEVELOPER_APP_DEFAULT_URL=
-
-# Authenticator app related URLs
-EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=<google-ios-client-id>
-EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=<google-android-client-id>
-EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=<google-web-client-id>
-EXPO_PUBLIC_GOOGLE_ACCESS_TOKEN_KEY=<google-access-token-key>
-EXPO_PUBLIC_GOOGLE_REFRESH_TOKEN_KEY=<google-refresh-token-key>
-EXPO_PUBLIC_GOOGLE_USER_INFO_KEY=<google-user-info-key>
-EXPO_PUBLIC_GOOGLE_USER_INFO_URL=<google-user-info-url>
-EXPO_PUBLIC_GOOGLE_TOKEN_URL=<google-token-url>
-EXPO_PUBLIC_GOOGLE_DRIVE_UPLOAD_URL=<google-drive-upload-url>
-EXPO_PUBLIC_GOOGLE_DRIVE_LIST_FILES_URL=<google-drive-list-url>
-EXPO_PUBLIC_GOOGLE_TOKEN_INFO_URL=<google-token-info-url>
-EXPO_PUBLIC_GOOGLE_DRIVE_FILE_DOWNLOAD_URL=<google-drive-file-download-url>
 EXPO_PUBLIC_MICRO_APP_STORAGE_DIR=<directory-name-to-store-microapps>
 
 # Feed tab URLs
+EXPO_PUBLIC_LIBRARY_ARTICLE_FALLBACK_IMAGE=<fallback-image-url-for-library>
 EXPO_PUBLIC_EVENTS_URL=<events-url>
 EXPO_PUBLIC_NEWS_URL=<news-url>
-EXPO_PUBLIC_LIBRARY_URL=<base-url-for-library-related-operations> 
-EXPO_PUBLIC_ARTICLE_BASE_URL=<base-url-for-article-related-operations> 
+EXPO_PUBLIC_LIBRARY_URL=<base-url-for-library-related-operations>
+EXPO_PUBLIC_ARTICLE_BASE_URL=<base-url-for-article-related-operations>
 
 ```
 
