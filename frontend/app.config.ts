@@ -20,9 +20,12 @@ import type { ExpoConfig } from "expo/config";
 // import fs from "fs";
 // import path from "path";
 
+const PRODUCTION = "production";
+const DEVELOPMENT = "development";
+
 const profile =
   process.env.EAS_BUILD_PROFILE ??
-  (process.env.NODE_ENV === "production" ? "production" : "development");
+  (process.env.NODE_ENV === PRODUCTION ? PRODUCTION : DEVELOPMENT);
 
 // Allow forks to build by providing defaults, while letting you override via env.
 const APP_NAME = process.env.APP_NAME ?? "";
@@ -80,8 +83,7 @@ const config: ExpoConfig = {
       UIBackgroundModes: ["remote-notification"],
     },
     entitlements: {
-      "aps-environment":
-        profile === "production" ? "production" : "development",
+      "aps-environment": profile === PRODUCTION ? PRODUCTION : DEVELOPMENT,
     },
     icon: {
       dark: "./assets/images/ios-light.png",
