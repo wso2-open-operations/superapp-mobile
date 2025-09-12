@@ -53,7 +53,7 @@ if [ -n "$ADDED_FILES" ]; then
   git diff --cached --name-only --diff-filter=A | while IFS= read -r file; do
     # skip common binary/asset files or the top-level LICENSE itself
     case "$file" in
-      LICENSE|LICENSE.*|*.png|*.jpg|*.jpeg|*.gif|*.webp|*.ico|*.pdf|*.zip|*.tar|*.gz|*.tgz|*.7z|*.exe|*.dll|*.so|*.class|*.jar|*.apk|*.ipa|*.otf|*.ttf|*.woff|*.woff2)
+      LICENSE|LICENSE.*|*.png|*.jpg|*.jpeg|*.gif|*.webp|*.ico|*.pdf|*.zip|*.tar|*.gz|*.tgz|*.7z|*.exe|*.dll|*.so|*.class|*.jar|*.apk|*.ipa|*.otf|*.ttf|*.woff|*.woff2|*.md)
         continue
         ;;
     esac

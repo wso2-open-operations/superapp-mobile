@@ -13,13 +13,13 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { Tabs } from "expo-router";
-import { Platform } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useRestoreLastTab } from "@/hooks/useRestoreLastTab";
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import { Platform } from "react-native";
 
 type TabType = {
   name: string;
@@ -99,6 +99,7 @@ export default function TabLayout() {
           key={`tab-${index}`}
           name={tab.name}
           options={{
+            tabBarAccessibilityLabel: `tab_${tab.name}`,
             headerShown: tab.options.headerShown,
             title: tab.options.title,
             headerTitleAllowFontScaling: false,
