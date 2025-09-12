@@ -1,5 +1,5 @@
 {
-  "name": "wso2-superapp-mobile",
+  "name": "superapp-mobile",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -66,6 +66,7 @@
     "react-dom": "18.3.1",
     "react-native": "0.76.7",
     "react-native-app-auth": "^8.0.3",
+    "react-native-edge-to-edge": "^1.7.0",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-paper": "^5.13.5",
     "react-native-prompt-android": "^1.1.0",
