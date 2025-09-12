@@ -252,7 +252,8 @@ npm install
 cp .env.example .env
 ```
 
-   - This will create a .env file. Make sure to update the values according to your project requirements.
+   - This will create a `.env` file. Make sure to update the values according to your project requirements.  
+   - Please note that the authenticator app–related URL in `.env` is required only for the WSO2 Super App. Since your app does not need      it, you can safely remove those entries.
 
 
 ```shell
