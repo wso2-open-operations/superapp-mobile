@@ -47,7 +47,7 @@ const IOS_URL_SCHEME = process.env.IOS_URL_SCHEME ?? "example.scheme";
  *
  * 2.  You have two options for providing these files to the build process:
  *
- *     a) (Recommmended) In your `.env` file, provide thebase64-encoded content of these files
+ *     a) (Recommended) In your `.env` file, provide the base64-encoded content of these files
  *        to `FIREBASE_IOS_PLIST_B64` and `FIREBASE_ANDROID_JSON_B64`. The `package.json`
  *        has scripts to decode these at `npm install`. Instructions are provided in the
  *        `.env.example` file. This will benefit local development and CI/CD pipelines.
