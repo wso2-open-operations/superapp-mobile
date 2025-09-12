@@ -233,7 +233,8 @@ First, copy the example environment file to create your local configuration:
 cp .env.example .env
 ```
 
-Next, open the newly created `.env` file and fill in the required values.
+- This will create a `.env` file. Make sure to update the values according to your project requirements.
+- Please note that the authenticator app–related URL in `.env` is required only for the WSO2 Super App. If your app does not need it, you can safely remove those variables.
 
 #### 1.1. (Optional) If you are using `Firebase Services`, generate Base64 for Firebase Configuration
 
