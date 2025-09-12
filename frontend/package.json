@@ -11,7 +11,7 @@
     "lint": "eslint frontend --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint frontend --ext .js,.jsx,.ts,.tsx --fix",
     "lint:ci": "eslint frontend --ext .js,.jsx,.ts,.tsx --max-warnings=0",
-    "write-firebase-files": "npx dotenv -e .env -- sh -c 'mkdir -p google-services && if [ -n \"$FIREBASE_IOS_PLIST_B64\" ]; then echo \"$FIREBASE_IOS_PLIST_B64\" | base64 --decode > google-services/GoogleService-Info.plist; fi; if [ -n \"$FIREBASE_ANDROID_JSON_B64\" ]; then echo \"$FIREBASE_ANDROID_JSON_B64\" | base64 --decode > google-services/google-services.json; fi'",
+    "write-firebase-files": "npx dotenv -e .env -- node ./scripts/writeFirebaseFiles.ts",
     "postinstall": "npm run write-firebase-files || true && npm install --prefix .."
   },
   "lint-staged": {
@@ -40,7 +40,7 @@
     "expo-auth-session": "~6.0.3",
     "expo-av": "~15.0.2",
     "expo-blur": "~14.0.3",
-    "expo-build-properties": "~0.13.3",
+    "expo-build-properties": "^0.14.8",
     "expo-camera": "~16.0.18",
     "expo-crypto": "~14.0.2",
     "expo-dev-client": "~5.0.20",
