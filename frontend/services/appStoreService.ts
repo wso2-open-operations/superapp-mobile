@@ -146,8 +146,8 @@ const unzipFile = async (dispatch: AppDispatch, appId: string) => {
     const indexPath = await getIndexPath(extractedDir);
     if (!indexPath) throw new Error("Index file not found");
 
-    const clientId = await getClientId(extractedDir);
-    if (!clientId) throw new Error("Client id not found");
+    const microAppConfig = await getMicroAppConfig(extractedDir);
+    if (!microAppConfig.clientId) throw new Error("Client id not found");
 
     const formattedUri = encodeURI(
       indexPath.startsWith("file://") ? indexPath : `file://${indexPath}`
@@ -160,7 +160,8 @@ const unzipFile = async (dispatch: AppDispatch, appId: string) => {
         appId,
         status: DOWNLOADED,
         webViewUri: relativeUri,
-        clientId: clientId,
+        clientId: microAppConfig.clientId,
+        displayMode: microAppConfig.displayMode,
       })
     );
   } catch (error: any) {
@@ -191,7 +192,7 @@ const getIndexPath = async (extractedDir: string) => {
   }
 };
 
-const getClientId = async (extractedDir: string) => {
+const getMicroAppConfig = async (extractedDir: string) => {
   try {
     const possiblePaths = [
       `${extractedDir}microapp.json`,
@@ -204,20 +205,23 @@ const getClientId = async (extractedDir: string) => {
         try {
           const jsonString = await readAsStringAsync(path);
           const appConfig = JSON.parse(jsonString);
-          if (appConfig.clientId) return appConfig.clientId;
+          return {
+            clientId: appConfig.clientId || null,
+            displayMode: appConfig.displayMode || "showHeader",
+          };
         } catch (jsonError) {
           console.error("Error parsing microapp.json:", jsonError);
           Alert.alert("Error", "Failed to parse microapp.json.");
-          return null;
+          return { clientId: null, displayMode: "showHeader" };
         }
       }
     }
 
     Alert.alert("Error", "microapp configs not found after unzipping.");
-    return null;
+    return { clientId: null, displayMode: "showHeader" };
   } catch (error) {
-    console.error("Error reading clientId:", error);
-    return null;
+    console.error("Error reading microapp config:", error);
+    return { clientId: null, displayMode: "showHeader" };
   }
 };
 
@@ -242,6 +246,7 @@ export const removeMicroApp = async (
         webViewUri: "",
         clientId: "",
         exchangedToken: "",
+        displayMode: "showHeader",
       })
     );
     await UpdateUserConfiguration(appId, NOT_DOWNLOADED, onLogout); // Update user configurations
@@ -296,6 +301,8 @@ export const loadMicroAppDetails = async (
             webViewUri: storedApp?.webViewUri || "",
             clientId: storedApp?.clientId || "",
             exchangedToken: storedApp?.exchangedToken || "",
+            displayMode:
+              storedApp?.displayMode || app.displayMode || "showHeader",
           };
         }
         return app;

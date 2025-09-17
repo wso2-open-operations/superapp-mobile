@@ -19,4 +19,7 @@ export type MicroAppParams = {
   clientId: string;
   exchangedToken: string;
   appId: string;
+  displayMode?: DisplayMode;
 };
+
+export type DisplayMode = "showHeader" | "hideHeader";

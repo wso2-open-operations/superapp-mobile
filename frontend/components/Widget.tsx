@@ -38,6 +38,7 @@ type WidgetProps = {
   clientId: string;
   exchangedToken: string;
   appId: string;
+  displayMode?: "showHeader" | "hideHeader";
 };
 
 const Widget = React.memo(
@@ -49,6 +50,7 @@ const Widget = React.memo(
     clientId,
     exchangedToken,
     appId,
+    displayMode,
   }: WidgetProps) => {
     const colorScheme = useColorScheme();
     const styles = createStyles(colorScheme ?? "light");
@@ -56,7 +58,14 @@ const Widget = React.memo(
     const handlePress = () => {
       router.push({
         pathname: ScreenPaths.MICRO_APP,
-        params: { webViewUri, appName, clientId, exchangedToken, appId },
+        params: {
+          webViewUri,
+          appName,
+          clientId,
+          exchangedToken,
+          appId,
+          displayMode,
+        },
       });
     };
 
