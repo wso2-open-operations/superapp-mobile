@@ -40,7 +40,8 @@ import {
   BASE_URL,
   DOWNLOADED,
   NOT_DOWNLOADED,
-  MICRO_APP_STORAGE_DIR
+  MICRO_APP_STORAGE_DIR,
+  DEFAULT_VIEWING_MODE,
 } from "@/constants/Constants";
 import { UpdateUserConfiguration } from "./userConfigService";
 
@@ -207,21 +208,21 @@ const getMicroAppConfig = async (extractedDir: string) => {
           const appConfig = JSON.parse(jsonString);
           return {
             clientId: appConfig.clientId || null,
-            displayMode: appConfig.displayMode || "default",
+            displayMode: appConfig.displayMode || DEFAULT_VIEWING_MODE,
           };
         } catch (jsonError) {
           console.error("Error parsing microapp.json:", jsonError);
           Alert.alert("Error", "Failed to parse microapp.json.");
-          return { clientId: null, displayMode: "default" };
+          return { clientId: null, displayMode: DEFAULT_VIEWING_MODE };
         }
       }
     }
 
     Alert.alert("Error", "microapp configs not found after unzipping.");
-    return { clientId: null, displayMode: "default" };
+    return { clientId: null, displayMode: DEFAULT_VIEWING_MODE };
   } catch (error) {
     console.error("Error reading microapp config:", error);
-    return { clientId: null, displayMode: "default" };
+    return { clientId: null, displayMode: DEFAULT_VIEWING_MODE };
   }
 };
 
@@ -246,7 +247,7 @@ export const removeMicroApp = async (
         webViewUri: "",
         clientId: "",
         exchangedToken: "",
-        displayMode: "default",
+        displayMode: DEFAULT_VIEWING_MODE,
       })
     );
     await UpdateUserConfiguration(appId, NOT_DOWNLOADED, onLogout); // Update user configurations
@@ -302,7 +303,7 @@ export const loadMicroAppDetails = async (
             clientId: storedApp?.clientId || "",
             exchangedToken: storedApp?.exchangedToken || "",
             displayMode:
-              storedApp?.displayMode || app.displayMode || "default",
+              storedApp?.displayMode || app.displayMode || DEFAULT_VIEWING_MODE,
           };
         }
         return app;
