@@ -22,4 +22,4 @@ export type MicroAppParams = {
   displayMode?: DisplayMode;
 };
 
-export type DisplayMode = "showHeader" | "hideHeader";
+export type DisplayMode = "fullscreen" | "default";

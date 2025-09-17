@@ -71,7 +71,7 @@ const MicroApp = () => {
   const isDeveloper: boolean = appId.includes("developer");
   const isTotp: boolean = appId.includes("totp");
   const insets = useSafeAreaInsets();
-  const shouldShowHeader: boolean = displayMode === "showHeader";
+  const shouldShowHeader: boolean = displayMode !== "fullscreen";
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: GOOGLE_IOS_CLIENT_ID,

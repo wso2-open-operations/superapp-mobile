@@ -43,7 +43,7 @@ type ListItemProps = {
   downloading: boolean;
   onDownload: () => void;
   onRemove: () => void;
-  displayMode?: "showHeader" | "hideHeader";
+  displayMode?: "fullscreen" | "default";
 };
 
 const ListItem = React.memo(

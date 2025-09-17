@@ -38,7 +38,7 @@ export type MicroApp = {
   webViewUri?: string | "";
   clientId?: string | "";
   exchangedToken?: string | "";
-  displayMode?: "showHeader" | "hideHeader";
+  displayMode?: "fullscreen" | "default";
 };
 
 interface AppsState {
@@ -74,7 +74,7 @@ const appsSlice = createSlice({
         webViewUri: string;
         clientId: string;
         exchangedToken?: string;
-        displayMode?: "showHeader" | "hideHeader";
+        displayMode?: "fullscreen" | "default";
       }>
     ) => {
       const {
@@ -90,7 +90,7 @@ const appsSlice = createSlice({
         app.status = status;
         app.webViewUri = webViewUri;
         app.clientId = clientId;
-        app.displayMode = displayMode || "showHeader";
+        app.displayMode = displayMode || "default";
         if (exchangedToken) {
           app.exchangedToken = exchangedToken;
         } else app.exchangedToken = "";

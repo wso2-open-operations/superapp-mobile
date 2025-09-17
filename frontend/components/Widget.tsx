@@ -38,7 +38,7 @@ type WidgetProps = {
   clientId: string;
   exchangedToken: string;
   appId: string;
-  displayMode?: "showHeader" | "hideHeader";
+  displayMode?: "fullscreen" | "default";
 };
 
 const Widget = React.memo(
