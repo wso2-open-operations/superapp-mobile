@@ -328,7 +328,7 @@ const MicroApp = () => {
         case TOPIC.GOOGLE_USER_INFO:
           handleGetGoogleUserInfo();
           break;
-        case TOPIC.GO_BACK:
+        case TOPIC.CLOSE_WEBVIEW_FROM_MICROAPP:
           router.back();
           break;
         default:
