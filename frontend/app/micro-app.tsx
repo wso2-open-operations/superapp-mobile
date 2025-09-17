@@ -13,6 +13,18 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
+import {
+  View,
+  Alert,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  StyleSheet,
+} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { WebView, WebViewMessageEvent } from "react-native-webview";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import NotFound from "@/components/NotFound";
 import Scanner from "@/components/Scanner";
 import { Colors } from "@/constants/Colors";
@@ -67,6 +79,7 @@ const MicroApp = () => {
   const webviewRef = useRef<WebView>(null);
   const [token, setToken] = useState<string | null>();
   const dispatch = useDispatch();
+  const router = useRouter();
   const pendingTokenRequests: ((token: string) => void)[] = [];
   const [webUri, setWebUri] = useState<string>(DEVELOPER_APP_DEFAULT_URL);
   const colorScheme = useColorScheme();
@@ -328,6 +341,9 @@ const MicroApp = () => {
           break;
         case TOPIC.GOOGLE_USER_INFO:
           handleGetGoogleUserInfo();
+          break;
+        case TOPIC.CLOSE_WEBVIEW_FROM_MICROAPP:
+          router.back();
           break;
         case TOPIC.NATIVE_LOG:
           handleNativeLog(data);

@@ -29,6 +29,7 @@ import React from "react";
 import ActionButton from "./ActionButton";
 import { router } from "expo-router";
 import { ScreenPaths } from "@/constants/ScreenPaths";
+import { DisplayMode } from "@/types/navigation";
 
 
 type ListItemProps = {
@@ -44,7 +45,7 @@ type ListItemProps = {
   downloading: boolean;
   onDownload: () => void;
   onRemove: () => void;
-  displayMode?: typeof FULL_SCREEN_VIEWING_MODE | typeof DEFAULT_VIEWING_MODE;
+  displayMode?: DisplayMode;
 };
 
 const ListItem = React.memo(

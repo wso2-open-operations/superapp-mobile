@@ -24,4 +24,4 @@ export type MicroAppParams = {
   displayMode?: DisplayMode;
 };
 
-export type DisplayMode = typeof FULL_SCREEN_VIEWING_MODE | typeof DEFAULT_VIEWING_MODE;;
+export type DisplayMode = typeof FULL_SCREEN_VIEWING_MODE | typeof DEFAULT_VIEWING_MODE;
