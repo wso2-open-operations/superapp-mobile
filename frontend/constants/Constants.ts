@@ -84,3 +84,5 @@ export const NEWS_STORAGE_KEY = "cached_news_feed";
 export const NEWS_TIMESTAMP_KEY = "cached_news_timestamp";
 export const isAndroid = Platform.OS === "android";
 export const isIos = Platform.OS === "ios";
+export const FULL_SCREEN_VIEWING_MODE = "fullscreen";
+export const DEFAULT_VIEWING_MODE = "default";

@@ -37,6 +37,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import {
   DEVELOPER_APP_DEFAULT_URL,
+  FULL_SCREEN_VIEWING_MODE,
   GOOGLE_ANDROID_CLIENT_ID,
   GOOGLE_IOS_CLIENT_ID,
   GOOGLE_SCOPES,
@@ -71,7 +72,7 @@ const MicroApp = () => {
   const isDeveloper: boolean = appId.includes("developer");
   const isTotp: boolean = appId.includes("totp");
   const insets = useSafeAreaInsets();
-  const shouldShowHeader: boolean = displayMode !== "fullscreen";
+  const shouldShowHeader: boolean = displayMode !== FULL_SCREEN_VIEWING_MODE;
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: GOOGLE_IOS_CLIENT_ID,

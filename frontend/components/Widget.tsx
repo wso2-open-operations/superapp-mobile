@@ -14,6 +14,10 @@
 // specific language governing permissions and limitations
 // under the License.
 import { Colors } from "@/constants/Colors";
+import {
+  DEFAULT_VIEWING_MODE,
+  FULL_SCREEN_VIEWING_MODE,
+} from "@/constants/Constants";
 import { ScreenPaths } from "@/constants/ScreenPaths";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -38,7 +42,7 @@ type WidgetProps = {
   clientId: string;
   exchangedToken: string;
   appId: string;
-  displayMode?: "fullscreen" | "default";
+  displayMode?: typeof FULL_SCREEN_VIEWING_MODE | typeof DEFAULT_VIEWING_MODE;
 };
 
 const Widget = React.memo(
