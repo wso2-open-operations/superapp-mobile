@@ -225,6 +225,7 @@ const Store = () => {
                 description={item.description}
                 iconUrl={item.iconUrl}
                 status={item.status || NOT_DOWNLOADED}
+                displayMode={item.displayMode}
                 downloading={
                   downloading.includes(item.appId) ||
                   installationQueue.some((i) => i.appId === item.appId)

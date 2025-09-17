@@ -33,6 +33,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { documentDirectory } from "expo-file-system";
 import { MicroAppParams } from "@/types/navigation";
 import { Colors } from "@/constants/Colors";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 import {
   DEVELOPER_APP_DEFAULT_URL,
   GOOGLE_ANDROID_CLIENT_ID,
@@ -55,7 +57,8 @@ WebBrowser.maybeCompleteAuthSession();
 
 const MicroApp = () => {
   const [isScannerVisible, setScannerVisible] = useState(false);
-  const { webViewUri, appName, clientId, exchangedToken, appId } =
+
+  const { webViewUri, appName, clientId, exchangedToken, appId, displayMode } =
     useLocalSearchParams<MicroAppParams>();
   const [hasError, setHasError] = useState(false);
   const webviewRef = useRef<WebView>(null);
@@ -67,6 +70,8 @@ const MicroApp = () => {
   const styles = createStyles(colorScheme ?? "light");
   const isDeveloper: boolean = appId.includes("developer");
   const isTotp: boolean = appId.includes("totp");
+  const insets = useSafeAreaInsets();
+  const shouldShowHeader: boolean = displayMode === "showHeader";
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: GOOGLE_IOS_CLIENT_ID,
@@ -401,11 +406,16 @@ const MicroApp = () => {
 
   return (
     <>
+      {!shouldShowHeader && (
+        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      )}
       <Stack.Screen
         options={{
-          title: appName,
+          title: shouldShowHeader ? appName : "",
+          headerShown: shouldShowHeader,
           headerRight: () =>
-            isDeveloper && (
+            isDeveloper &&
+            shouldShowHeader && (
               <TouchableOpacity
                 onPressIn={() => {
                   isIos
@@ -479,14 +489,26 @@ const MicroApp = () => {
           </View>
         )}
 
-        <View
-          style={[
-            styles.webViewContainer,
-            isScannerVisible && styles.webViewHidden,
-          ]}
-        >
-          {renderWebView(isDeveloper ? webUri : webViewUri)}
-        </View>
+        {!shouldShowHeader ? (
+          <View
+            style={[
+              styles.webViewContainer,
+              isScannerVisible && styles.webViewHidden,
+              { paddingTop: insets.top },
+            ]}
+          >
+            {renderWebView(isDeveloper ? webUri : webViewUri)}
+          </View>
+        ) : (
+          <View
+            style={[
+              styles.webViewContainer,
+              isScannerVisible && styles.webViewHidden,
+            ]}
+          >
+            {renderWebView(isDeveloper ? webUri : webViewUri)}
+          </View>
+        )}
       </View>
     </>
   );

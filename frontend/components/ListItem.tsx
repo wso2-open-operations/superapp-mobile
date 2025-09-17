@@ -43,6 +43,7 @@ type ListItemProps = {
   downloading: boolean;
   onDownload: () => void;
   onRemove: () => void;
+  displayMode?: "showHeader" | "hideHeader";
 };
 
 const ListItem = React.memo(
@@ -59,6 +60,7 @@ const ListItem = React.memo(
     downloading,
     onDownload,
     onRemove,
+    displayMode,
   }: ListItemProps) => {
     const screenWidth = Dimensions.get("window").width;
     const colorScheme = useColorScheme() ?? "light";
@@ -67,7 +69,14 @@ const ListItem = React.memo(
     const handlePress = () => {
       router.push({
         pathname: ScreenPaths.MICRO_APP,
-        params: { webViewUri, appName: name, clientId, exchangedToken, appId },
+        params: {
+          webViewUri,
+          appName: name,
+          clientId,
+          exchangedToken,
+          appId,
+          displayMode,
+        },
       });
     };
 
