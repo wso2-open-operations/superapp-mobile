@@ -346,13 +346,19 @@ const MicroApp = () => {
 
     switch (level) {
       case "info":
-        console.info("[Micro App] ", message, ". ", injectedData);
+        console.info(
+          `[Micro App] ${message}${injectedData !== undefined ? ". " + injectedData : ""}`
+        );
         break;
       case "warn":
-        console.warn("[Micro App] ", message, ". ", injectedData);
+        console.warn(
+          `[Micro App] ${message}${injectedData !== undefined ? ". " + injectedData : ""}`
+        );
         break;
       case "error":
-        console.error("[Micro App] ", message, ". ", injectedData);
+        console.error(
+          `[Micro App] ${message}${injectedData !== undefined ? ". " + injectedData : ""}`
+        );
         break;
     }
   };
