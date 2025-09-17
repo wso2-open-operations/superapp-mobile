@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 import {
   View,
   Alert,
@@ -26,12 +27,6 @@ import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import NotFound from "@/components/NotFound";
 import Scanner from "@/components/Scanner";
-import { useDispatch } from "react-redux";
-import { injectedJavaScript, TOPIC } from "@/utils/bridge";
-import { logout, tokenExchange } from "@/services/authService";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { documentDirectory } from "expo-file-system";
-import { MicroAppParams } from "@/types/navigation";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -44,17 +39,36 @@ import {
   GOOGLE_WEB_CLIENT_ID,
   isIos,
 } from "@/constants/Constants";
-import prompt from "react-native-prompt-android";
-import * as WebBrowser from "expo-web-browser";
+import { logout, tokenExchange } from "@/services/authService";
 import googleAuthenticationService, {
   getGoogleUserInfo,
   isAuthenticatedWithGoogle,
   restoreGoogleDriveBackup,
   uploadToGoogleDrive,
 } from "@/services/googleService";
+import { MicroAppParams } from "@/types/navigation";
+import { injectedJavaScript, TOPIC } from "@/utils/bridge";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Google from "expo-auth-session/providers/google";
+import { documentDirectory } from "expo-file-system";
+import { Stack, useLocalSearchParams } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
+import prompt from "react-native-prompt-android";
+import { WebView, WebViewMessageEvent } from "react-native-webview";
+import { useDispatch } from "react-redux";
 
 WebBrowser.maybeCompleteAuthSession();
+
+type NativeLogLevel = "info" | "warn" | "error";
 
 const MicroApp = () => {
   const [isScannerVisible, setScannerVisible] = useState(false);
@@ -331,11 +345,46 @@ const MicroApp = () => {
         case TOPIC.CLOSE_WEBVIEW_FROM_MICROAPP:
           router.back();
           break;
+        case TOPIC.NATIVE_LOG:
+          handleNativeLog(data);
+          break;
         default:
           console.error("Unknown topic:", topic);
       }
     } catch (error) {
       console.error("Error handling WebView message:", error);
+    }
+  };
+
+  /**
+   * Display microapp logs in the console
+   * @param data - The data to display
+   */
+  const handleNativeLog = (data: any) => {
+    if (!__DEV__) return;
+    const level = data.level as NativeLogLevel;
+    const message = data.message;
+    const injectedData = data.data;
+
+    switch (level) {
+      case "info":
+        console.info(
+          `[Micro App] ${message}.`,
+          injectedData !== undefined ? injectedData : ""
+        );
+        break;
+      case "warn":
+        console.warn(
+          `[Micro App] ${message}.`,
+          injectedData !== undefined ? injectedData : ""
+        );
+        break;
+      case "error":
+        console.error(
+          `[Micro App] ${message}.`,
+          injectedData !== undefined ? injectedData : ""
+        );
+        break;
     }
   };
 
