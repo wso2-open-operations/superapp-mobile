@@ -149,6 +149,7 @@ build/
   "bannerImageUrl": "hosting-url-for-banner.png",
   "isMandatory": 0,
   "clientId": "client-id-for-authentication-if-integrated",
+  "displayMode": "Controls whether to hide the header ('fullscreen') or show it ('default'). If no value is provided, it defaults to 'default'",
   "versions": [
     {
       "version": "version no",
