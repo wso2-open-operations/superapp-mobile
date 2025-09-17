@@ -23,7 +23,7 @@ import {
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import NotFound from "@/components/NotFound";
 import Scanner from "@/components/Scanner";
 import { useDispatch } from "react-redux";
@@ -65,6 +65,7 @@ const MicroApp = () => {
   const webviewRef = useRef<WebView>(null);
   const [token, setToken] = useState<string | null>();
   const dispatch = useDispatch();
+  const router = useRouter();
   const pendingTokenRequests: ((token: string) => void)[] = [];
   const [webUri, setWebUri] = useState<string>(DEVELOPER_APP_DEFAULT_URL);
   const colorScheme = useColorScheme();
@@ -326,6 +327,9 @@ const MicroApp = () => {
           break;
         case TOPIC.GOOGLE_USER_INFO:
           handleGetGoogleUserInfo();
+          break;
+        case TOPIC.GO_BACK:
+          router.back();
           break;
         default:
           console.error("Unknown topic:", topic);
