@@ -53,7 +53,7 @@ import { useDispatch } from "react-redux";
 
 WebBrowser.maybeCompleteAuthSession();
 
-type NativeLogLevel = "debug" | "info" | "warn" | "error";
+type NativeLogLevel = "info" | "warn" | "error";
 
 const MicroApp = () => {
   const [isScannerVisible, setScannerVisible] = useState(false);
@@ -347,17 +347,20 @@ const MicroApp = () => {
     switch (level) {
       case "info":
         console.info(
-          `[Micro App] ${message}${injectedData !== undefined ? ". " + injectedData : ""}`
+          `[Micro App] ${message}.`,
+          injectedData !== undefined ? injectedData : ""
         );
         break;
       case "warn":
         console.warn(
-          `[Micro App] ${message}${injectedData !== undefined ? ". " + injectedData : ""}`
+          `[Micro App] ${message}.`,
+          injectedData !== undefined ? injectedData : ""
         );
         break;
       case "error":
         console.error(
-          `[Micro App] ${message}${injectedData !== undefined ? ". " + injectedData : ""}`
+          `[Micro App] ${message}.`,
+          injectedData !== undefined ? injectedData : ""
         );
         break;
     }
