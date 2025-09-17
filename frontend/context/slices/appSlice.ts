@@ -15,11 +15,8 @@
 // under the License.
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  APPS,
-  DEFAULT_VIEWING_MODE,
-  FULL_SCREEN_VIEWING_MODE,
-} from "@/constants/Constants";
+import { APPS, DEFAULT_VIEWING_MODE } from "@/constants/Constants";
+import { DisplayMode } from "@/types/navigation";
 
 export type Version = {
   version: string;
@@ -42,7 +39,7 @@ export type MicroApp = {
   webViewUri?: string | "";
   clientId?: string | "";
   exchangedToken?: string | "";
-  displayMode?: typeof FULL_SCREEN_VIEWING_MODE | typeof DEFAULT_VIEWING_MODE;
+  displayMode?: DisplayMode;
 };
 
 interface AppsState {
@@ -78,9 +75,7 @@ const appsSlice = createSlice({
         webViewUri: string;
         clientId: string;
         exchangedToken?: string;
-        displayMode?:
-          | typeof FULL_SCREEN_VIEWING_MODE
-          | typeof DEFAULT_VIEWING_MODE;
+        displayMode?: DisplayMode;
       }>
     ) => {
       const {
