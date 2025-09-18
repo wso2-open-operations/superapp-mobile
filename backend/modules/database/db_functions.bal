@@ -21,6 +21,10 @@ import ballerina/sql;
 # + groups - User's groups
 # + return - Array of MicroApp IDs or an error
 isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
+    if groups.length() == 0 {
+        log:printWarn("No groups found for the user");
+        return [];
+    }
     stream<MicroAppId, sql:Error?> appIdStream = databaseClient->query(getMicroAppIdsByGroupsQuery(groups));
     string[] appIds = check from MicroAppId microAppId in appIdStream
         select microAppId.appId;
@@ -38,6 +42,11 @@ isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error
 # + return - Array of MicroApps or an error
 public isolated function getMicroApps(string[] groups) returns MicroApp[]|error {
     string[] appIds = check getMicroAppIdsByGroups(groups);
+
+    if appIds.length() == 0 {
+        log:printWarn("No groups found for the user");
+        return [];
+    }
 
     stream<MicroApp, sql:Error?> appStream = databaseClient->query(getMicroAppsByAppIdsQuery(appIds));
     MicroApp[] microApps = check from MicroApp microApp in appStream
