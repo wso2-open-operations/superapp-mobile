@@ -297,7 +297,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        string[]|error memberEmails = scim_operations:getGroupMemberEmails(GROUP_SEARCH_FILTER_PREFIX + group, organization);
+        string[]|error memberEmails = scim_operations:getGroupMemberEmails(group, organization);
         if memberEmails is error {
             string customError = string `Client not found for organization: ${organization}`;
             log:printError(customError, memberEmails);
