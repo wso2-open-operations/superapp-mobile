@@ -142,7 +142,7 @@ isolated function getAppConfigsByEmailQuery(string email) returns sql:Parameteri
 # + return - Generated Query to insert/update configurations
 isolated function updateAppConfigsByEmailQuery(string email, string configKey, string configValue, int isActive)
     returns sql:ParameterizedQuery => `
-        INSERT INTO user_config (x
+        INSERT INTO user_config (
             email,
             config_key,
             config_value,
