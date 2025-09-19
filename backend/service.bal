@@ -287,7 +287,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # + organization - The organization name to search groups 
     # + startIndex - Starting index for pagination
     # + return - Paginated FCM tokens response or an error.
-    resource function get users/groupFcmTokens(http:RequestContext ctx, string group, string organization, int startIndex) 
+    resource function get users/fcm\-tokens(http:RequestContext ctx, string group, string organization, int startIndex) 
         returns database:FCMTokenResponse|http:InternalServerError|http:NotFound {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
