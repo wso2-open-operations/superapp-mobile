@@ -14,5 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+# Error message returned when the expected user information header is missing
 public const ERR_MSG_USER_HEADER_NOT_FOUND = "User information header not found!";
+
+# Prefix used for filtering groups in SCIM service
 public const GROUP_SEARCH_FILTER_PREFIX = "displayName eq ";
