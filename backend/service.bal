@@ -24,7 +24,6 @@ configurable int maxHeaderSize = 16384; // 16KB header size for WSO2 Choreo supp
 configurable string[] restrictedAppsForNonLk = ?;
 configurable string lkLocation = "Sri Lanka";
 configurable string mobileAppReviewerEmail = ?; // App store reviewer email
-configurable string defaultMicroAppsGroup = ?; // Default micro apps group name
 
 @display {
     label: "SuperApp Mobile Service",
@@ -47,7 +46,7 @@ service class ErrorInterceptor {
     }
 }
 
-service http:InterceptableService / on new http:Listener(9090, config = {requestLimits: {maxHeaderSize}}) {
+service http:InterceptableService / on new http:Listener(9091, config = {requestLimits: {maxHeaderSize}}) {
 
     # + return - authorization:JwtInterceptor, ErrorInterceptor
     public function createInterceptors() returns http:Interceptor[] =>
@@ -293,7 +292,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     #
     # + return - Content records or an error
     resource function get default\-microapps () returns database:MicroApp[]|http:InternalServerError {
-        database:MicroApp[]|error defaultMicroApps = database:getMicroApps([defaultMicroAppsGroup]);
+        database:MicroApp[]|error defaultMicroApps = database:getMicroApps([database:defaultMicroAppsGroup]);
         if defaultMicroApps is error  {
             string customError = "Error occurred while retrieving default micro apps!";
             log:printError(customError, defaultMicroApps);

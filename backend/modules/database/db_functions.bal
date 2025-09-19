@@ -16,16 +16,20 @@
 import ballerina/log;
 import ballerina/sql;
 
+public configurable string defaultMicroAppsGroup = ?; // Default micro apps group name
+
 # Get list of all MicroApp IDs for given groups.
 #
 # + groups - User's groups
 # + return - Array of MicroApp IDs or an error
 isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
+    string[] effectiveGroups = groups;
     if groups.length() == 0 {
-        log:printWarn("No groups found for the user");
-        return [];
+        effectiveGroups = [defaultMicroAppsGroup];
+    } else {
+        effectiveGroups.push(defaultMicroAppsGroup);
     }
-    stream<MicroAppId, sql:Error?> appIdStream = databaseClient->query(getMicroAppIdsByGroupsQuery(groups));
+    stream<MicroAppId, sql:Error?> appIdStream = databaseClient->query(getMicroAppIdsByGroupsQuery(effectiveGroups));
     string[] appIds = check from MicroAppId microAppId in appIdStream
         select microAppId.appId;
 
@@ -42,9 +46,7 @@ isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error
 # + return - Array of MicroApps or an error
 public isolated function getMicroApps(string[] groups) returns MicroApp[]|error {
     string[] appIds = check getMicroAppIdsByGroups(groups);
-
     if appIds.length() == 0 {
-        log:printWarn("No groups found for the user");
         return [];
     }
 
@@ -52,7 +54,6 @@ public isolated function getMicroApps(string[] groups) returns MicroApp[]|error 
     MicroApp[] microApps = check from MicroApp microApp in appStream
         order by microApp.name ascending
         select microApp;
-
     if microApps.length() == 0 {
         return [];
     }
@@ -64,7 +65,6 @@ public isolated function getMicroApps(string[] groups) returns MicroApp[]|error 
             select version;
         microApp.versions = versions;
     }
-
     return microApps;
 }
 
@@ -114,8 +114,15 @@ public isolated function getVersionsByPlatform(string platform) returns Version[
 public isolated function getAppConfigsByEmail(string email) returns AppConfig[]|error {
     stream<AppConfig, sql:Error?> configStream =
         databaseClient->query(getAppConfigsByEmailQuery(email));
-    return from AppConfig appConfig in configStream
+    AppConfig[] appConfigs = check from AppConfig appConfig in configStream
         select appConfig;
+    foreach AppConfig config in appConfigs {
+        string[] configValues = check config.configValue.fromJsonWithType();
+        string[] defaultMicroAppIds = check getMicroAppIdsByGroups([]);
+        configValues.push(...defaultMicroAppIds);
+        config.configValue = configValues.toJson();
+    }
+    return appConfigs;
 }
 
 # Insert or update app configurations of the logged in user.
