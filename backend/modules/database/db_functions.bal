@@ -1,3 +1,4 @@
+
 // Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
@@ -118,10 +119,35 @@ public isolated function updateAppConfigsByEmail(string email, AppConfig appConf
     returns ExecutionSuccessResult|error {
 
     sql:ParameterizedQuery query = updateAppConfigsByEmailQuery(
-        email,
-        appConfig.configKey,
-        appConfig.configValue.toJsonString(),
-        appConfig.isActive);
+            email,
+            appConfig.configKey,
+            appConfig.configValue.toJsonString(),
+            appConfig.isActive);
     sql:ExecutionResult result = check databaseClient->execute(query);
     return result.cloneWithType(ExecutionSuccessResult);
+}
+
+# Get FCM tokens for a list of emails with pagination.
+#
+# + emails - Array of user emails to retrieve tokens for
+# + startIndex - Start index for pagination
+# + return - FCMTokenResponse with tokens and pagination info, or an error.
+public isolated function getFCMTokens(string[] emails, int startIndex) returns FCMTokenResponse|error {
+    CountRecord countRecord = check databaseClient->queryRow(countFCMTokensQuery(emails));
+
+    if startIndex >= countRecord.count {
+        return error(string `Invalid start index: ${startIndex}. Total results: ${countRecord.count}`);
+    }
+
+    stream<FCMTokenRecord, sql:Error?> tokenStream = databaseClient->query(getFCMTokensQuery(emails, startIndex));
+    string[] tokens = check from FCMTokenRecord tokenRecord in tokenStream
+        where tokenRecord.fcm_token != ""
+        select tokenRecord.fcm_token;
+
+    return {
+        fcmTokens: tokens,
+        totalResults: countRecord.count,
+        startIndex: startIndex,
+        itemsPerPage: offsetvalue
+    };
 }

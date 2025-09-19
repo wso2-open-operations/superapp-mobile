@@ -1,3 +1,4 @@
+
 // Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
@@ -16,6 +17,7 @@
 import superapp_mobile_service.authorization;
 import superapp_mobile_service.database;
 import superapp_mobile_service.entity;
+import superapp_mobile_service.scim_operations;
 
 import ballerina/http;
 import ballerina/log;
@@ -277,5 +279,48 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         }
 
         return http:CREATED;
+    }
+
+    # Retrieves FCM tokens for all members of a specified group.
+    #
+    # + ctx - Request context
+    # + group - The group name to search for members 
+    # + organization - The organization name to search groups 
+    # + startIndex - Starting index for pagination
+    # + return - Paginated FCM tokens response or an error.
+    resource function get users/groupFcmTokens(http:RequestContext ctx, string group, string organization, int startIndex) 
+        returns database:FCMTokenResponse|http:InternalServerError|http:NotFound {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {"message": ERR_MSG_USER_HEADER_NOT_FOUND}
+            };
+        }
+
+        string[]|error memberEmails = scim_operations:getGroupMemberEmails(GROUP_SEARCH_FILTER_PREFIX + group, organization);
+        if memberEmails is error {
+            string customError = string `Client not found for organization: ${organization}`;
+            log:printError(customError, memberEmails);
+            return <http:InternalServerError>{
+                body: {"message": customError}
+            };
+        }
+
+        if memberEmails.length() == 0 {
+            string customError = string `No members found in ${group} or no ${group} exists`;
+            return <http:NotFound>{
+                body: {"message": customError}
+            };
+        }
+        database:FCMTokenResponse|error fcmTokensResponse = database:getFCMTokens(memberEmails, startIndex);
+        if fcmTokensResponse is error {
+            log:printError(fcmTokensResponse.message(), fcmTokensResponse);
+            return <http:InternalServerError>{
+                body: {"message": fcmTokensResponse.message()}
+            };
+        }
+
+        return fcmTokensResponse;
     }
 }
