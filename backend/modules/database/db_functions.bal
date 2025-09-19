@@ -134,7 +134,7 @@ public isolated function updateAppConfigsByEmail(string email, AppConfig appConf
 public isolated function getFCMTokens(string[] emails, int startIndex) returns FCMTokenResponse|error {
     CountRecord countRecord = check databaseClient->queryRow(countFCMTokensQuery(emails));
 
-    if startIndex >= countRecord.count {
+    if startIndex < 0 || startIndex >= countRecord.count {
         return error(string `Invalid start index: ${startIndex}. Total results: ${countRecord.count}`);
     }
 
