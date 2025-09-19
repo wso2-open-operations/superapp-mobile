@@ -289,22 +289,4 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
 
         return http:CREATED;
     }
-
-    # Fetch default microapps.
-    #
-    # + return - Content records or an error
-    resource function get default\-microapps() returns database:MicroApp[]|http:InternalServerError {
-        database:MicroApp[]|error defaultMicroApps = database:getMicroApps([database:defaultMicroAppsGroup]);
-        if defaultMicroApps is error  {
-            string customError = "Error occurred while retrieving default micro apps!";
-            log:printError(customError, defaultMicroApps);
-            return {
-                body: {
-                    message: customError
-                }
-            };
-
-        }
-        return defaultMicroApps;
-    }
 }
