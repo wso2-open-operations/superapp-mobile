@@ -46,7 +46,7 @@ service class ErrorInterceptor {
     }
 }
 
-service http:InterceptableService / on new http:Listener(9091, config = {requestLimits: {maxHeaderSize}}) {
+service http:InterceptableService / on new http:Listener(9090, config = {requestLimits: {maxHeaderSize}}) {
 
     # + return - authorization:JwtInterceptor, ErrorInterceptor
     public function createInterceptors() returns http:Interceptor[] =>
@@ -60,10 +60,12 @@ service http:InterceptableService / on new http:Listener(9091, config = {request
     #
     # + ctx - Request context
     # + return - User information object or an error
-    resource function get user\-info(http:RequestContext ctx) returns entity:Employee|http:InternalServerError? {
+    resource function get user\-info(http:RequestContext ctx)
+        returns entity:Employee|http:InternalServerError|http:NotFound {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            return {
+            return <http:InternalServerError>{
                 body: {
                     message: ERR_MSG_USER_HEADER_NOT_FOUND
                 }
@@ -74,7 +76,7 @@ service http:InterceptableService / on new http:Listener(9091, config = {request
         if loggedInUser is error {
             string customError = "Error occurred while retrieving user data!";
             log:printError(customError, loggedInUser);
-            return {
+            return <http:InternalServerError>{
                 body: {
                     message: customError
                 }
@@ -83,7 +85,7 @@ service http:InterceptableService / on new http:Listener(9091, config = {request
 
         if loggedInUser is () {
             log:printWarn("User not found!", email = userInfo.email);
-            return;
+            return http:NOT_FOUND;
         }
 
         error? cacheError = userInfoCache.put(userInfo.email, loggedInUser);
@@ -291,7 +293,7 @@ service http:InterceptableService / on new http:Listener(9091, config = {request
     # Fetch default microapps.
     #
     # + return - Content records or an error
-    resource function get default\-microapps () returns database:MicroApp[]|http:InternalServerError {
+    resource function get default\-microapps() returns database:MicroApp[]|http:InternalServerError {
         database:MicroApp[]|error defaultMicroApps = database:getMicroApps([database:defaultMicroAppsGroup]);
         if defaultMicroApps is error  {
             string customError = "Error occurred while retrieving default micro apps!";

@@ -24,11 +24,7 @@ public configurable string defaultMicroAppsGroup = ?; // Default micro apps grou
 # + return - Array of MicroApp IDs or an error
 isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
     string[] effectiveGroups = groups;
-    if groups.length() == 0 {
-        effectiveGroups = [defaultMicroAppsGroup];
-    } else {
-        effectiveGroups.push(defaultMicroAppsGroup);
-    }
+    effectiveGroups.push(defaultMicroAppsGroup);
     stream<MicroAppId, sql:Error?> appIdStream = databaseClient->query(getMicroAppIdsByGroupsQuery(effectiveGroups));
     string[] appIds = check from MicroAppId microAppId in appIdStream
         select microAppId.appId;
