@@ -288,7 +288,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # + startIndex - Starting index for pagination
     # + return - Paginated FCM tokens response or an error.
     resource function get users/fcm\-tokens(http:RequestContext ctx, string group, string organization, int startIndex) 
-        returns database:FCMTokenResponse|http:InternalServerError|http:NotFound {
+        returns database:FcmTokenResponse|http:InternalServerError|http:NotFound {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -299,7 +299,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
 
         string[]|error memberEmails = scim_operations:getGroupMemberEmails(group, organization);
         if memberEmails is error {
-            string customError = string `Client not found for organization: ${organization}`;
+            string customError = "Error occurred while calling SCIM operations service";
             log:printError(customError, memberEmails);
             return <http:InternalServerError>{
                 body: {"message": customError}
@@ -312,11 +312,12 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
                 body: {"message": customError}
             };
         }
-        database:FCMTokenResponse|error fcmTokensResponse = database:getFCMTokens(memberEmails, startIndex);
+        database:FcmTokenResponse|error fcmTokensResponse = database:getFcmTokens(memberEmails, startIndex);
         if fcmTokensResponse is error {
-            log:printError(fcmTokensResponse.message(), fcmTokensResponse);
+            string customError = "Error occurred while retrieving FCM tokens";
+            log:printError(customError, fcmTokensResponse);
             return <http:InternalServerError>{
-                body: {"message": fcmTokensResponse.message()}
+                body: {"message": customError}
             };
         }
 
