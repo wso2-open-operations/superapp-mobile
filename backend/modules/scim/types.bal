@@ -6,13 +6,23 @@
 // herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
 // You may not alter or remove any copyright or other notice from copies of this content.
 
-# Request record for the SCIM group search request
+# [Configurable] OAuth2 entity application configuration.
+type Oauth2Config record {|
+    # The URL of the token endpoint
+    string tokenUrl;
+    # The client ID of the application
+    string clientId;
+    # The client secret of the application
+    string clientSecret;
+|};
+
+# Request record for the SCIM group search request.
 public type GroupSearchRequest record {|
     # The group name string used to query groups from the SCIM service
     string filter;
 |};
 
-# Response record for the SCIM group search response
+# Response record for the SCIM group search response.
 public type GroupSearchResponse record {|
     # The total number of results that match the request
     int totalResults;
@@ -26,7 +36,7 @@ public type GroupSearchResponse record {|
     GroupResource[] Resources;
 |};
 
-# Record representing a SCIM group resource returned in a group search response
+# Record representing a SCIM group resource returned in a group search response.
 public type GroupResource record {|
     # The unique identifier of the group
     string id;
@@ -38,7 +48,7 @@ public type GroupResource record {|
     GroupMeta meta;
 |};
 
-# Record representing a member of a SCIM group resource
+# Record representing a member of a SCIM group resource.
 public type GroupMember record {|
     # The id of the member
     string value;
@@ -48,7 +58,7 @@ public type GroupMember record {|
     string \$ref;
 |};
 
-# Record representing metadata of a SCIM group resource
+# Record representing metadata of a SCIM group resource.
 public type GroupMeta record {|
     # The timestamp when the group resource was created
     string created;

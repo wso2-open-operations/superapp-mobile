@@ -42,8 +42,6 @@ public isolated function getGroupMemberEmails(string group, string organization)
 # + return - A `GroupSearchResponse` on success, or an error on failure
 public isolated function searchGroups(string group, string organization) returns GroupSearchResponse|error {
     GroupSearchRequest searchRequest = {filter: string `displayName eq ${group}`};
-    
-    string endpoint = string `/organizations/${organization}/groups/search`;
 
-    return check scimClient->post(endpoint, searchRequest);
+    return check scimClient->/organizations/[organization]/groups/search.post(searchRequest);
 }
