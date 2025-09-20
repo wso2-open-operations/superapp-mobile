@@ -15,7 +15,7 @@
 // under the License.
 import ballerina/sql;
 
-configurable int offsetvalue = ?;
+configurable int offsetValue = ?;
 
 # Query to retrieve distinct micro app IDs allowed for the given user groups.
 #
@@ -169,7 +169,7 @@ isolated function updateAppConfigsByEmailQuery(string email, string configKey, s
 # + emails - Array of user emails to retrieve tokens for
 # + startIndex - Start index for pagination
 # + return - Generated query to get FCM tokens from the device_tokens table.
-public isolated function getFCMTokensQuery(string[] emails, int startIndex) returns sql:ParameterizedQuery =>
+public isolated function getFcmTokensQuery(string[] emails, int startIndex) returns sql:ParameterizedQuery =>
     sql:queryConcat(`
         SELECT 
             dt.fcm_token
@@ -178,14 +178,14 @@ public isolated function getFCMTokensQuery(string[] emails, int startIndex) retu
         INNER JOIN 
             user_config uc ON dt.user_id = uc.id
         WHERE
-            uc.email IN (`, sql:arrayFlattenQuery(emails), `) LIMIT ${offsetvalue} OFFSET ${startIndex}
+            uc.email IN (`, sql:arrayFlattenQuery(emails), `) LIMIT ${offsetValue} OFFSET ${startIndex}
     `);
 
 # Query to count FCM tokens for a given list of emails.
 #
 # + emails - Array of user emails to count tokens for
 # + return - Generated query to count FCM tokens from the device_tokens table.
-public isolated function countFCMTokensQuery(string[] emails) returns sql:ParameterizedQuery =>
+public isolated function countFcmTokensQuery(string[] emails) returns sql:ParameterizedQuery =>
     sql:queryConcat(`
         SELECT 
             COUNT(*) as count

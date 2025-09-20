@@ -147,13 +147,13 @@ public type CountRecord record {|
 
 # Record representing an FCM token for a device associated with a user.
 # This record maps to the device_tokens table in the database.
-public type FCMTokenRecord record {|
+public type FcmTokenRecord record {|
     # FCM token for the device
     string fcm_token;
 |};
 
 # Response type for paginated FCM tokens.
-public type FCMTokenResponse record {|
+public type FcmTokenResponse record {|
     # Array of FCM tokens
     string[] fcmTokens;
     # Total FCM Token count
