@@ -139,14 +139,12 @@ public type ExecutionSuccessResult record {|
 |};
 
 # Record type for count query results.
-# This type is used to receive COUNT query results from the database.
 public type CountRecord record {|
     # Count result from a SQL COUNT query
     int count;
 |};
 
 # Record representing an FCM token for a device associated with a user.
-# This record maps to the device_tokens table in the database.
 public type FcmTokenRecord record {|
     # FCM token for the device
     string fcm_token;
