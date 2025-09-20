@@ -8,7 +8,7 @@
 
 # Request record for the SCIM group search request
 public type GroupSearchRequest record {|
-    # The filter string used to query groups from the SCIM service
+    # The group name string used to query groups from the SCIM service
     string filter;
 |};
 
