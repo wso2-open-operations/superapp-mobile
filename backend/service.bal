@@ -16,6 +16,7 @@
 import superapp_mobile_service.authorization;
 import superapp_mobile_service.database;
 import superapp_mobile_service.entity;
+import superapp_mobile_service.scim_operations;
 
 import ballerina/http;
 import ballerina/log;
@@ -288,5 +289,49 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         }
 
         return http:CREATED;
+    }
+
+    # Retrieves FCM tokens for all members of a specified group.
+    #
+    # + ctx - Request context
+    # + group - The group name to search for members 
+    # + organization - The organization name to search groups 
+    # + startIndex - Starting index for pagination
+    # + return - Paginated FCM tokens response or an error.
+    resource function get users/fcm\-tokens(http:RequestContext ctx, string group, string organization, int startIndex) 
+        returns database:FcmTokenResponse|http:InternalServerError|http:NotFound {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {"message": ERR_MSG_USER_HEADER_NOT_FOUND}
+            };
+        }
+
+        string[]|error memberEmails = scim_operations:getGroupMemberEmails(group, organization);
+        if memberEmails is error {
+            string customError = "Error occurred while calling SCIM operations service";
+            log:printError(customError, memberEmails);
+            return <http:InternalServerError>{
+                body: {"message": customError}
+            };
+        }
+
+        if memberEmails.length() == 0 {
+            string customError = string `No members found in ${group} or no ${group} exists`;
+            return <http:NotFound>{
+                body: {"message": customError}
+            };
+        }
+        database:FcmTokenResponse|error fcmTokensResponse = database:getFcmTokens(memberEmails, startIndex);
+        if fcmTokensResponse is error {
+            string customError = "Error occurred while retrieving FCM tokens";
+            log:printError(customError, fcmTokensResponse);
+            return <http:InternalServerError>{
+                body: {"message": customError}
+            };
+        }
+
+        return fcmTokensResponse;
     }
 }

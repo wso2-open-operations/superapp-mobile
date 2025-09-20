@@ -137,3 +137,28 @@ public isolated function updateAppConfigsByEmail(string email, AppConfig appConf
     sql:ExecutionResult result = check databaseClient->execute(query);
     return result.cloneWithType(ExecutionSuccessResult);
 }
+
+# Get FCM tokens for a list of emails with pagination.
+#
+# + emails - Array of user emails to retrieve tokens for
+# + startIndex - Start index for pagination
+# + return - FCMTokenResponse with tokens and pagination info, or an error.
+public isolated function getFcmTokens(string[] emails, int startIndex) returns FcmTokenResponse|error {
+    CountRecord countRecord = check databaseClient->queryRow(countFcmTokensQuery(emails));
+
+    if startIndex < 0 || startIndex >= countRecord.count {
+        return error(string `Invalid start index: ${startIndex}. Total results: ${countRecord.count}`);
+    }
+
+    stream<FcmTokenRecord, sql:Error?> tokenStream = databaseClient->query(getFcmTokensQuery(emails, startIndex));
+    string[] tokens = check from FcmTokenRecord tokenRecord in tokenStream
+        where tokenRecord.fcm_token != ""
+        select tokenRecord.fcm_token;
+
+    return {
+        fcmTokens: tokens,
+        totalResults: countRecord.count,
+        startIndex: startIndex,
+        itemsPerPage: offsetValue
+    };
+}

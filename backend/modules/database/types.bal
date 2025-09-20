@@ -137,3 +137,27 @@ public type ExecutionSuccessResult record {|
     # Unique id for the operation
     string uniqueId?;
 |};
+
+# Record type for count query results.
+public type CountRecord record {|
+    # Count result from a SQL COUNT query
+    int count;
+|};
+
+# Record representing an FCM token for a device associated with a user.
+public type FcmTokenRecord record {|
+    # FCM token for the device
+    string fcm_token;
+|};
+
+# Response type for paginated FCM tokens.
+public type FcmTokenResponse record {|
+    # Array of FCM tokens
+    string[] fcmTokens;
+    # Total FCM Token count
+    int totalResults;
+    # Start index of response 
+    int startIndex;
+    # Total items for per page
+    int itemsPerPage;
+|};
