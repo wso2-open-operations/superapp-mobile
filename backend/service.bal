@@ -13,10 +13,11 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 import superapp_mobile_service.authorization;
 import superapp_mobile_service.database;
 import superapp_mobile_service.entity;
-import superapp_mobile_service.scim_operations;
+import superapp_mobile_service.scim;
 
 import ballerina/http;
 import ballerina/log;
@@ -297,7 +298,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        string[]|error memberEmails = scim_operations:getGroupMemberEmails(group, organization);
+        string[]|error memberEmails = scim:getGroupMemberEmails(group, organization);
         if memberEmails is error {
             string customError = "Error occurred while calling SCIM operations service";
             log:printError(customError, memberEmails);

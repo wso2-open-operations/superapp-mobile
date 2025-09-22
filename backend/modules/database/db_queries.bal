@@ -15,7 +15,7 @@
 // under the License.
 import ballerina/sql;
 
-configurable int offsetValue = ?;
+configurable int resultLimit = 100;
 
 # Query to retrieve distinct micro app IDs allowed for the given user groups.
 #
@@ -178,7 +178,7 @@ public isolated function getFcmTokensQuery(string[] emails, int startIndex) retu
         INNER JOIN 
             user_config uc ON dt.user_id = uc.id
         WHERE
-            uc.email IN (`, sql:arrayFlattenQuery(emails), `) LIMIT ${offsetValue} OFFSET ${startIndex}
+            uc.email IN (`, sql:arrayFlattenQuery(emails), `) LIMIT ${resultLimit} OFFSET ${startIndex}
     `);
 
 # Query to count FCM tokens for a given list of emails.

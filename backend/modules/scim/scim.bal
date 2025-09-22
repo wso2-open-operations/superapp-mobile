@@ -13,17 +13,17 @@
 public isolated function getGroupMemberEmails(string group, string organization) returns string[]|error {
     GroupSearchResponse groupResponse = check searchGroups(group, organization);
 
-    if groupResponse.totalResults <= 0 || groupResponse.Resources.length() <= 0 {
+    if groupResponse.totalResults == 0 || groupResponse.Resources.length() == 0 {
         return [];
     }
 
     GroupResource groupResource = groupResponse.Resources[0];
 
-    GroupMember[] members = <GroupMember[]>groupResource.members;
+    GroupMember[] members = groupResource.members;
     string[] emails = [];
 
     from GroupMember member in members
-    let string displayName = <string>member.display
+    let string displayName = member.display
     do {
         if displayName.startsWith(STORE_NAME) {
             emails.push(displayName.substring(STORE_NAME.length()));
@@ -42,6 +42,5 @@ public isolated function getGroupMemberEmails(string group, string organization)
 # + return - A `GroupSearchResponse` on success, or an error on failure
 public isolated function searchGroups(string group, string organization) returns GroupSearchResponse|error {
     GroupSearchRequest searchRequest = {filter: string `displayName eq ${group}`};
-
     return check scimClient->/organizations/[organization]/groups/search.post(searchRequest);
 }
