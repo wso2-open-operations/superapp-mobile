@@ -13,35 +13,35 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import React, { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  useColorScheme,
-  Image,
-  ActivityIndicator,
-  FlatList,
-  Linking,
-  Dimensions,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import RemoteFallbackImage from "@/components/RemoteFallbackImage";
+import SearchBar from "@/components/SearchBar";
 import { Colors } from "@/constants/Colors";
-import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
-import { ScreenPaths } from "@/constants/ScreenPaths";
-import { fetchLibraryArticles } from "@/services/libraryService";
 import {
   ARTICLE_BASE_URL,
   LIBRARY_ARTICLE_FETCH_LIMIT,
 } from "@/constants/Constants";
-import { LibraryArticle } from "@/types/library.types";
-import LibrarySkelton from "../../components/LibrarySkelton";
-import { capitalizeName } from "@/utils/capitalizeName";
-import SearchBar from "@/components/SearchBar";
+import { ScreenPaths } from "@/constants/ScreenPaths";
 import useDebounce from "@/hooks/useDebounce";
-import RemoteFallbackImage from "@/components/RemoteFallbackImage";
+import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
+import { fetchLibraryArticles } from "@/services/libraryService";
+import { LibraryArticle } from "@/types/library.types";
+import { capitalizeName } from "@/utils/capitalizeName";
+import { Ionicons } from "@expo/vector-icons";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Image,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
+import LibrarySkelton from "../../components/LibrarySkeleton";
 
 const screenWidth = Dimensions.get("window").width;
 const WEBINAR = "Webinar";
@@ -116,7 +116,13 @@ const Library = () => {
     handleQuery();
   }, [debouncedQuery]);
 
-  const renderArticle = ({ item: article }: { item: LibraryArticle }) => {
+  const renderArticle = ({
+    item: article,
+    index,
+  }: {
+    item: LibraryArticle;
+    index: number;
+  }) => {
     const isWebinar = article.content_name === WEBINAR;
     const iconName = isWebinar ? "videocam-outline" : "reader-outline";
     const label = isWebinar
@@ -128,6 +134,7 @@ const Library = () => {
         onPress={() => Linking.openURL(ARTICLE_BASE_URL + article.url)}
         style={styles.card}
         activeOpacity={0.8}
+        accessibilityLabel={`library_article_${index}`}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -208,10 +215,11 @@ const Library = () => {
         <LibrarySkelton />
       ) : (
         <FlatList
+          accessibilityLabel="library_flat_list"
           contentContainerStyle={styles.flatListContent}
           data={articles}
           keyExtractor={(_, index) => index.toString()}
-          renderItem={renderArticle}
+          renderItem={({ item, index }) => renderArticle({ item, index })}
           onEndReached={() => fetchArticles(false)}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
@@ -225,7 +233,12 @@ const Library = () => {
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No search results found</Text>
+              <Text
+                style={styles.emptyText}
+                accessibilityLabel="library_empty_text"
+              >
+                No search results found
+              </Text>
             </View>
           }
         />

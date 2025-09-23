@@ -227,6 +227,7 @@ export default function HomeScreen() {
               clientId={item.clientId ?? ""}
               exchangedToken={item.exchangedToken ?? ""}
               appId={item.appId}
+              displayMode={item.displayMode}
             />
           )}
           contentContainerStyle={{

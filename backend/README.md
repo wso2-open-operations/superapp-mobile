@@ -1,6 +1,6 @@
-# WSO2 Super App Mobile Backend
+# Super App Mobile Backend
 
-This is the Ballerina-based backend for the WSO2 Superapp Mobile. It powers the mobile experience by exposing RESTful APIs, integrating with databases, and retrieving entity information from internal services. The backend is modular and designed for scalability, security, and reusability across multiple micro-apps.
+This is the Ballerina based backend for the Superapp Mobile. It powers the mobile experience by exposing RESTful APIs, integrating with databases, and retrieving entity information from internal services. The backend is modular and designed for scalability, security, and reusability across multiple micro apps.
 
 ## 🧱 Project Structure
 ```bash
@@ -31,22 +31,25 @@ bal run
 ## 📘 Available API Endpoints
 - The following is a summary of the backend API routes, including their purpose and return types. All endpoints use JWT-based authentication.
 
-| Endpoint                 | Method    | Description                                           | Response Type                                  |             |
-| ------------------------ | --------- | ----------------------------------------------------- | ---------------------------------------------- | ----------- |
-| `/user-info`             | GET       | Fetch user information of the logged-in user          | `Employee`                                     |             |
-| `/micro-apps`            | GET       | Retrieve all micro-apps available to the user         | `MicroApp[]`                                   |             |
-| `/micro-apps/{appId}`    | GET       | Retrieve details of a specific micro-app by App ID    | `MicroApp`                                     |             |
-| `/versions?platform=ios` | GET                                                   | Retrieve Super App version info for a platform | `Version[]` |
-| `/users/app-configs`     | GET       | Fetch user's downloaded micro-app configurations      | `AppConfig[]`                                  |             |
-| `/users/app-configs`     | POST      | Add/update user's downloaded micro-app configurations | `201 Created`                                  |             |
+| Endpoint                 | Method | Description                                           | Response Type |
+|--------------------------|--------|-------------------------------------------------------|---------------|
+| `/user-info`             | GET    | Fetch user information of the logged-in user          | `Employee`    |
+| `/micro-apps`            | GET    | Retrieve all micro apps available to the user         | `MicroApp[]`  |
+| `/micro-apps/{appId}`    | GET    | Retrieve details of a specific micro app by App ID    | `MicroApp`    |
+| `/versions?platform={ios/android}` | GET    | Retrieve Super App version info for a platform        | `Version[]`   |
+| `/users/app-configs`     | GET    | Fetch user's downloaded micro app configurations      | `AppConfig[]` |
+| `/users/app-configs`     | POST   | Add/update user's downloaded micro app configurations | `201 Created` |
 
+## 📦 Schema Definitions
+  <img src="../resources/schema.png" alt="Schema Diagram" width="700"/>
 
-## 📦 Schema Definitions (Response Types)
+| Table Name             | Description                                                                                           |
+|------------------------|-------------------------------------------------------------------------------------------------------|
+| **Micro_app**          | Stores micro app details, including micro app ID, name, description, promo text, icon URL, and banner image URL. |
+| **Micro_app_role**     | Manages micro app accessibility based on specific user groups (e.g., Asgardeo groups), allowing apps to be specialized for certain groups. |
+| **Superapp_version**   | Stores release versions, release notes, and other details about the Super App.                        |
+| **Micro_app_version**  | Stores release versions, release notes, and other details about micro-apps.                           |
+| **User_config**        | Stores user details and configurations for the Super App.                                             |
 
-| Type              | Description                                                                                                       |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `Employee`        | Contains `firstName`, `lastName`, `email`, `location`, and `thumbnail`                                            |
-| `MicroApp`        | Basic info of a micro-app including `name`, `description`, `promoText`, `iconUrl`, and list of `MicroAppVersion`s |
-| `MicroAppVersion` | Contains versioning info such as `version`, `build`, `releaseNotes`, `downloadUrl`                                |
-| `Version`         | Super App version info for each platform (`version`, `platform`, `build`)                                         |
-| `AppConfig`       | User-specific config key-value store (`configKey`, `configValue`, `isActive`)                                     |
+---
+  

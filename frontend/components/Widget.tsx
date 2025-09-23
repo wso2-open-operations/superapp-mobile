@@ -15,6 +15,7 @@
 // under the License.
 import { Colors } from "@/constants/Colors";
 import { ScreenPaths } from "@/constants/ScreenPaths";
+import { DisplayMode } from "@/types/navigation";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React from "react";
@@ -38,6 +39,7 @@ type WidgetProps = {
   clientId: string;
   exchangedToken: string;
   appId: string;
+  displayMode?: DisplayMode;
 };
 
 const Widget = React.memo(
@@ -49,6 +51,7 @@ const Widget = React.memo(
     clientId,
     exchangedToken,
     appId,
+    displayMode,
   }: WidgetProps) => {
     const colorScheme = useColorScheme();
     const styles = createStyles(colorScheme ?? "light");
@@ -56,7 +59,14 @@ const Widget = React.memo(
     const handlePress = () => {
       router.push({
         pathname: ScreenPaths.MICRO_APP,
-        params: { webViewUri, appName, clientId, exchangedToken, appId },
+        params: {
+          webViewUri,
+          appName,
+          clientId,
+          exchangedToken,
+          appId,
+          displayMode,
+        },
       });
     };
 

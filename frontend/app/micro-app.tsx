@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 import {
   View,
   Alert,
@@ -23,50 +24,70 @@ import {
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import NotFound from "@/components/NotFound";
 import Scanner from "@/components/Scanner";
-import { useDispatch } from "react-redux";
-import { injectedJavaScript, TOPIC } from "@/utils/bridge";
-import { logout, tokenExchange } from "@/services/authService";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { documentDirectory } from "expo-file-system";
-import { MicroAppParams } from "@/types/navigation";
 import { Colors } from "@/constants/Colors";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 import {
   DEVELOPER_APP_DEFAULT_URL,
+  FULL_SCREEN_VIEWING_MODE,
   GOOGLE_ANDROID_CLIENT_ID,
   GOOGLE_IOS_CLIENT_ID,
   GOOGLE_SCOPES,
   GOOGLE_WEB_CLIENT_ID,
   isIos,
 } from "@/constants/Constants";
-import prompt from "react-native-prompt-android";
-import * as WebBrowser from "expo-web-browser";
+import { logout, tokenExchange } from "@/services/authService";
 import googleAuthenticationService, {
   getGoogleUserInfo,
   isAuthenticatedWithGoogle,
   restoreGoogleDriveBackup,
   uploadToGoogleDrive,
 } from "@/services/googleService";
+import { MicroAppParams } from "@/types/navigation";
+import { injectedJavaScript, TOPIC } from "@/utils/bridge";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Google from "expo-auth-session/providers/google";
+import { documentDirectory } from "expo-file-system";
+import { Stack, useLocalSearchParams } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
+import prompt from "react-native-prompt-android";
+import { WebView, WebViewMessageEvent } from "react-native-webview";
+import { useDispatch } from "react-redux";
 
 WebBrowser.maybeCompleteAuthSession();
 
+type NativeLogLevel = "info" | "warn" | "error";
+
 const MicroApp = () => {
   const [isScannerVisible, setScannerVisible] = useState(false);
-  const { webViewUri, appName, clientId, exchangedToken, appId } =
+
+  const { webViewUri, appName, clientId, exchangedToken, appId, displayMode } =
     useLocalSearchParams<MicroAppParams>();
   const [hasError, setHasError] = useState(false);
   const webviewRef = useRef<WebView>(null);
   const [token, setToken] = useState<string | null>();
   const dispatch = useDispatch();
+  const router = useRouter();
   const pendingTokenRequests: ((token: string) => void)[] = [];
   const [webUri, setWebUri] = useState<string>(DEVELOPER_APP_DEFAULT_URL);
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme ?? "light");
   const isDeveloper: boolean = appId.includes("developer");
   const isTotp: boolean = appId.includes("totp");
+  const insets = useSafeAreaInsets();
+  const shouldShowHeader: boolean = displayMode !== FULL_SCREEN_VIEWING_MODE;
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: GOOGLE_IOS_CLIENT_ID,
@@ -321,11 +342,49 @@ const MicroApp = () => {
         case TOPIC.GOOGLE_USER_INFO:
           handleGetGoogleUserInfo();
           break;
+        case TOPIC.CLOSE_WEBVIEW_FROM_MICROAPP:
+          router.back();
+          break;
+        case TOPIC.NATIVE_LOG:
+          handleNativeLog(data);
+          break;
         default:
           console.error("Unknown topic:", topic);
       }
     } catch (error) {
       console.error("Error handling WebView message:", error);
+    }
+  };
+
+  /**
+   * Display microapp logs in the console
+   * @param data - The data to display
+   */
+  const handleNativeLog = (data: any) => {
+    if (!__DEV__) return;
+    const level = data.level as NativeLogLevel;
+    const message = data.message;
+    const injectedData = data.data;
+
+    switch (level) {
+      case "info":
+        console.info(
+          `[Micro App] ${message}.`,
+          injectedData !== undefined ? injectedData : ""
+        );
+        break;
+      case "warn":
+        console.warn(
+          `[Micro App] ${message}.`,
+          injectedData !== undefined ? injectedData : ""
+        );
+        break;
+      case "error":
+        console.error(
+          `[Micro App] ${message}.`,
+          injectedData !== undefined ? injectedData : ""
+        );
+        break;
     }
   };
 
@@ -401,11 +460,16 @@ const MicroApp = () => {
 
   return (
     <>
+      {!shouldShowHeader && (
+        <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      )}
       <Stack.Screen
         options={{
-          title: appName,
+          title: shouldShowHeader ? appName : "",
+          headerShown: shouldShowHeader,
           headerRight: () =>
-            isDeveloper && (
+            isDeveloper &&
+            shouldShowHeader && (
               <TouchableOpacity
                 onPressIn={() => {
                   isIos
@@ -479,14 +543,26 @@ const MicroApp = () => {
           </View>
         )}
 
-        <View
-          style={[
-            styles.webViewContainer,
-            isScannerVisible && styles.webViewHidden,
-          ]}
-        >
-          {renderWebView(isDeveloper ? webUri : webViewUri)}
-        </View>
+        {!shouldShowHeader ? (
+          <View
+            style={[
+              styles.webViewContainer,
+              isScannerVisible && styles.webViewHidden,
+              { paddingTop: insets.top },
+            ]}
+          >
+            {renderWebView(isDeveloper ? webUri : webViewUri)}
+          </View>
+        ) : (
+          <View
+            style={[
+              styles.webViewContainer,
+              isScannerVisible && styles.webViewHidden,
+            ]}
+          >
+            {renderWebView(isDeveloper ? webUri : webViewUri)}
+          </View>
+        )}
       </View>
     </>
   );

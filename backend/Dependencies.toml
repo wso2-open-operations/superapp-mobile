@@ -96,7 +96,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "http"
-version = "2.12.9"
+version = "2.12.10"
 dependencies = [
 	{org = "ballerina", name = "auth"},
 	{org = "ballerina", name = "cache"},
@@ -392,7 +392,7 @@ modules = [
 ]
 
 [[package]]
-org = "wso2_open_operations"
+org = "wso2"
 name = "superapp_mobile_service"
 version = "1.0.0"
 dependencies = [
@@ -407,9 +407,9 @@ dependencies = [
 	{org = "ballerinax", name = "mysql.driver"}
 ]
 modules = [
-	{org = "wso2_open_operations", packageName = "superapp_mobile_service", moduleName = "superapp_mobile_service"},
-	{org = "wso2_open_operations", packageName = "superapp_mobile_service", moduleName = "superapp_mobile_service.authorization"},
-	{org = "wso2_open_operations", packageName = "superapp_mobile_service", moduleName = "superapp_mobile_service.database"},
-	{org = "wso2_open_operations", packageName = "superapp_mobile_service", moduleName = "superapp_mobile_service.entity"}
+	{org = "wso2", packageName = "superapp_mobile_service", moduleName = "superapp_mobile_service"},
+	{org = "wso2", packageName = "superapp_mobile_service", moduleName = "superapp_mobile_service.authorization"},
+	{org = "wso2", packageName = "superapp_mobile_service", moduleName = "superapp_mobile_service.database"},
+	{org = "wso2", packageName = "superapp_mobile_service", moduleName = "superapp_mobile_service.entity"}
 ]
 

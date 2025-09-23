@@ -15,7 +15,8 @@
 // under the License.
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { APPS } from "@/constants/Constants";
+import { APPS, DEFAULT_VIEWING_MODE } from "@/constants/Constants";
+import { DisplayMode } from "@/types/navigation";
 
 export type Version = {
   version: string;
@@ -38,6 +39,7 @@ export type MicroApp = {
   webViewUri?: string | "";
   clientId?: string | "";
   exchangedToken?: string | "";
+  displayMode?: DisplayMode;
 };
 
 interface AppsState {
@@ -73,15 +75,23 @@ const appsSlice = createSlice({
         webViewUri: string;
         clientId: string;
         exchangedToken?: string;
+        displayMode?: DisplayMode;
       }>
     ) => {
-      const { appId, status, webViewUri, clientId, exchangedToken } =
-        action.payload;
+      const {
+        appId,
+        status,
+        webViewUri,
+        clientId,
+        exchangedToken,
+        displayMode,
+      } = action.payload;
       const app = state.apps.find((app) => app.appId === appId);
       if (app) {
         app.status = status;
         app.webViewUri = webViewUri;
         app.clientId = clientId;
+        app.displayMode = displayMode || DEFAULT_VIEWING_MODE;
         if (exchangedToken) {
           app.exchangedToken = exchangedToken;
         } else app.exchangedToken = "";

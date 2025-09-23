@@ -24,11 +24,13 @@ import {
 import { Image } from "expo-image";
 import { Colors } from "@/constants/Colors";
 import { Version } from "@/context/slices/appSlice";
-import { DOWNLOADED } from "@/constants/Constants";
+import { DEFAULT_VIEWING_MODE, DOWNLOADED, FULL_SCREEN_VIEWING_MODE } from "@/constants/Constants";
 import React from "react";
 import ActionButton from "./ActionButton";
 import { router } from "expo-router";
 import { ScreenPaths } from "@/constants/ScreenPaths";
+import { DisplayMode } from "@/types/navigation";
+
 
 type ListItemProps = {
   appId: string;
@@ -43,6 +45,7 @@ type ListItemProps = {
   downloading: boolean;
   onDownload: () => void;
   onRemove: () => void;
+  displayMode?: DisplayMode;
 };
 
 const ListItem = React.memo(
@@ -59,6 +62,7 @@ const ListItem = React.memo(
     downloading,
     onDownload,
     onRemove,
+    displayMode,
   }: ListItemProps) => {
     const screenWidth = Dimensions.get("window").width;
     const colorScheme = useColorScheme() ?? "light";
@@ -67,7 +71,14 @@ const ListItem = React.memo(
     const handlePress = () => {
       router.push({
         pathname: ScreenPaths.MICRO_APP,
-        params: { webViewUri, appName: name, clientId, exchangedToken, appId },
+        params: {
+          webViewUri,
+          appName: name,
+          clientId,
+          exchangedToken,
+          appId,
+          displayMode,
+        },
       });
     };
 

@@ -13,12 +13,21 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+const fs = require("fs");
+const path = require("path");
 
-# User info custom type for Asgardeo token.
-public type CustomJwtPayload record {|
-    # User email 
-    string email;
-    # User groups
-    string[] groups?;
-    json...;
-|};
+fs.mkdirSync("google-services", { recursive: true });
+
+if (process.env.FIREBASE_IOS_PLIST_B64) {
+  fs.writeFileSync(
+    path.join("google-services", "GoogleService-Info.plist"),
+    Buffer.from(process.env.FIREBASE_IOS_PLIST_B64, "base64")
+  );
+}
+
+if (process.env.FIREBASE_ANDROID_JSON_B64) {
+  fs.writeFileSync(
+    path.join("google-services", "google-services.json"),
+    Buffer.from(process.env.FIREBASE_ANDROID_JSON_B64, "base64")
+  );
+}

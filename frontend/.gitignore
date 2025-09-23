@@ -38,6 +38,9 @@ yarn-error.*
 
 app-example
 
+# Google service(s) configuration(s)
+google-services/
+
 # builds
 android/
 ios/
