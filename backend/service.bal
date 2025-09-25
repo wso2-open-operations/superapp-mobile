@@ -347,7 +347,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             string customError = "Error occurred while adding FCM token";
             log:printError(customError, result);
             return <http:InternalServerError>{
-                body: {"message": customError}
+                body: {message: customError}
             };
         }
 
@@ -376,7 +376,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             string customError = "Error occurred while Deleting FCM token";
             log:printError(customError, result);
             return <http:InternalServerError>{
-                body: {"message": customError}
+                body: {message: customError}
             };
         }
         return <http:Ok>{body: {message: result}};
