@@ -114,6 +114,8 @@ export const pushFCMToken = createAsyncThunk(
     }
   }
 );
+
+// Redux slice
 const deviceSlice = createSlice({
   name: "device",
   initialState,
