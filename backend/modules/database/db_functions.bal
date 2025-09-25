@@ -20,7 +20,7 @@ import ballerina/sql;
 #
 # + groups - User's groups
 # + return - Array of MicroApp IDs or an error
-isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
+public isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
     stream<MicroAppId, sql:Error?> appIdStream = databaseClient->query(getMicroAppIdsByGroupsQuery(groups));
     string[] appIds = check from MicroAppId microAppId in appIdStream
         select microAppId.appId;
