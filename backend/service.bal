@@ -306,13 +306,13 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
                 body: {message: customError}
             };
         }
-
         if memberEmails.length() == 0 {
             string customError = string `No members found in the requested group or the group does not exist.`;
             return <http:NotFound>{
                 body: {message: customError}
             };
         }
+        
         database:FcmTokenResponse|error fcmTokensResponse = database:getFcmTokens(memberEmails, startIndex);
         if fcmTokensResponse is error {
             string customError = "Error occurred while retrieving FCM tokens";
