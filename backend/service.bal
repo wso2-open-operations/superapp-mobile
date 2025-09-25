@@ -294,7 +294,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             return <http:InternalServerError>{
-                body: {"message": ERR_MSG_USER_HEADER_NOT_FOUND}
+                body: {message: ERR_MSG_USER_HEADER_NOT_FOUND}
             };
         }
 
@@ -303,14 +303,14 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             string customError = "Error occurred while calling SCIM operations service";
             log:printError(customError, memberEmails);
             return <http:InternalServerError>{
-                body: {"message": customError}
+                body: {message: customError}
             };
         }
 
         if memberEmails.length() == 0 {
             string customError = string `No members found in ${group} or no ${group} exists`;
             return <http:NotFound>{
-                body: {"message": customError}
+                body: {message: customError}
             };
         }
         database:FcmTokenResponse|error fcmTokensResponse = database:getFcmTokens(memberEmails, startIndex);
@@ -318,7 +318,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             string customError = "Error occurred while retrieving FCM tokens";
             log:printError(customError, fcmTokensResponse);
             return <http:InternalServerError>{
-                body: {"message": customError}
+                body: {message: customError}
             };
         }
 
