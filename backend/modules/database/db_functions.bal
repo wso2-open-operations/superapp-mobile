@@ -158,8 +158,7 @@ public isolated function getFcmTokens(string[] emails, int startIndex) returns F
 # + return - `ExecutionSuccessResult` if the insertion succeeds, or `error` if it fails
 public isolated function addFcmToken(string email, string fcmToken) returns ExecutionSuccessResult|error {
     sql:ExecutionResult result = check databaseClient->execute(addFcmTokenQuery(email, fcmToken));
-
-    if (result.affectedRowCount == 0) {
+    if result.affectedRowCount == 0 {
         return error("Failed to add FCM token.");
     }
 
@@ -172,7 +171,6 @@ public isolated function addFcmToken(string email, string fcmToken) returns Exec
 # + return - `ExecutionSuccessResult` if the deletion is successful, or `error` if the operation fails
 public isolated function deleteFcmToken(string fcmToken) returns ExecutionSuccessResult|error {
     sql:ExecutionResult result = check databaseClient->execute(deleteFcmTokenQuery(fcmToken));
-
     if result.affectedRowCount == 0 {
         return error("No matching FCM token found to delete.");
     }
