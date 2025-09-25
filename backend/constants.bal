@@ -13,6 +13,5 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 public const ERR_MSG_USER_HEADER_NOT_FOUND = "User information header not found!";
 

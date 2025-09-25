@@ -139,15 +139,16 @@ public type ExecutionSuccessResult record {|
 |};
 
 # Record type for count query results.
-public type CountRecord record {|
+public type FcmTokenCount record {|
     # Count result from a SQL COUNT query
     int count;
 |};
 
 # Record representing an FCM token for a device associated with a user.
-public type FcmTokenRecord record {|
+public type FcmToken record {|
     # FCM token for the device
-    string fcm_token;
+    @sql:Column {name: "fcm_token"}
+    string fcmToken;
 |};
 
 # Response type for paginated FCM tokens.
