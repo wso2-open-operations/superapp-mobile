@@ -54,6 +54,10 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # + return - authorization:JwtInterceptor, ErrorInterceptor
     public function createInterceptors() returns http:Interceptor[] =>
         [new authorization:JwtInterceptor(), new ErrorInterceptor()];
+        
+    function init() returns error? {
+        log:printInfo("Super app mobile backend started.");
+    }
 
     # Fetch application configuration details for the given user groups and config key.
     #
@@ -100,31 +104,37 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             defaultMicroAppIds,
             appScopes: appScopes
         };
-    }
 
     # Fetch user information of the logged in users.
     #
     # + ctx - Request context
     # + return - User information object or an error
-    resource function get user\-info(http:RequestContext ctx) returns entity:Employee|http:InternalServerError {
+    resource function get user\-info(http:RequestContext ctx)
+        returns entity:Employee|http:InternalServerError|http:NotFound {
+
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
-            return {
+            return <http:InternalServerError>{
                 body: {
                     message: ERR_MSG_USER_HEADER_NOT_FOUND
                 }
             };
         }
 
-        entity:Employee|error loggedInUser = getUserInfo(userInfo.email);
+        entity:Employee|error? loggedInUser = getUserInfo(userInfo.email);
         if loggedInUser is error {
             string customError = "Error occurred while retrieving user data!";
             log:printError(customError, loggedInUser);
-            return {
+            return <http:InternalServerError>{
                 body: {
                     message: customError
                 }
             };
+        }
+
+        if loggedInUser is () {
+            log:printWarn("User not found!", email = userInfo.email);
+            return http:NOT_FOUND;
         }
 
         error? cacheError = userInfoCache.put(userInfo.email, loggedInUser);
@@ -149,7 +159,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        database:MicroApp[]|error allMicroApps = database:getMicroApps(userInfo.groups);
+        database:MicroApp[]|error allMicroApps = database:getMicroApps(userInfo.groups ?: []);
         if allMicroApps is error {
             string customError = "Error occurred while retrieving Micro Apps!";
             log:printError(customError, err = allMicroApps.message());
@@ -202,7 +212,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        database:MicroApp|error? microApp = database:getMicroAppById(appId, userInfo.groups);
+        database:MicroApp|error? microApp = database:getMicroAppById(appId, userInfo.groups ?: []);
 
         if microApp is error {
             string customError = "Error occurred while retrieving the Micro App for the given app ID!";
