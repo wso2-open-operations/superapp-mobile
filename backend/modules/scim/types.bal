@@ -61,8 +61,7 @@ public type GroupMember record {|
     string value;
     # The email of the member
     string display;
-    # The reference URI 
-    string \$ref;
+    json...;
 |};
 
 # Record representing metadata of a SCIM group resource.
