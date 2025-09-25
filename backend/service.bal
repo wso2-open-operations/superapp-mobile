@@ -373,7 +373,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
 
         database:ExecutionSuccessResult|error result = database:deleteFcmToken(fcmToken);
         if result is error {
-            string customError = "Error occurred while Deleting FCM token";
+            string customError = "Error occurred while deleting FCM token";
             log:printError(customError, result);
             return <http:InternalServerError>{
                 body: {message: customError}

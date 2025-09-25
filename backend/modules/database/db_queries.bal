@@ -211,7 +211,7 @@ public isolated function addFcmTokenQuery(string email, string fcmToken) returns
         (SELECT id FROM user_config WHERE email = ${email}),
         ${fcmToken},
         CURRENT_TIMESTAMP
-     )`;
+    )`;
 
 # Query to delete an FCM token.
 #
