@@ -21,13 +21,10 @@
 # + return - An array of email strings, or an error if the operation fails
 public isolated function getGroupMemberEmails(string group, string organization) returns string[]|error {
     GroupSearchResponse groupResponse = check searchGroups(group, organization);
-
     if groupResponse.totalResults == 0 || groupResponse.Resources.length() == 0 {
         return [];
     }
-
     GroupResource groupResource = groupResponse.Resources[0];
-
     GroupMember[] members = groupResource.members;
     string[] emails = [];
 

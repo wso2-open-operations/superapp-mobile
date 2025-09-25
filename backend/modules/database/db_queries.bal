@@ -202,9 +202,12 @@ public isolated function countFcmTokensQuery(string[] emails) returns sql:Parame
 # + email - The user email used to fetch the corresponding `user_id` from `user_config`
 # + fcmToken - The FCM token to be inserted
 # + return - Generated query to insert the FCM token into `device_tokens`
-public isolated function addFcmTokenQuery(string email, string fcmToken) returns sql:ParameterizedQuery =>
-    `INSERT INTO device_tokens (user_id, fcm_token, created_at)
-     VALUES (
+public isolated function addFcmTokenQuery(string email, string fcmToken) returns sql:ParameterizedQuery => `
+    INSERT INTO device_tokens (
+        user_id, 
+        fcm_token, 
+        created_at
+    )VALUES (
         (SELECT id FROM user_config WHERE email = ${email}),
         ${fcmToken},
         CURRENT_TIMESTAMP
