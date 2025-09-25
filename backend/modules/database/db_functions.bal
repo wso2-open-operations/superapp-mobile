@@ -177,3 +177,19 @@ public isolated function deleteFcmToken(string fcmToken) returns ExecutionSucces
 
     return result.cloneWithType(ExecutionSuccessResult);
 }
+
+# Get an app configuration value from the database.
+#
+# + ConfigKey - The configuration key used to look up the value.
+# + return - boolean (`true` or `false`), or `error` if the configuration is not found or cannot be retrieved.
+public isolated function getAppConfigs(string ConfigKey) returns boolean|error {
+    AppConfigResponse result = check databaseClient->queryRow(getAppConfigsQuery(ConfigKey));
+    if result.Type == "boolean" {
+        if result.Value == "true" {
+            return true;
+        } else if result.Value == "false" {
+            return false;
+        }
+    }
+    return error("Failed to get AppConfig : " + ConfigKey);
+}
