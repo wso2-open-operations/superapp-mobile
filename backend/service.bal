@@ -86,7 +86,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
 
         return loggedInUser;
     }
-    
+
     # Retrieves the list of micro apps available to the authenticated user.
     #
     # + ctx - Request context
@@ -287,8 +287,8 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # + group - The group name to search for members 
     # + organization - The organization name to search groups 
     # + startIndex - Starting index for pagination
-    # + return - Paginated FCM tokens response or an error.
-    resource function get users/fcm\-tokens(http:RequestContext ctx, string group, string organization, int startIndex) 
+    # + return - Paginated FCM tokens response or an error
+    resource function get users/fcm\-tokens(http:RequestContext ctx, string group, string organization, int startIndex)
         returns database:FcmTokenResponse|http:InternalServerError|http:NotFound {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -323,5 +323,62 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         }
 
         return fcmTokensResponse;
+    }
+
+    # Adds a new FCM token.
+    #
+    # + ctx - Request context
+    # + fcmToken - The FCM token to be stored
+    # + return - `http:Ok` on success with a confirmation message, or `http:InternalServerError` if the operation fails
+    resource function post users/fcm\-tokens(http:RequestContext ctx, string fcmToken)
+        returns http:Ok|http:InternalServerError {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {
+                    message: ERR_MSG_USER_HEADER_NOT_FOUND
+                }
+            };
+        }
+
+        database:ExecutionSuccessResult|error result = database:addFcmToken(userInfo.email, fcmToken);
+        if result is error {
+            string customError = "Error occurred while adding FCM token";
+            log:printError(customError, result);
+            return <http:InternalServerError>{
+                body: {"message": customError}
+            };
+        }
+
+        return <http:Ok>{body: {message: result}};
+    }
+
+    # Deletes the specified FCM token.
+    #
+    # + ctx - Request context
+    # + fcmToken - The FCM token to be deleted
+    # + return - `http:Ok` on success with a confirmation message, or `http:InternalServerError` if the deletion fails
+    resource function delete users/fcm\-tokens(http:RequestContext ctx, string fcmToken)
+        returns http:Ok|http:InternalServerError {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {
+                    message: ERR_MSG_USER_HEADER_NOT_FOUND
+                }
+            };
+        }
+
+        database:ExecutionSuccessResult|error result = database:deleteFcmToken(fcmToken);
+        if result is error {
+            string customError = "Error occurred while Deleting FCM token";
+            log:printError(customError, result);
+            return <http:InternalServerError>{
+                body: {"message": customError}
+            };
+        }
+        return <http:Ok>{body: {message: result}};
     }
 }
