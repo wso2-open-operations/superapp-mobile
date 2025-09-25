@@ -16,6 +16,7 @@
 import { APPS, AUTH_DATA, USER_INFO } from "@/constants/Constants";
 import { ScreenPaths } from "@/constants/ScreenPaths";
 import { resetAll } from "@/context/slices/authSlice";
+import { clearDeviceState } from "@/context/slices/deviceSlice";
 import { persistor } from "@/context/store";
 import { logout } from "@/services/authService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,6 +32,7 @@ export const performLogout = createAsyncThunk(
       await logout(); // Call Asgardeo logout
       await persistor.purge(); // Clear redux-persist storage
       dispatch(resetAll()); // Reset Redux state completely
+      dispatch(clearDeviceState()); // Reset device state
 
       await AsyncStorage.removeItem(AUTH_DATA);
       await AsyncStorage.removeItem(APPS);
