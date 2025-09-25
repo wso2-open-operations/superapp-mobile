@@ -13,7 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { BASE_URL } from "@/constants/Constants";
+import { BASE_URL, LAST_SENT_FCM_TOKEN } from "@/constants/Constants";
 import { apiRequest } from "@/utils/requestHandler";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
@@ -40,7 +40,7 @@ export const loadLastSentFCMToken = createAsyncThunk(
   "device/loadLastSentFCMToken",
   async () => {
     try {
-      const token = getItem("lastSentFCMToken");
+      const token = getItem(LAST_SENT_FCM_TOKEN);
       return token;
     } catch (error) {
       console.error("Error loading last sent FCM token:", error);
@@ -56,7 +56,7 @@ export const disableFCMToken = createAsyncThunk(
   "device/disableFCMToken",
   async (_, { rejectWithValue }) => {
     try {
-      const fcmToken = await getItemAsync("lastSentFCMToken");
+      const fcmToken = await getItemAsync(LAST_SENT_FCM_TOKEN);
       if (!fcmToken) {
         return rejectWithValue("No FCM token found");
       }
@@ -124,7 +124,7 @@ const deviceSlice = createSlice({
       state.isPushingToken = false;
       state.fcmPushError = null;
       state.lastSentFCMToken = null;
-      deleteItemAsync("lastSentFCMToken");
+      deleteItemAsync(LAST_SENT_FCM_TOKEN);
     },
   },
   extraReducers: (builder) => {
@@ -139,7 +139,7 @@ const deviceSlice = createSlice({
       .addCase(pushFCMToken.fulfilled, (state, action) => {
         state.isPushingToken = false;
         state.lastSentFCMToken = action.meta.arg.fcmToken;
-        setItem("lastSentFCMToken", action.meta.arg.fcmToken);
+        setItem(LAST_SENT_FCM_TOKEN, action.meta.arg.fcmToken);
       })
       .addCase(pushFCMToken.rejected, (state, action) => {
         state.isPushingToken = false;

@@ -86,3 +86,6 @@ export const isAndroid = Platform.OS === "android";
 export const isIos = Platform.OS === "ios";
 export const FULL_SCREEN_VIEWING_MODE = "fullscreen";
 export const DEFAULT_VIEWING_MODE = "default";
+
+// Keys for Secure Store
+export const LAST_SENT_FCM_TOKEN = "last_sent_fcm_token";
