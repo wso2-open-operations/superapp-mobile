@@ -23,7 +23,7 @@ type Oauth2Config record {|
     # The client secret of the application
     string clientSecret;
     # The scopes of the application
-    string[] scopes
+    string[] scopes;
 |};
 
 # Request record for the SCIM group search request.
