@@ -159,14 +159,15 @@ public type FcmTokenResponse record {|
     int totalResults;
     # Start index of response 
     int startIndex;
-    # Total items for per page
+    # Total items per page
     int itemsPerPage;
 |};
 
-# Response type for app config response.
-public type AppConfigResponse record {|
-    # Conflagration Value
-    string Value;
-    # Conflagration value Type
-    string Type;
+# Response type for app setting response.
+public type AppSetting record {|
+    # Configuration key
+    string configKey;
+    # Configuration value
+    string value;
+    json...;
 |};

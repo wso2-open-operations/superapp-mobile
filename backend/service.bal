@@ -62,10 +62,8 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # Fetch application configuration details for the given user groups and config key.
     #
     # + ctx - Request context
-    # + groups - The list of user groups used to fetch default micro-app IDs.
-    # + ConfigKey - The configuration key used to retrieve the `isForceUpdate` status.
     # + return - `AppConfigResponse` or `http:InternalServerError` if the operation fails.
-    resource function get app\-configs(http:RequestContext ctx, string[] groups, string ConfigKey)
+    resource function get app\-configs(http:RequestContext ctx)
         returns AppConfigResponse|http:InternalServerError {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -77,9 +75,9 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        string[]|error defaultMicroAppIds = database:getMicroAppIdsByGroups(groups);
+        string[]|error defaultMicroAppIds = database:getMicroAppIdsByGroups([database:defaultMicroAppsGroup]);
         if defaultMicroAppIds is error {
-            string customError = "Failed to fetch defulat micro app IDs";
+            string customError = "Failed to fetch default micro app IDs";
             log:printError(customError, defaultMicroAppIds);
             return <http:InternalServerError>{
                 body: {
@@ -88,10 +86,10 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        boolean|error isForceUpdate = database:getAppConfigs(ConfigKey);
-        if isForceUpdate is error {
-            string customError = "Error occurred while retrieving isForceUpdate status!";
-            log:printError(customError, isForceUpdate);
+        database:AppSetting[]|error appConfigs = database:getAppConfigs();
+        if appConfigs is error {
+            string customError = "Error occurred while retrieving app configs!";
+            log:printError(customError, appConfigs);
             return <http:InternalServerError>{
                 body: {
                     message: customError
@@ -100,10 +98,11 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         }
 
         return {
-            isForceUpdate,
+            appConfigs,
             defaultMicroAppIds,
-            appScopes: appScopes
+            appScopes
         };
+    }
 
     # Fetch user information of the logged in users.
     #

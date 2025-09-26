@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import superapp_mobile_service.database;
 
 # App scope record type.
 public type AppScope record {|
@@ -22,10 +23,10 @@ public type AppScope record {|
     string scopes;
 |};
 
-# App scope record type.
+# App config record type.
 public type AppConfigResponse record {|
-    # Force Update Status
-    boolean isForceUpdate;
+    # App configs
+    database:AppSetting[] appConfigs;
     # Micro App Ids
     string[] defaultMicroAppIds;
     # Micro App Scopes

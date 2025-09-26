@@ -168,15 +168,15 @@ isolated function updateAppConfigsByEmailQuery(string email, string configKey, s
 #
 # + emails - Array of user emails to retrieve tokens for
 # + startIndex - Start index for pagination
-# + return - Generated query to get FCM tokens from the device_tokens table.
+# + return - Generated query to get FCM tokens from the token table
 public isolated function getFcmTokensQuery(string[] emails, int startIndex) returns sql:ParameterizedQuery =>
     sql:queryConcat(`
         SELECT 
-            dt.fcm_token
+            t.fcm_token
         FROM 
-            device_tokens dt
+            token t
         INNER JOIN 
-            user_config uc ON dt.user_id = uc.id
+            user_config uc ON t.user_id = uc.id
         WHERE
             uc.email IN (`, sql:arrayFlattenQuery(emails), `) LIMIT ${'limit} OFFSET ${startIndex}
     `);
@@ -184,26 +184,26 @@ public isolated function getFcmTokensQuery(string[] emails, int startIndex) retu
 # Query to count FCM tokens for a given list of emails.
 #
 # + emails - Array of user emails to count tokens for
-# + return - Generated query to count FCM tokens from the device_tokens table.
+# + return - Generated query to count FCM tokens from the token table.
 public isolated function countFcmTokensQuery(string[] emails) returns sql:ParameterizedQuery =>
     sql:queryConcat(`
         SELECT 
             COUNT(*) as count
         FROM 
-            device_tokens dt
+            token t
         INNER JOIN 
-            user_config uc ON dt.user_id = uc.id
+            user_config uc ON t.user_id = uc.id
         WHERE
             uc.email IN (`, sql:arrayFlattenQuery(emails), `) 
     `);
 
-# Query to insert an FCM token.
+# Query to insert or update an FCM token.
 #
 # + email - The user email used to fetch the corresponding `user_id` from `user_config`
-# + fcmToken - The FCM token to be inserted
-# + return - Generated query to insert the FCM token into `device_tokens`
+# + fcmToken - The FCM token to be inserted or updated
+# + return - Generated query to insert the FCM token into `token`
 public isolated function addFcmTokenQuery(string email, string fcmToken) returns sql:ParameterizedQuery => `
-    INSERT INTO device_tokens (
+    INSERT INTO token (
         user_id, 
         fcm_token, 
         created_at
@@ -211,21 +211,22 @@ public isolated function addFcmTokenQuery(string email, string fcmToken) returns
         (SELECT id FROM user_config WHERE email = ${email}),
         ${fcmToken},
         CURRENT_TIMESTAMP
-    )`;
+    )
+    ON DUPLICATE KEY UPDATE 
+        created_at = CURRENT_TIMESTAMP
+`;
 
 # Query to delete an FCM token.
 #
 # + fcmToken - The FCM token to be deleted
-# + return - Generated query to remove the matching FCM token from the `device_tokens` table
+# + return - Generated query to remove the matching FCM token from the `token` table
 public isolated function deleteFcmTokenQuery(string fcmToken) returns sql:ParameterizedQuery =>
-    `DELETE FROM device_tokens WHERE fcm_token = ${fcmToken}`;
+    `DELETE FROM token WHERE fcm_token = ${fcmToken}`;
 
-# Query to retrieve an application configuration by key.
+# Query to retrieve all application configurations.
 #
-# + ConfigKey - The configuration key used to look up the value.
-# + return - A Query that selects the `Value` and `Type`fields from the `appconfig` table for the given `ConfigKey`.
-public isolated function getAppConfigsQuery(string ConfigKey) returns sql:ParameterizedQuery => `
-    SELECT Value, Type
-    FROM appconfig
-    WHERE ConfigKey = ${ConfigKey}
+# + return - A query that selects the `ConfigKey`, `Value`, and `Type` fields from the `appconfig` table
+public isolated function getAppConfigsQuery() returns sql:ParameterizedQuery => `
+    SELECT ConfigKey, Value, Type
+    FROM app_config
 `;
