@@ -201,13 +201,8 @@ public isolated function getAppConfigs() returns AppSetting[]|error {
     AppSetting[] results = [];
 
     foreach var row in rows {
-        boolean|string|int value;
-        if row.'type == "boolean" {
-            value = row.value == "true";
-        } else {
-            value = row.value;
-        }
-        results.push({configKey: row.configKey, value});
+        var value = check parseConfigValue(row);
+        results.push({configKey: row.configKey, value: value});
     }
     return results;
 }
