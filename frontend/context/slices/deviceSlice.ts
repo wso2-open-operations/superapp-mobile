@@ -16,12 +16,7 @@
 import { BASE_URL, LAST_SENT_FCM_TOKEN } from "@/constants/Constants";
 import { apiRequest } from "@/utils/requestHandler";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import {
-  deleteItemAsync,
-  getItem,
-  getItemAsync,
-  setItem,
-} from "expo-secure-store";
+import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
 
 interface DeviceState {
   isPushingToken: boolean;
@@ -40,7 +35,7 @@ export const loadLastSentFCMToken = createAsyncThunk(
   "device/loadLastSentFCMToken",
   async () => {
     try {
-      const token = getItem(LAST_SENT_FCM_TOKEN);
+      const token = await getItemAsync(LAST_SENT_FCM_TOKEN);
       return token;
     } catch (error) {
       console.error("Error loading last sent FCM token:", error);
@@ -86,8 +81,8 @@ export const disableFCMToken = createAsyncThunk(
 /**
  * Pushes the FCM token to the backend. This is called when the user is authenticated.
  */
-export const pushFCMToken = createAsyncThunk(
-  "device/pushFCMToken",
+export const pushFcmToken = createAsyncThunk(
+  "device/pushFcmToken",
   async (
     { fcmToken, onLogout }: { fcmToken: string; onLogout: () => Promise<void> },
     { rejectWithValue }
@@ -124,7 +119,10 @@ const deviceSlice = createSlice({
       state.isPushingToken = false;
       state.fcmPushError = null;
       state.lastSentFCMToken = null;
-      deleteItemAsync(LAST_SENT_FCM_TOKEN);
+      const deleteLastFCMToken = async () => {
+        await deleteItemAsync(LAST_SENT_FCM_TOKEN);
+      };
+      deleteLastFCMToken();
     },
   },
   extraReducers: (builder) => {
@@ -132,16 +130,19 @@ const deviceSlice = createSlice({
       .addCase(loadLastSentFCMToken.fulfilled, (state, action) => {
         state.lastSentFCMToken = action.payload;
       })
-      .addCase(pushFCMToken.pending, (state) => {
+      .addCase(pushFcmToken.pending, (state) => {
         state.isPushingToken = true;
         state.fcmPushError = null;
       })
-      .addCase(pushFCMToken.fulfilled, (state, action) => {
+      .addCase(pushFcmToken.fulfilled, (state, action) => {
         state.isPushingToken = false;
         state.lastSentFCMToken = action.meta.arg.fcmToken;
-        setItem(LAST_SENT_FCM_TOKEN, action.meta.arg.fcmToken);
+        const setLastSentFCMToken = async () => {
+          await setItemAsync(LAST_SENT_FCM_TOKEN, action.meta.arg.fcmToken);
+        };
+        setLastSentFCMToken();
       })
-      .addCase(pushFCMToken.rejected, (state, action) => {
+      .addCase(pushFcmToken.rejected, (state, action) => {
         state.isPushingToken = false;
         state.fcmPushError = action.payload as string;
       });

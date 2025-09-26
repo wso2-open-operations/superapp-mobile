@@ -15,7 +15,7 @@
 // under the License.
 import {
   loadLastSentFCMToken,
-  pushFCMToken,
+  pushFcmToken,
 } from "@/context/slices/deviceSlice"; // The async thunk
 import { AppDispatch, RootState } from "@/context/store";
 import {
@@ -56,7 +56,7 @@ export const usePushNotificationHandler = ({
           const fcmToken = await getFCMToken();
 
           if (fcmToken && fcmToken !== lastSentFCMToken) {
-            dispatch(pushFCMToken({ fcmToken, onLogout: onLogoutRef.current }));
+            dispatch(pushFcmToken({ fcmToken, onLogout: onLogoutRef.current }));
           } else {
             console.warn(
               "No FCM token received or token is the same as the last sent token."
@@ -72,7 +72,7 @@ export const usePushNotificationHandler = ({
       const unsubscribe = setupTokenRefreshListener((refreshedToken) => {
         if (refreshedToken && refreshedToken !== lastSentFCMToken) {
           dispatch(
-            pushFCMToken({
+            pushFcmToken({
               fcmToken: refreshedToken,
               onLogout: onLogoutRef.current,
             })
