@@ -22,11 +22,13 @@ type Oauth2Config record {|
     string clientId;
     # The client secret of the application
     string clientSecret;
+    # The scopes of the application
+    string[] scopes;
 |};
 
 # Request record for the SCIM group search request.
 public type GroupSearchRequest record {|
-    # The group name string used to query groups from the SCIM service
+    # The group name string used to query groups it from the SCIM service
     string filter;
 |};
 
