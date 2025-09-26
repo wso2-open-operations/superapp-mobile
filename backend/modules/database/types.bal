@@ -166,8 +166,12 @@ public type FcmTokenResponse record {|
 # Response type for app setting response.
 public type AppSetting record {|
     # Configuration key
+    @sql:Column {name: "config_key"}
     string configKey;
     # Configuration value
-    string value;
-    json...;
+    @sql:Column {name: "value"}
+    boolean|string value;
+    # Type of configuration value
+    @sql:Column {name: "type"}
+    string 'type?;
 |};

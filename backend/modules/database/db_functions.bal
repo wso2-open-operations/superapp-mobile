@@ -195,8 +195,18 @@ public isolated function deleteFcmToken(string fcmToken) returns ExecutionSucces
 #
 # + return - An array of `AppConfigAppSetting`,or `error` if the configurations cannot be retrieved
 public isolated function getAppConfigs() returns AppSetting[]|error {
-    stream<AppSetting,sql:Error?> resultStream = databaseClient->query(getAppConfigsQuery());
-    AppSetting[] results = check from AppSetting row in resultStream
-        select row;
+    stream<AppSetting, sql:Error?> resultStream = databaseClient->query(getAppConfigsQuery());
+    AppSetting[] rows = check from var row in resultStream select row;
+     AppSetting[] results = [];
+
+    foreach var row in rows {
+        boolean|string value;
+        if row.'type == "boolean" {
+            value = row.value == "true";
+        } else {
+            value = row.value;
+        }
+        results.push({ configKey: row.configKey, value: value });
+    }
     return results;
 }

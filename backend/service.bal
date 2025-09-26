@@ -64,7 +64,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # + ctx - Request context
     # + return - `AppConfigResponse` or `http:InternalServerError` if the operation fails.
     resource function get app\-configs(http:RequestContext ctx)
-        returns AppConfigResponse|http:InternalServerError {
+        returns http:Ok|http:InternalServerError {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -97,10 +97,12 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        return {
-            appConfigs,
-            defaultMicroAppIds,
-            appScopes
+        return <http:Ok>{
+            body: {
+                appConfigs,
+                defaultMicroAppIds,
+                appScopes
+            }
         };
     }
 

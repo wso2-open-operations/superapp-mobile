@@ -227,6 +227,6 @@ public isolated function deleteFcmTokenQuery(string fcmToken) returns sql:Parame
 #
 # + return - A query that selects the `ConfigKey`, `Value`, and `Type` fields from the `appconfig` table
 public isolated function getAppConfigsQuery() returns sql:ParameterizedQuery => `
-    SELECT ConfigKey, Value, Type
+    SELECT config_key, value, type
     FROM app_config
 `;
