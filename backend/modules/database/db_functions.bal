@@ -22,7 +22,7 @@ public configurable string defaultMicroAppsGroup = ?; // Default micro apps grou
 #
 # + groups - User's groups
 # + return - Array of MicroApp IDs or an error
-isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
+public isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
     string[] effectiveGroups = groups;
     effectiveGroups.push(defaultMicroAppsGroup);
     stream<MicroAppId, sql:Error?> appIdStream = databaseClient->query(getMicroAppIdsByGroupsQuery(effectiveGroups));
@@ -164,7 +164,7 @@ public isolated function getFcmTokens(string[] emails, int startIndex) returns F
     };
 }
 
-# Inserts an FCM token into the `device_tokens` table for the given email.
+# Inserts an FCM token into the `token` table for the given email.
 #
 # + email - The user email
 # + fcmToken - The FCM token to be stored
@@ -191,18 +191,12 @@ public isolated function deleteFcmToken(string fcmToken) returns ExecutionSucces
     return result.cloneWithType(ExecutionSuccessResult);
 }
 
-# Get an app configuration value from the database.
+# Get all application configuration values from the database.
 #
-# + ConfigKey - The configuration key used to look up the value.
-# + return - boolean (`true` or `false`), or `error` if the configuration is not found or cannot be retrieved.
-public isolated function getAppConfigs(string ConfigKey) returns boolean|error {
-    AppConfigResponse result = check databaseClient->queryRow(getAppConfigsQuery(ConfigKey));
-    if result.Type == "boolean" {
-        if result.Value == "true" {
-            return true;
-        } else if result.Value == "false" {
-            return false;
-        }
-    }
-    return error("Failed to get AppConfig : " + ConfigKey);
+# + return - An array of `AppConfigAppSetting`,or `error` if the configurations cannot be retrieved
+public isolated function getAppConfigs() returns AppSetting[]|error {
+    stream<AppSetting,sql:Error?> resultStream = databaseClient->query(getAppConfigsQuery());
+    AppSetting[] results = check from AppSetting row in resultStream
+        select row;
+    return results;
 }
