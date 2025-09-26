@@ -24,9 +24,9 @@ public type AppScope record {|
 |};
 
 # App config record type.
-public type AppConfigResponse record {|
+public type AppConfig record {|
     # App configs
-    database:AppSetting[] AppSetting;
+    database:AppSetting[] appSettings;
     # Micro App Ids
     string[] defaultMicroAppIds;
     # Micro App Scopes

@@ -54,7 +54,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # + return - authorization:JwtInterceptor, ErrorInterceptor
     public function createInterceptors() returns http:Interceptor[] =>
         [new authorization:JwtInterceptor(), new ErrorInterceptor()];
-        
+
     function init() returns error? {
         log:printInfo("Super app mobile backend started.");
     }
@@ -63,7 +63,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     #
     # + ctx - Request context
     # + return - `AppConfigResponse` or `http:InternalServerError` if the operation fails.
-    resource function get app\-configs(http:RequestContext ctx) returns http:Ok|http:InternalServerError {
+    resource function get app\-configs(http:RequestContext ctx) returns AppConfig|http:InternalServerError {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -85,10 +85,10 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        database:AppSetting[]|error AppSettings = database:getAppConfigs();
-        if AppSettings is error {
+        database:AppSetting[]|error appSettings = database:getAppConfigs();
+        if appSettings is error {
             string customError = "Error occurred while retrieving app configs!";
-            log:printError(customError, AppSettings);
+            log:printError(customError, appSettings);
             return <http:InternalServerError>{
                 body: {
                     message: customError
@@ -96,12 +96,10 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        return <http:Ok>{
-            body: {
-                AppSettings,
-                defaultMicroAppIds,
-                appScopes
-            }
+        return <AppConfig>{
+            appSettings,
+            defaultMicroAppIds,
+            appScopes: appScopes
         };
     }
 
@@ -303,7 +301,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # + configuration - User's app configurations including downloaded microapps
     # + return - Created response or error
     resource function post users/app\-configs(http:RequestContext ctx,
-        database:AppConfig configuration) returns http:Created|http:InternalServerError|http:BadRequest {
+            database:AppConfig configuration) returns http:Created|http:InternalServerError|http:BadRequest {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -370,7 +368,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
                 body: {message: customError}
             };
         }
-        
+
         database:FcmTokenResponse|error fcmTokensResponse = database:getFcmTokens(memberEmails, startIndex);
         if fcmTokensResponse is error {
             string customError = "Error occurred while retrieving FCM tokens";

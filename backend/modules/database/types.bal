@@ -171,6 +171,5 @@ public type AppSetting record {|
     # Configuration value
     boolean|string|int value;
     # Type of configuration value
-    @sql:Column {name: "type"}
     string 'type?;
 |};
