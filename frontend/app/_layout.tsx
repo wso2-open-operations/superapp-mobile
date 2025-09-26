@@ -13,6 +13,18 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import SplashModal from "@/components/SplashModal";
+import { APPS, USER_INFO } from "@/constants/Constants";
+import { setApps } from "@/context/slices/appSlice";
+import { restoreAuth } from "@/context/slices/authSlice";
+import { getUserConfigurations } from "@/context/slices/userConfigSlice";
+import { setUserInfo } from "@/context/slices/userInfoSlice";
+import { getVersions } from "@/context/slices/versionSlice";
+import { AppDispatch, persistor, store } from "@/context/store";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { usePushNotificationHandler } from "@/hooks/usePushNotificationHandler";
+import { performLogout } from "@/utils/performLogout";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   DarkTheme,
   DefaultTheme,
@@ -20,23 +32,12 @@ import {
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { useCallback, useEffect, useState } from "react";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Provider, useDispatch } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { AppDispatch, persistor, store } from "@/context/store";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setApps } from "@/context/slices/appSlice";
-import { APPS, USER_INFO } from "@/constants/Constants";
-import { getUserConfigurations } from "@/context/slices/userConfigSlice";
-import { restoreAuth } from "@/context/slices/authSlice";
-import { getVersions } from "@/context/slices/versionSlice";
-import { setUserInfo } from "@/context/slices/userInfoSlice";
-import SplashModal from "@/components/SplashModal";
-import { performLogout } from "@/utils/performLogout";
 import { lockAsync, OrientationLock } from "expo-screen-orientation";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { useCallback, useEffect, useState } from "react";
+import { Provider, useDispatch } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 // Component to handle app initialization
 function AppInitializer({ onReady }: { onReady: () => void }) {
@@ -44,6 +45,11 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
   const handleLogout = async () => {
     await dispatch(performLogout()).unwrap(); // Ensure the logout action is dispatched properly
   };
+
+  /**
+   * Handles push notification token lifecycle.
+   */
+  usePushNotificationHandler({ onLogout: handleLogout });
 
   useEffect(() => {
     const initialize = async () => {

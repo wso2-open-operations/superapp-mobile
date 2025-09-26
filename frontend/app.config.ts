@@ -16,9 +16,9 @@
 import "dotenv/config";
 import type { ExpoConfig } from "expo/config";
 
-/* Uncomment the lines below if you want to use Firebase for iOS or Android */
-// import fs from "fs";
-// import path from "path";
+/* Comment the lines below if you want to use Firebase for iOS or Android */
+import fs from "fs";
+import path from "path";
 
 const PRODUCTION = "production";
 const DEVELOPMENT = "development";
@@ -55,15 +55,13 @@ const IOS_URL_SCHEME = process.env.IOS_URL_SCHEME ?? "example.scheme";
  *     b) Place the files directly in a `google-services` directory at the root of your project
  *        You may need to create this directory)
  *
- * 3.  After setting up your files, uncomment lines immediately below this comment section
- *     and the corresponding `googleServicesFile` line(s) in the `ios` and/or `android` section(s) below.
  *
  * ======================================================= */
 
-// const here = (...p: string[]) => path.resolve(__dirname, ...p);
-// const fileIfExists = (p: string) => (fs.existsSync(p) ? p : undefined);
-// const iosPlist = fileIfExists(here("google-services/GoogleService-Info.plist"));
-// const androidJson = fileIfExists(here("google-services/google-services.json"));
+const here = (...p: string[]) => path.resolve(__dirname, ...p);
+const fileIfExists = (p: string) => (fs.existsSync(p) ? p : undefined);
+const iosPlist = fileIfExists(here("google-services/GoogleService-Info.plist"));
+const androidJson = fileIfExists(here("google-services/google-services.json"));
 
 const config: ExpoConfig = {
   name: APP_NAME,
@@ -77,7 +75,7 @@ const config: ExpoConfig = {
     supportsTablet: true,
     requireFullScreen: true,
     bundleIdentifier: BUNDLE_ID,
-    // googleServicesFile: iosPlist, // Uncomment this if you use Firebase for iOS
+    googleServicesFile: iosPlist, // Comment this if you use Firebase for iOS
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
       UIBackgroundModes: ["remote-notification"],
@@ -93,7 +91,7 @@ const config: ExpoConfig = {
   },
   android: {
     package: ANDROID_PACKAGE,
-    // googleServicesFile: androidJson, // Uncomment this if you use Firebase for Android
+    googleServicesFile: androidJson, // Comment this if you use Firebase for Android
     permissions: [
       "android.permission.CAMERA",
       "android.permission.RECORD_AUDIO",
@@ -109,6 +107,8 @@ const config: ExpoConfig = {
     favicon: "./assets/images/favicon.png",
   },
   plugins: [
+    "@react-native-firebase/app", // Comment this if you are not using Firebase
+    "@react-native-firebase/messaging", // Comment this if you are not using Firebase
     [
       "@wavemaker/react-native-app-auth-expo-plugin",
       {
@@ -123,6 +123,10 @@ const config: ExpoConfig = {
           compileSdkVersion: 35,
           targetSdkVersion: 35,
           minSdkVersion: 24,
+        },
+        // Comment this if you are not using Firebase for iOS
+        ios: {
+          useFrameworks: "static",
         },
       },
     ],

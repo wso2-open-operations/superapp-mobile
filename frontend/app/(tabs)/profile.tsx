@@ -13,33 +13,34 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import Avatar from "@/components/Avatar";
+import ProfileListItem from "@/components/ProfileListItem";
+import SignInMessage from "@/components/SignInMessage";
+import { Colors } from "@/constants/Colors";
+import { ScreenPaths } from "@/constants/ScreenPaths";
+import { disableFCMToken } from "@/context/slices/deviceSlice";
+import { getUserInfo } from "@/context/slices/userInfoSlice";
+import { AppDispatch, RootState } from "@/context/store";
+import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
+import { logout } from "@/services/authService";
+import { BasicUserInfo } from "@/types/basicUserInfo.types";
+import { DecodedAccessToken } from "@/types/decodeAccessToken.types";
+import { performLogout } from "@/utils/performLogout";
+import { Ionicons } from "@expo/vector-icons";
+import Constants from "expo-constants";
+import { jwtDecode } from "jwt-decode";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  Alert,
+  Image,
   SafeAreaView,
-  View,
+  StyleSheet,
   Text,
   TouchableOpacity,
   useColorScheme,
-  StyleSheet,
-  Alert,
-  Image,
+  View,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/context/store";
-import { Colors } from "@/constants/Colors";
-import Constants from "expo-constants";
-import ProfileListItem from "@/components/ProfileListItem";
-import { getUserInfo } from "@/context/slices/userInfoSlice";
-import { logout } from "@/services/authService";
-import Avatar from "@/components/Avatar";
-import { jwtDecode } from "jwt-decode";
-import { DecodedAccessToken } from "@/types/decodeAccessToken.types";
-import { BasicUserInfo } from "@/types/basicUserInfo.types";
-import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
-import { ScreenPaths } from "@/constants/ScreenPaths";
-import SignInMessage from "@/components/SignInMessage";
-import { performLogout } from "@/utils/performLogout";
 
 /**
  * Settings screen displays user profile information when authenticated,
@@ -106,6 +107,7 @@ const SettingsScreen = () => {
           text: "Sign Out",
           style: "destructive",
           onPress: async () => {
+            await dispatch(disableFCMToken());
             await dispatch(performLogout());
           },
         },

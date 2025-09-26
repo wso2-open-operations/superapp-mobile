@@ -13,14 +13,15 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { persistStore, persistReducer } from "redux-persist";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { persistReducer, persistStore } from "redux-persist";
 import appReducer from "./slices/appSlice";
 import authReducer from "./slices/authSlice";
+import deviceReducer from "./slices/deviceSlice";
 import userConfigReducer from "./slices/userConfigSlice";
-import versionReducer from "./slices/versionSlice";
 import userInfoReducer from "./slices/userInfoSlice";
+import versionReducer from "./slices/versionSlice";
 
 const authPersistConfig = {
   key: "auth",
@@ -52,6 +53,7 @@ const appReducerCombined = combineReducers({
   userConfig: persistReducer(userConfigPersistConfig, userConfigReducer),
   version: versionReducer,
   userInfo: persistReducer(userInfoPersistConfig, userInfoReducer),
+  device: deviceReducer,
 });
 
 const rootReducer = (
