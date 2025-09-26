@@ -164,7 +164,7 @@ public isolated function getFcmTokens(string[] emails, int startIndex) returns F
     };
 }
 
-# Inserts an FCM token into the `token` table for the given email.
+# Inserts an FCM token into the `fcm_token` table for the given email.
 #
 # + email - The user email
 # + fcmToken - The FCM token to be stored
