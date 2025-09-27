@@ -26,6 +26,7 @@ configurable int maxHeaderSize = 16384; // 16KB header size for WSO2 Choreo supp
 configurable string[] restrictedAppsForNonLk = ?;
 configurable string lkLocation = "Sri Lanka";
 configurable string mobileAppReviewerEmail = ?; // App store reviewer email
+configurable AppScope[] appScopes = [];
 
 @display {
     label: "SuperApp Mobile Service",
@@ -56,6 +57,49 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
 
     function init() returns error? {
         log:printInfo("Super app mobile backend started.");
+    }
+
+    # Fetch application configuration details for the given user groups and config key.
+    #
+    # + ctx - Request context
+    # + return - `AppMetaInfo` or `http:InternalServerError` if the operation fails.
+    resource function get meta\-info(http:RequestContext ctx) returns AppMetaInfo|http:InternalServerError {
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {
+                    message: ERR_MSG_USER_HEADER_NOT_FOUND
+                }
+            };
+        }
+
+        string[]|error defaultMicroAppIds = database:getMicroAppIdsByGroups([database:defaultMicroAppsGroup]);
+        if defaultMicroAppIds is error {
+            string customError = "Failed to fetch default micro app IDs";
+            log:printError(customError, defaultMicroAppIds);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        database:AppSetting[]|error appSettings = database:getAppSettings();
+        if appSettings is error {
+            string customError = "Error occurred while retrieving app settings!";
+            log:printError(customError, appSettings);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        return <AppMetaInfo>{
+            appSettings,
+            defaultMicroAppIds,
+            appScopes
+        };
     }
 
     # Fetch user information of the logged in users.
@@ -323,7 +367,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
                 body: {message: customError}
             };
         }
-        
+
         database:FcmTokenResponse|error fcmTokensResponse = database:getFcmTokens(memberEmails, startIndex);
         if fcmTokensResponse is error {
             string customError = "Error occurred while retrieving FCM tokens";

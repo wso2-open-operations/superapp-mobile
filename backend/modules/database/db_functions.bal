@@ -22,10 +22,11 @@ public configurable string defaultMicroAppsGroup = ?; // Default micro apps grou
 #
 # + groups - User's groups
 # + return - Array of MicroApp IDs or an error
-isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
+public isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
     string[] effectiveGroups = groups;
     effectiveGroups.push(defaultMicroAppsGroup);
     stream<MicroAppId, sql:Error?> appIdStream = databaseClient->query(getMicroAppIdsByGroupsQuery(effectiveGroups));
+
     string[] appIds = check from MicroAppId microAppId in appIdStream
         select microAppId.appId;
 
@@ -163,7 +164,7 @@ public isolated function getFcmTokens(string[] emails, int startIndex) returns F
     };
 }
 
-# Inserts an FCM token into the `device_tokens` table for the given email.
+# Inserts an FCM token into the `device_token` table for the given email.
 #
 # + email - The user email
 # + fcmToken - The FCM token to be stored
@@ -188,4 +189,20 @@ public isolated function deleteFcmToken(string fcmToken) returns ExecutionSucces
     }
 
     return result.cloneWithType(ExecutionSuccessResult);
+}
+
+# Retrieve all application settings from the database.
+#
+# + return - An array of `AppSetting`,or `error` if the settings cannot be retrieved
+public isolated function getAppSettings() returns AppSetting[]|error {
+    stream<AppSetting, sql:Error?> resultStream = databaseClient->query(getAppSettingsQuery());
+    AppSetting[] rows = check from var row in resultStream
+        select row;
+    AppSetting[] results = [];
+
+    foreach var row in rows {
+        var value = check parseConfigValue(row);
+        results.push({configKey: row.configKey, value: value});
+    }
+    return results;
 }

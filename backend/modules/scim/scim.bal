@@ -37,7 +37,6 @@ public isolated function getGroupMemberEmails(string group, string organization)
             emails.push(displayName);
         }
     };
-
     return emails;
 }
 

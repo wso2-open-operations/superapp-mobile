@@ -159,6 +159,17 @@ public type FcmTokenResponse record {|
     int totalResults;
     # Start index of response 
     int startIndex;
-    # Total items for per page
+    # Total items per page
     int itemsPerPage;
+|};
+
+# Response type for app setting response.
+public type AppSetting record {|
+    # Configuration key
+    @sql:Column {name: "config_key"}
+    string configKey;
+    # Configuration value
+    boolean|string|int value;
+    # Type of configuration value
+    string 'type?;
 |};
