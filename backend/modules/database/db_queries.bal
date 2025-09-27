@@ -225,7 +225,7 @@ public isolated function deleteFcmTokenQuery(string fcmToken) returns sql:Parame
 
 # Query to retrieve all application settings.
 #
-# + return - A query that selects the `ConfigKey`, `Value`, and `Type` fields from the `meta_info` table
+# + return - A query that selects the `ConfigKey`, `Value`, and `Type` fields from the `app_settings` table
 public isolated function getAppSettingsQuery() returns sql:ParameterizedQuery => `
     SELECT 
         config_key, 
