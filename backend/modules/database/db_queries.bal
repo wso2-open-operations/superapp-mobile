@@ -232,5 +232,5 @@ public isolated function getAppSettingsQuery() returns sql:ParameterizedQuery =>
         value, 
         type
     FROM 
-        meta_info
+        app_settings
 `;
