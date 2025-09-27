@@ -191,11 +191,11 @@ public isolated function deleteFcmToken(string fcmToken) returns ExecutionSucces
     return result.cloneWithType(ExecutionSuccessResult);
 }
 
-# Get all application configuration values from the database.
+# Retrieve all application settings from the database.
 #
-# + return - An array of `AppSetting`,or `error` if the configurations cannot be retrieved
-public isolated function getAppConfigs() returns AppSetting[]|error {
-    stream<AppSetting, sql:Error?> resultStream = databaseClient->query(getAppConfigsQuery());
+# + return - An array of `AppSetting`,or `error` if the settings cannot be retrieved
+public isolated function getAppSettings() returns AppSetting[]|error {
+    stream<AppSetting, sql:Error?> resultStream = databaseClient->query(getAppSettingsQuery());
     AppSetting[] rows = check from var row in resultStream
         select row;
     AppSetting[] results = [];

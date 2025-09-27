@@ -223,14 +223,14 @@ public isolated function addFcmTokenQuery(string email, string fcmToken) returns
 public isolated function deleteFcmTokenQuery(string fcmToken) returns sql:ParameterizedQuery =>
     `DELETE FROM device_token WHERE fcm_token = ${fcmToken}`;
 
-# Query to retrieve all application configurations.
+# Query to retrieve all application settings.
 #
-# + return - A query that selects the `ConfigKey`, `Value`, and `Type` fields from the `app_config` table
-public isolated function getAppConfigsQuery() returns sql:ParameterizedQuery => `
+# + return - A query that selects the `ConfigKey`, `Value`, and `Type` fields from the `meta_info` table
+public isolated function getAppSettingsQuery() returns sql:ParameterizedQuery => `
     SELECT 
         config_key, 
         value, 
         type
     FROM 
-        app_config
+        meta_info
 `;
