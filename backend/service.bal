@@ -62,8 +62,8 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # Fetch application configuration details for the given user groups and config key.
     #
     # + ctx - Request context
-    # + return - `AppConfigResponse` or `http:InternalServerError` if the operation fails.
-    resource function get app\-configs(http:RequestContext ctx) returns AppConfig|http:InternalServerError {
+    # + return - `AppMetaInfo` or `http:InternalServerError` if the operation fails.
+    resource function get meta\-info(http:RequestContext ctx) returns AppMetaInfo|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             return <http:InternalServerError>{
@@ -84,9 +84,9 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        database:AppSetting[]|error appSettings = database:getAppConfigs();
+        database:AppSetting[]|error appSettings = database:getAppSettings();
         if appSettings is error {
-            string customError = "Error occurred while retrieving app configs!";
+            string customError = "Error occurred while retrieving app settings!";
             log:printError(customError, appSettings);
             return <http:InternalServerError>{
                 body: {
@@ -95,7 +95,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        return <AppConfig>{
+        return <AppMetaInfo>{
             appSettings,
             defaultMicroAppIds,
             appScopes

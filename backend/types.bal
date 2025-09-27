@@ -23,8 +23,8 @@ public type AppScope record {|
     string scopes;
 |};
 
-# App config record type.
-public type AppConfig record {|
+# App meta info record type.
+public type AppMetaInfo record {|
     # App configs
     database:AppSetting[] appSettings;
     # Micro App Ids
