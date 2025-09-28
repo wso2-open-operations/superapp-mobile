@@ -16,13 +16,11 @@ This Super App serves as a **container** for multiple micro-apps. It:
 - Supports **time-based local notifications** for scheduled sessions.  
   -- You can store sessions in the following format:  
 
-      ```json
       [
          { "id": 1, "title": "Session Title", "startTime": "2025-09-30T10:00:00Z" },
          { "id": 2, "title": "Another Session", "startTime": "2025-09-30T14:00:00Z" }
       ]
-      ```
-
+      
   -- A notification will automatically be sent **10 minutes before each session**.
 
 
