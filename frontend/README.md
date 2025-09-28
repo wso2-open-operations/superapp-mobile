@@ -17,8 +17,8 @@ This Super App serves as a **container** for multiple micro-apps. It:
   -- You can store sessions in the following format:  
 
       [
-         { "id": 1, "title": "Session Title", "startTime": "2025-09-30T10:00:00Z" },
-         { "id": 2, "title": "Another Session", "startTime": "2025-09-30T14:00:00Z" }
+         { "id": 1, "title": "Session Title", "startTime": "2025-09-30 10:00:00.000000" },
+         { "id": 2, "title": "Another Session", "startTime": "2025-09-30 14:00:00.000000" }
       ]
       
   -- A notification will automatically be sent **10 minutes before each session**.

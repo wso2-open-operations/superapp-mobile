@@ -16,7 +16,7 @@
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
-import { LOCAL_NOTIFICATIONS_KEY} from "@/constants/Constants";
+import { LOCAL_NOTIFICATIONS_KEY, SCHEDULED_NOTIFICATION_TITLE} from "@/constants/Constants";
 
 interface SessionNotification {
   id: string;
@@ -96,7 +96,7 @@ export const scheduleSessionNotifications = async () => {
         if (triggerSeconds > 0) {
           await Notifications.scheduleNotificationAsync({
             content: {
-              title: "WSO2 CON",
+              title: SCHEDULED_NOTIFICATION_TITLE,
               body: `${session.title} starts in 10 minutes`,
               data: { sessionId: session.id },
             },
