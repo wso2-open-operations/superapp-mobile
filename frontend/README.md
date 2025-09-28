@@ -13,6 +13,18 @@ This Super App serves as a **container** for multiple micro-apps. It:
 - Handles **micro-app authentication and token exchange**.
 - Manages state using **Redux** with **Redux Thunk**.
 - Uses **AsyncStorage** for persistence (small client side storage needs, not as a replacement for a dedicated database).
+ - Supports **time-based local notifications** for scheduled sessions.  
+  - You can store sessions in the following format:  
+
+    ```json
+    [
+      { "id": 1, "title": "Session Title", "startTime": "2025-09-30T10:00:00Z" },
+      { "id": 2, "title": "Another Session", "startTime": "2025-09-30T14:00:00Z" }
+    ]
+    ```
+
+  - A notification will automatically be sent **10 minutes before each session**.
+
 
 ---
 
