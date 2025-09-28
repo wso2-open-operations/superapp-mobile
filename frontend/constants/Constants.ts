@@ -64,8 +64,11 @@ export const GOOGLE_DRIVE_FILE_DOWNLOAD_URL = (fileId: string) =>
 export const GOOGLE_TOKEN_INFO_URL = (accessToken: string) =>
   `${process.env.EXPO_PUBLIC_GOOGLE_TOKEN_INFO_URL ?? ""}${accessToken}`;
 export const EVENTS_URL = process.env.EXPO_PUBLIC_EVENTS_URL ?? "";
-export const LOCAL_NOTIFICATIONS_KEY = process.env.EXPO_PUBLIC_LOCAL_NOTIFICATIONS_KEY ?? "";
-export const SCHEDULED_NOTIFICATION_TITLE = process.env.EXPO_PUBLIC_SCHEDULED_NOTIFICATION_TITLE ?? "";
+export const LOCAL_NOTIFICATIONS_KEY =
+  process.env.EXPO_PUBLIC_LOCAL_NOTIFICATIONS_KEY ?? "";
+export const SCHEDULED_NOTIFICATION_TITLE =
+  process.env.EXPO_PUBLIC_SCHEDULED_NOTIFICATION_TITLE ?? "";
+export const NOTIFICATION_LEAD_TIME_MINUTES = 10;
 
 export const SUCCESS = "success";
 export const APPS = "apps";

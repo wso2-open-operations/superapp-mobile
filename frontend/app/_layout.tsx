@@ -28,7 +28,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   initializeNotifications,
   scheduleSessionNotifications,
-} from "@/services/notificationService";
+} from "@/services/scheduledNotifications";
 import {
   DarkTheme,
   DefaultTheme,

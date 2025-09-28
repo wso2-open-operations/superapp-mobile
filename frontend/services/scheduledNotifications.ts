@@ -16,7 +16,11 @@
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
-import { LOCAL_NOTIFICATIONS_KEY, SCHEDULED_NOTIFICATION_TITLE} from "@/constants/Constants";
+import {
+  LOCAL_NOTIFICATIONS_KEY,
+  SCHEDULED_NOTIFICATION_TITLE,
+  NOTIFICATION_LEAD_TIME_MINUTES,
+} from "@/constants/Constants";
 
 interface SessionNotification {
   id: string;
@@ -72,7 +76,7 @@ export const scheduleSessionNotifications = async () => {
     for (const session of sessions) {
       const sessionStartTime = new Date(session.startTime);
       const notificationTime = new Date(
-        sessionStartTime.getTime() - 10 * 60 * 1000
+        sessionStartTime.getTime() - NOTIFICATION_LEAD_TIME_MINUTES * 60 * 1000
       );
 
       const secondsUntilNotification = Math.floor(
@@ -97,7 +101,7 @@ export const scheduleSessionNotifications = async () => {
           await Notifications.scheduleNotificationAsync({
             content: {
               title: SCHEDULED_NOTIFICATION_TITLE,
-              body: `${session.title} starts in 10 minutes`,
+              body: `${session.title} starts in ${NOTIFICATION_LEAD_TIME_MINUTES} minutes`,
               data: { sessionId: session.id },
             },
             trigger: {
