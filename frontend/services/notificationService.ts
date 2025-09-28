@@ -16,6 +16,7 @@
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
+import { SESSION_NOTIFICATIONS_KEY } from "@/constants/Constants";
 
 interface SessionNotification {
   id: string;
@@ -42,7 +43,7 @@ export const initializeNotifications = async () => {
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: true,
-      shouldSetBadge: false,
+      shouldSetBadge: true,
     }),
   });
 
@@ -55,7 +56,7 @@ export const scheduleSessionNotifications = async () => {
     await Notifications.cancelAllScheduledNotificationsAsync();
 
     // Get sessions from storage
-    const sessionsData = await AsyncStorage.getItem("session-notifications");
+    const sessionsData = await AsyncStorage.getItem(SESSION_NOTIFICATIONS_KEY);
     if (!sessionsData) return;
 
     let sessions: SessionNotification[];
@@ -84,7 +85,7 @@ export const scheduleSessionNotifications = async () => {
       try {
         if (Platform.OS === "android") {
           await Notifications.setNotificationChannelAsync(
-            "session-notifications",
+            process.env.EXPO_PUBLIC_SESSION_NOTIFICATIONS_KEY as string,
             {
               name: "Session Notifications",
               importance: Notifications.AndroidImportance.HIGH,
