@@ -26,6 +26,10 @@ import { usePushNotificationHandler } from "@/hooks/usePushNotificationHandler";
 import { performLogout } from "@/utils/performLogout";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
+  initializeNotifications,
+  scheduleSessionNotifications,
+} from "@/services/notificationService";
+import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
@@ -61,6 +65,10 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
 
         if (savedApps) dispatch(setApps(JSON.parse(savedApps)));
         if (savedUserInfo) dispatch(setUserInfo(JSON.parse(savedUserInfo)));
+
+        // Initialize notifications
+        await initializeNotifications();
+        await scheduleSessionNotifications();
 
         dispatch(getVersions(handleLogout));
         dispatch(getUserConfigurations(handleLogout));
