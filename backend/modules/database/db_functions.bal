@@ -18,6 +18,8 @@ import ballerina/sql;
 
 public configurable string defaultMicroAppsGroup = ?; // Default micro apps group name
 
+const DEFAULT_CONFIG_KEY = "superapp.apps.list"; // Default config key for user app list
+
 # Get list of all MicroApp IDs for given groups.
 #
 # + groups - User's groups
@@ -113,11 +115,16 @@ public isolated function getUserConfigsByEmail(string email) returns UserConfig[
         databaseClient->query(getUserConfigsByEmailQuery(email));
     UserConfig[] userConfigs = check from UserConfig userConfig in configStream
         select userConfig;
+
+    if userConfigs.length() == 0 {
+        UserConfig userConfig = check addDefaultUserConfig(email, []);
+        userConfigs.push(userConfig);
+        return userConfigs;
+    }
     foreach UserConfig config in userConfigs {
         string[] configValues = check config.configValue.fromJsonWithType();
-        string[] defaultMicroAppIds = check getMicroAppIdsByGroups([]);
-        configValues.push(...defaultMicroAppIds);
-        config.configValue = configValues.toJson();
+        UserConfig userConfig = check addDefaultUserConfig(email, configValues);
+        config.configValue = userConfig.configValue;
     }
     return userConfigs;
 }
@@ -205,4 +212,20 @@ public isolated function getAppConfigs() returns AppConfig[]|error {
         results.push({configKey: row.configKey, value});
     }
     return results;
+}
+
+# Add default user configuration for a new user.
+# 
+# + email - Email of the user
+# + configValues - Initial configuration values
+# + return - UserConfig with default settings, or an error if the operation fails
+public isolated function addDefaultUserConfig(string email, string[] configValues) returns UserConfig|error {
+    string[] defaultMicroAppIds = check getMicroAppIdsByGroups([]);
+    configValues.push(...defaultMicroAppIds);
+    return {
+        email,
+        configKey: DEFAULT_CONFIG_KEY,
+        configValue: configValues.toJson(),
+        isActive: 1
+    };
 }
