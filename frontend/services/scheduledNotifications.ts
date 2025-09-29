@@ -18,16 +18,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import {
   LOCAL_NOTIFICATIONS_KEY,
-  SCHEDULED_NOTIFICATION_TITLE,
   NOTIFICATION_LEAD_TIME_MINUTES,
+  isAndroid,
 } from "@/constants/Constants";
 
-interface SessionNotification {
-  id: string;
-  title: string;
-  startTime: string;
+interface SessionData {
+  data: Array<{
+    id: string;
+    title: string;
+    startTime: string;
+  }>;
+  superapp_notification_title: string;
 }
 
+// Function to initialize notification service
 export const initializeNotifications = async () => {
   // Request permissions
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -54,6 +58,7 @@ export const initializeNotifications = async () => {
   return true;
 };
 
+// Function to schedule Notifications
 export const scheduleSessionNotifications = async () => {
   try {
     // Clear any existing scheduled notifications
@@ -63,17 +68,17 @@ export const scheduleSessionNotifications = async () => {
     const sessionsData = await AsyncStorage.getItem(LOCAL_NOTIFICATIONS_KEY);
     if (!sessionsData) return;
 
-    let sessions: SessionNotification[];
+    let sessionData: SessionData;
     try {
       const decodedData = atob(sessionsData);
-      sessions = JSON.parse(decodedData);
+      sessionData = JSON.parse(decodedData);
     } catch (parseError) {
       console.error("Parse error:", parseError);
       return;
     }
     const now = new Date();
 
-    for (const session of sessions) {
+    for (const session of sessionData.data) {
       const sessionStartTime = new Date(session.startTime);
       const notificationTime = new Date(
         sessionStartTime.getTime() - NOTIFICATION_LEAD_TIME_MINUTES * 60 * 1000
@@ -87,7 +92,7 @@ export const scheduleSessionNotifications = async () => {
 
       // Schedule notification
       try {
-        if (Platform.OS === "android") {
+        if (isAndroid) {
           await Notifications.setNotificationChannelAsync(
             process.env.EXPO_PUBLIC_SESSION_NOTIFICATIONS_KEY as string,
             {
@@ -100,7 +105,7 @@ export const scheduleSessionNotifications = async () => {
         if (triggerSeconds > 0) {
           await Notifications.scheduleNotificationAsync({
             content: {
-              title: SCHEDULED_NOTIFICATION_TITLE,
+              title: sessionData.superapp_notification_title,
               body: `${session.title} starts in ${NOTIFICATION_LEAD_TIME_MINUTES} minutes`,
               data: { sessionId: session.id },
             },

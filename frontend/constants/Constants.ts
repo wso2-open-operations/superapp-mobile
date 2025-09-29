@@ -66,8 +66,6 @@ export const GOOGLE_TOKEN_INFO_URL = (accessToken: string) =>
 export const EVENTS_URL = process.env.EXPO_PUBLIC_EVENTS_URL ?? "";
 export const LOCAL_NOTIFICATIONS_KEY =
   process.env.EXPO_PUBLIC_LOCAL_NOTIFICATIONS_KEY ?? "";
-export const SCHEDULED_NOTIFICATION_TITLE =
-  process.env.EXPO_PUBLIC_SCHEDULED_NOTIFICATION_TITLE ?? "";
 export const NOTIFICATION_LEAD_TIME_MINUTES = 10;
 
 export const SUCCESS = "success";
