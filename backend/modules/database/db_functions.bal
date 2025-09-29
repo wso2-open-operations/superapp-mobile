@@ -202,7 +202,7 @@ public isolated function getAppConfigs() returns AppConfig[]|error {
 
     foreach var row in rows {
         var value = check parseConfigValue(row);
-        results.push({configKey: row.configKey, value: value});
+        results.push({configKey: row.configKey, value});
     }
     return results;
 }
