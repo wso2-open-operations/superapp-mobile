@@ -14,15 +14,17 @@ This Super App serves as a **container** for multiple micro-apps. It:
 - Manages state using **Redux** with **Redux Thunk**.
 - Uses **AsyncStorage** for persistence (small client side storage needs, not as a replacement for a dedicated database).
 - Supports **time-based local notifications** for scheduled sessions.  
-  -- You can store sessions in the following format:  
+  -- You can store sessions in the following format:
 
-      [
-         { "id": 1, "title": "Session Title", "startTime": "2025-09-30 10:00:00.000000" },
-         { "id": 2, "title": "Another Session", "startTime": "2025-09-30 14:00:00.000000" }
-      ]
-      
-  -- A notification will automatically be sent **10 minutes before each session**.
+      {
+         "data": [
+            { "id": "1", "startTime": "2025-09-29 08:00:00.000000", "title": "Session Title" },
+            { "id": "2", "startTime": "2025-09-29 07:52:00.000000", "title": "Another Session" }
+         ],
+         "superapp_notification_title": "Scheduled notification title(This value defines the default title text that will appear)"
+      }
 
+-- A notification will automatically be sent **10 minutes before each session**.
 
 ---
 
