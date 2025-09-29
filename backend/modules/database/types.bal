@@ -114,7 +114,7 @@ public type Version record {|
 |};
 
 # Record type to model configurations for the users of the SuperApp.
-public type AppConfig record {|
+public type UserConfig record {|
     # User email
     string email;
     # Configuration key, unique key for the configuration
@@ -163,8 +163,8 @@ public type FcmTokenResponse record {|
     int itemsPerPage;
 |};
 
-# Response type for app setting response.
-public type AppSetting record {|
+# Response type for app config response.
+public type AppConfig record {|
     # Configuration key
     @sql:Column {name: "config_key"}
     string configKey;

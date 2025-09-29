@@ -14,11 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Parse the configuration value from a given `AppSetting` row based on its type.
+# Parse the configuration value from a given `AppConfig` row based on its type.
 #
 # + row - The configuration setting record that contains the key, raw value, and type.
 # + return - The parsed configuration value as a `boolean`, `string`, or `int`, or an `error` if parsing fails.
-public isolated function parseConfigValue(AppSetting row) returns boolean|string|int|error {
+public isolated function parseConfigValue(AppConfig row) returns boolean|string|int|error {
     if row.'type == "boolean" {
         return row.value == "true";
     } else if row.'type == "int" {

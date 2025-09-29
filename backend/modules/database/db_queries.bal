@@ -115,11 +115,11 @@ isolated function getVersionsByPlatformQuery(string platform) returns sql:Parame
         build DESC
 `;
 
-# Query to get app configurations by email
+# Query to get user configurations by email
 #
 # + email - User email
-# + return - Generated Query to get app configurations by email
-isolated function getAppConfigsByEmailQuery(string email) returns sql:ParameterizedQuery => `
+# + return - Generated Query to get user configurations by email
+isolated function getUserConfigsByEmailQuery(string email) returns sql:ParameterizedQuery => `
     SELECT
         email,
         config_key,
@@ -140,7 +140,7 @@ isolated function getAppConfigsByEmailQuery(string email) returns sql:Parameteri
 # + configValue - Configuration value
 # + isActive - status 1 or 0
 # + return - Generated Query to insert/update configurations
-isolated function updateAppConfigsByEmailQuery(string email, string configKey, string configValue, int isActive)
+isolated function updateUserConfigsByEmailQuery(string email, string configKey, string configValue, int isActive)
     returns sql:ParameterizedQuery => `
         INSERT INTO user_config (
             email,
@@ -223,14 +223,14 @@ public isolated function addFcmTokenQuery(string email, string fcmToken) returns
 public isolated function deleteFcmTokenQuery(string fcmToken) returns sql:ParameterizedQuery =>
     `DELETE FROM device_token WHERE fcm_token = ${fcmToken}`;
 
-# Query to retrieve all application settings.
+# Query to retrieve all application configurations.
 #
-# + return - A query that selects the `ConfigKey`, `Value`, and `Type` fields from the `app_settings` table
-public isolated function getAppSettingsQuery() returns sql:ParameterizedQuery => `
+# + return - A query that selects the `ConfigKey`, `Value`, and `Type` fields from the `app_configs` table
+public isolated function getAppConfigsQuery() returns sql:ParameterizedQuery => `
     SELECT 
         config_key, 
         value, 
         type
     FROM 
-        app_settings
+        app_configs
 `;

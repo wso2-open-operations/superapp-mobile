@@ -104,37 +104,37 @@ public isolated function getVersionsByPlatform(string platform) returns Version[
         select version;
 }
 
-# Get all the app configurations for a given user email.
+# Get all the user configurations for a given user email.
 #
 # + email - email address of the user
 # + return - Array of app configurations or else an error
-public isolated function getAppConfigsByEmail(string email) returns AppConfig[]|error {
-    stream<AppConfig, sql:Error?> configStream =
-        databaseClient->query(getAppConfigsByEmailQuery(email));
-    AppConfig[] appConfigs = check from AppConfig appConfig in configStream
-        select appConfig;
-    foreach AppConfig config in appConfigs {
+public isolated function getUserConfigsByEmail(string email) returns UserConfig[]|error {
+    stream<UserConfig, sql:Error?> configStream =
+        databaseClient->query(getUserConfigsByEmailQuery(email));
+    UserConfig[] userConfigs = check from UserConfig userConfig in configStream
+        select userConfig;
+    foreach UserConfig config in userConfigs {
         string[] configValues = check config.configValue.fromJsonWithType();
         string[] defaultMicroAppIds = check getMicroAppIdsByGroups([]);
         configValues.push(...defaultMicroAppIds);
         config.configValue = configValues.toJson();
     }
-    return appConfigs;
+    return userConfigs;
 }
 
-# Insert or update app configurations of the logged in user.
+# Insert or update user configurations of the logged in user.
 #
 # + email - email of the user
-# + appConfig - App configurations to be inserted or updated
+# + userConfig - User configurations to be inserted or updated
 # + return - Insert or update result, or an error
-public isolated function updateAppConfigsByEmail(string email, AppConfig appConfig)
+public isolated function updateUserConfigsByEmail(string email, UserConfig userConfig)
     returns ExecutionSuccessResult|error {
 
-    sql:ParameterizedQuery query = updateAppConfigsByEmailQuery(
+    sql:ParameterizedQuery query = updateUserConfigsByEmailQuery(
         email,
-        appConfig.configKey,
-        appConfig.configValue.toJsonString(),
-        appConfig.isActive);
+        userConfig.configKey,
+        userConfig.configValue.toJsonString(),
+        userConfig.isActive);
     sql:ExecutionResult result = check databaseClient->execute(query);
     return result.cloneWithType(ExecutionSuccessResult);
 }
@@ -191,14 +191,14 @@ public isolated function deleteFcmToken(string fcmToken) returns ExecutionSucces
     return result.cloneWithType(ExecutionSuccessResult);
 }
 
-# Retrieve all application settings from the database.
+# Retrieve all application configurations from the database.
 #
-# + return - An array of `AppSetting`,or `error` if the settings cannot be retrieved
-public isolated function getAppSettings() returns AppSetting[]|error {
-    stream<AppSetting, sql:Error?> resultStream = databaseClient->query(getAppSettingsQuery());
-    AppSetting[] rows = check from var row in resultStream
+# + return - An array of `AppConfig`,or `error` if the configs cannot be retrieved
+public isolated function getAppConfigs() returns AppConfig[]|error {
+    stream<AppConfig, sql:Error?> resultStream = databaseClient->query(getAppConfigsQuery());
+    AppConfig[] rows = check from var row in resultStream
         select row;
-    AppSetting[] results = [];
+    AppConfig[] results = [];
 
     foreach var row in rows {
         var value = check parseConfigValue(row);
