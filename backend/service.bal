@@ -62,8 +62,8 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     # Fetch application configuration details for the given user groups and config key.
     #
     # + ctx - Request context
-    # + return - `AppMetaInfo` or `http:InternalServerError` if the operation fails.
-    resource function get meta\-info(http:RequestContext ctx) returns AppMetaInfo|http:InternalServerError {
+    # + return - `AppConfig` or `http:InternalServerError` if the operation fails.
+    resource function get app\-configs(http:RequestContext ctx) returns AppConfig|http:InternalServerError {
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
             return <http:InternalServerError>{
@@ -84,10 +84,10 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        database:AppSetting[]|error appSettings = database:getAppSettings();
-        if appSettings is error {
+        database:AppConfig[]|error appConfigs = database:getAppConfigs();
+        if appConfigs is error {
             string customError = "Error occurred while retrieving app settings!";
-            log:printError(customError, appSettings);
+            log:printError(customError, appConfigs);
             return <http:InternalServerError>{
                 body: {
                     message: customError
@@ -95,8 +95,8 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        return <AppMetaInfo>{
-            appSettings,
+        return <AppConfig>{
+            appConfigs,
             defaultMicroAppIds,
             appScopes
         };
@@ -264,12 +264,12 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         return versions;
     }
 
-    # Fetch the app configurations(downloaded microapps) of the logged in user.
+    # Fetch the user configurations(downloaded microapps) of the logged in user.
     #
     # + ctx - Request context
     # + return - User configurations or error
-    resource function get users/app\-configs(http:RequestContext ctx)
-        returns database:AppConfig[]|http:InternalServerError {
+    resource function get users/user\-configs(http:RequestContext ctx)
+        returns database:UserConfig[]|http:InternalServerError {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -280,10 +280,10 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        database:AppConfig[]|error appConfigs = database:getAppConfigsByEmail(userInfo.email);
-        if appConfigs is error {
+        database:UserConfig[]|error userConfigs = database:getUserConfigsByEmail(userInfo.email);
+        if userConfigs is error {
             string customError = "Error occurred while retrieving app configurations for the user!";
-            log:printError(customError, appConfigs);
+            log:printError(customError, userConfigs);
             return {
                 body: {
                     message: customError
@@ -291,16 +291,16 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        return appConfigs;
+        return userConfigs;
     }
 
-    # Add/Update app configurations(downloaded microapps) of the logged in user.
+    # Add/Update user configurations(downloaded microapps) of the logged in user.
     #
     # + ctx - Request context
-    # + configuration - User's app configurations including downloaded microapps
+    # + configuration - User's user configurations including downloaded microapps
     # + return - Created response or error
-    resource function post users/app\-configs(http:RequestContext ctx,
-        database:AppConfig configuration) returns http:Created|http:InternalServerError|http:BadRequest {
+    resource function post users/user\-configs(http:RequestContext ctx,
+        database:UserConfig configuration) returns http:Created|http:InternalServerError|http:BadRequest {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -322,7 +322,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         }
 
         database:ExecutionSuccessResult|error result =
-            database:updateAppConfigsByEmail(userInfo.email, configuration);
+            database:updateUserConfigsByEmail(userInfo.email, configuration);
         if result is error {
             string customError = "Error occurred while updating the user configuration!";
             log:printError(customError, result);
