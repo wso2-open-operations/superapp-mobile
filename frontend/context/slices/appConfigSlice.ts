@@ -38,13 +38,10 @@ export const getAppConfigurations = createAsyncThunk(
         },
         onLogout
       );
-      console.log(response?.data);
 
       if (response?.data) return response.data;
       else rejectWithValue("App configs not found");
-      console.log("App configs not found");
     } catch (error) {
-      console.log(error);
       return rejectWithValue(error);
     }
   }
