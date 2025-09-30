@@ -23,15 +23,7 @@ public isolated function getGroupMemberEmails(string group) returns string[]|err
     if groupResponse.totalResults == 0 || groupResponse.Resources.length() == 0 {
         return [];
     }
-    string[] emails = [];
-    from GroupMember member in groupResponse.Resources[0].members
-    let string displayName = member.display
-    do {
-        if displayName.startsWith(STORE_NAME) {
-            emails.push(displayName.substring(STORE_NAME.length()));
-        } else {
-            emails.push(displayName);
-        }
-    };
-    return emails;
+    return from GroupMember member in groupResponse.Resources[0].members
+        let string displayName = member.display
+        select displayName.startsWith(STORE_NAME) ? displayName.substring(STORE_NAME.length()) : displayName;
 }
