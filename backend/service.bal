@@ -340,10 +340,9 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     #
     # + ctx - Request context
     # + group - The group name to search for members 
-    # + organization - The organization name to search groups 
     # + startIndex - Starting index for pagination
     # + return - Paginated FCM tokens response or an error
-    resource function get users/fcm\-tokens(http:RequestContext ctx, string group, string organization, int startIndex)
+    resource function get users/fcm\-tokens(http:RequestContext ctx, string group, int startIndex)
         returns database:FcmTokenResponse|http:InternalServerError|http:NotFound {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -353,7 +352,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        string[]|error memberEmails = scim:getGroupMemberEmails(group, organization);
+        string[]|error memberEmails = scim:getGroupMemberEmails(group);
         if memberEmails is error {
             string customError = "Error occurred while calling SCIM operations service";
             log:printError(customError, memberEmails);
