@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Gets the users from the internal organization by group.
+# Gets the group response from the SCIM operations service.
 # 
 # + group - The group name used to search groups from the SCIM operations service
 # + return - A `GroupSearchResponse` on success, or an error on failure
