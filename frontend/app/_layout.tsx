@@ -16,11 +16,12 @@
 import SplashModal from "@/components/SplashModal";
 import { APPS, USER_INFO } from "@/constants/Constants";
 import { setApps } from "@/context/slices/appSlice";
+import { getAppConfigurations } from "@/context/slices/appConfigSlice";
 import { restoreAuth } from "@/context/slices/authSlice";
 import { getUserConfigurations } from "@/context/slices/userConfigSlice";
 import { setUserInfo } from "@/context/slices/userInfoSlice";
 import { getVersions } from "@/context/slices/versionSlice";
-import { AppDispatch, persistor, store } from "@/context/store";
+import { AppDispatch, persistor, RootState, store } from "@/context/store";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { usePushNotificationHandler } from "@/hooks/usePushNotificationHandler";
 import { performLogout } from "@/utils/performLogout";
@@ -36,7 +37,7 @@ import { lockAsync, OrientationLock } from "expo-screen-orientation";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 // Component to handle app initialization
@@ -64,6 +65,7 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
 
         dispatch(getVersions(handleLogout));
         dispatch(getUserConfigurations(handleLogout));
+        dispatch(getAppConfigurations(handleLogout));
         await dispatch(restoreAuth()).unwrap();
       } catch (error) {
         console.error("Initialization error:", error);
