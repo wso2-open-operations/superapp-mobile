@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import React, { useCallback } from "react";
 import {
   Text,
   SafeAreaView,
@@ -27,10 +28,14 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/context/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import Widget from "@/components/Widget";
 import { router } from "expo-router";
-import { APP_LIST_CONFIG_KEY, DOWNLOADED } from "@/constants/Constants";
+import {
+  APP_LIST_CONFIG_KEY,
+  DOWNLOADED,
+} from "@/constants/Constants";
 import { MicroApp } from "@/context/slices/appSlice";
 import {
   downloadMicroApp,
@@ -46,12 +51,20 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import SearchBar from "@/components/SearchBar";
 import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
 import { ScreenPaths } from "@/constants/ScreenPaths";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const apps = useSelector((state: RootState) => state.apps.apps);
+  const downloadProgress = useSelector(
+    (state: RootState) => state.apps.downloadProgress
+  );
   const { email } = useSelector((state: RootState) => state.auth);
+  const isForceUpdate = useSelector(
+    (state: RootState) =>
+      state.appConfig.configs.find(
+        (config) => config.configKey === "isForceUpdate"
+      )?.value ?? false
+  );
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredApps, setFilteredApps] = useState(apps);
   const { versions, loading } = useSelector(
@@ -71,29 +84,59 @@ export default function HomeScreen() {
     done: 0,
     total: 0,
   });
+  const [updatingApps, setUpdatingApps] = useState<string[]>([]);
+  const isCheckingUpdates = useRef(false);
 
   useTrackActiveScreen(ScreenPaths.MY_APPS);
-
-  // Check versions
-  useEffect(() => {
-    const checkVersion = () => {
-      if (version && Array.isArray(versions) && versions.length > 0) {
-        if (versions[0]?.version > version) {
-          // If update available redirect to update screen
-          router.replace(ScreenPaths.UPDATE);
+  
+  // Handle app updates when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const checkForUpdates = async () => {
+        if (isCheckingUpdates.current || !email || !isForceUpdate) {
+          return;
         }
-      }
-    };
 
-    checkVersion();
-  }, [versions, loading]);
+        try {
+          isCheckingUpdates.current = true;
+          await loadMicroAppDetails(
+            dispatch,
+            logout,
+            (appId: string) => {
+              setUpdatingApps((prev) => [...prev, appId]);
+            },
+            (appId: string) => {
+              setUpdatingApps((prev) => prev.filter((id) => id !== appId));
+            }
+          );
+        } catch (error) {
+          console.error("Error checking for app updates:", error);
+        } finally {
+          isCheckingUpdates.current = false;
+        }
+      };
+      checkForUpdates();
+      return () => {
+        isCheckingUpdates.current = false;
+      };
+    }, [dispatch, email, isForceUpdate])
+  );
 
   // Load micro apps and user configurations if they haven't been initialized yet
   useEffect(() => {
     const initializeApp = async () => {
       try {
         if (!apps || apps.length === 0) {
-          await loadMicroAppDetails(dispatch, logout);
+          await loadMicroAppDetails(
+            dispatch,
+            logout,
+            (appId: string) => {
+              setUpdatingApps((prev) => [...prev, appId]);
+            },
+            (appId: string) => {
+              setUpdatingApps((prev) => prev.filter((id) => id !== appId));
+            }
+          );
         }
         if (!userConfigurations || userConfigurations.length === 0) {
           dispatch(getUserConfigurations(logout));
@@ -228,6 +271,8 @@ export default function HomeScreen() {
               exchangedToken={item.exchangedToken ?? ""}
               appId={item.appId}
               displayMode={item.displayMode}
+              isUpdating={updatingApps.includes(item.appId)}
+              downloadProgress={downloadProgress[item.appId]}
             />
           )}
           contentContainerStyle={{

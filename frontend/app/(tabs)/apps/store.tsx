@@ -44,7 +44,13 @@ import { useDispatch, useSelector } from "react-redux";
 const Store = () => {
   const dispatch = useDispatch();
   const { apps, downloading } = useSelector((state: RootState) => state.apps);
+  const downloadProgress = useSelector(
+    (state: RootState) => state.apps.downloadProgress
+  );
   const { accessToken } = useSelector((state: RootState) => state.auth);
+  const { defaultMicroAppIds } = useSelector(
+    (state: RootState) => state.appConfig
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -73,9 +79,16 @@ const Store = () => {
   // load micro apps list
   useEffect(() => {
     const initializeApps = async () => {
+      if (!accessToken) return;
+
       setIsLoading(true);
-      if (accessToken) loadMicroAppDetails(dispatch, logout);
-      setIsLoading(false);
+      try {
+        await loadMicroAppDetails(dispatch, logout);
+      } finally {
+        if (isMountedRef.current) {
+          setIsLoading(false);
+        }
+      }
     };
 
     initializeApps();
@@ -114,43 +127,60 @@ const Store = () => {
 
   // Process the installation queue
   useEffect(() => {
+    let isProcessing = false;
     const processQueue = async () => {
-      if (isProcessingQueue || installationQueue.length === 0) return;
+      if (
+        isProcessing ||
+        installationQueue.length === 0 ||
+        !isMountedRef.current
+      )
+        return;
 
-      setIsProcessingQueue(true);
+      isProcessing = true;
       const currentItem = installationQueue[0];
 
       try {
-        activeDownloadsRef.current.add(currentItem.appId);
+        if (!activeDownloadsRef.current.has(currentItem.appId)) {
+          activeDownloadsRef.current.add(currentItem.appId);
 
-        await downloadMicroApp(
-          dispatch,
-          currentItem.appId,
-          currentItem.downloadUrl,
-          logout
-        );
-
-        if (isMountedRef.current) {
-          setInstallationQueue((prev) => prev.slice(1));
+          dispatch({
+            type: "SET_DOWNLOAD_PROGRESS",
+            payload: { appId: currentItem.appId, progress: 0 },
+          });
+          await downloadMicroApp(
+            dispatch,
+            currentItem.appId,
+            currentItem.downloadUrl,
+            logout
+          );
+          if (isMountedRef.current) {
+            setInstallationQueue((prev) =>
+              prev.filter((item) => item.appId !== currentItem.appId)
+            );
+          }
         }
       } catch (error) {
         console.error("Installation failed:", error);
-        Alert.alert("Error", "Installation failed try again later");
-        setInstallationQueue((prev) => prev.slice(1));
-        dispatch({
-          type: "REMOVE_DOWNLOADING_APP",
-          payload: currentItem.appId,
-        });
-      } finally {
-        activeDownloadsRef.current.delete(currentItem.appId);
         if (isMountedRef.current) {
-          setIsProcessingQueue(false);
+          Alert.alert("Error", "Installation failed try again later");
+          dispatch({
+            type: "REMOVE_DOWNLOADING_APP",
+            payload: currentItem.appId,
+          });
+          setInstallationQueue((prev) =>
+            prev.filter((item) => item.appId !== currentItem.appId)
+          );
+        }
+      } finally {
+        if (isMountedRef.current) {
+          activeDownloadsRef.current.delete(currentItem.appId);
+          isProcessing = false;
         }
       }
     };
 
     processQueue();
-  }, [installationQueue, isProcessingQueue, dispatch]);
+  }, [installationQueue, dispatch]);
 
   // Modified download handler to create a serialized task queue
   const handleDownload = (appId: string, downloadUrl: string) => {
@@ -160,13 +190,18 @@ const Store = () => {
       return;
     }
 
-    // Check if already in queue or downloading
+    // Check if already in queue, downloading, or in the downloading state
     const isAlreadyQueued = installationQueue.some(
       (item) => item.appId === appId
     );
     const isCurrentlyDownloading = activeDownloadsRef.current.has(appId);
+    const isInDownloadingState = downloading.includes(appId);
 
-    if (!isAlreadyQueued && !isCurrentlyDownloading) {
+    if (!isAlreadyQueued && !isCurrentlyDownloading && !isInDownloadingState) {
+      dispatch({
+        type: "SET_DOWNLOAD_PROGRESS",
+        payload: { appId, progress: 0 },
+      });
       setInstallationQueue((prev) => [...prev, { appId, downloadUrl }]);
       dispatch({ type: "ADD_DOWNLOADING_APP", payload: appId });
     }
@@ -230,10 +265,12 @@ const Store = () => {
                   downloading.includes(item.appId) ||
                   installationQueue.some((i) => i.appId === item.appId)
                 }
+                downloadProgress={downloadProgress[item.appId]}
                 onDownload={() =>
                   handleDownload(item.appId, item.versions[0].downloadUrl)
                 }
                 onRemove={() => handleRemoveMicroApp(dispatch, item.appId)}
+                isDefaultApp={defaultMicroAppIds?.includes(item.appId)}
               />
               {/* Horizontal Line */}
               {index !== filteredApps.length - 1 && (
