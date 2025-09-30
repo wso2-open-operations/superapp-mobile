@@ -24,9 +24,10 @@ import {
 import { Image } from "expo-image";
 import { Colors } from "@/constants/Colors";
 import { Version } from "@/context/slices/appSlice";
-import { DEFAULT_VIEWING_MODE, DOWNLOADED, FULL_SCREEN_VIEWING_MODE } from "@/constants/Constants";
+import {DOWNLOADED} from "@/constants/Constants";
 import React from "react";
 import ActionButton from "./ActionButton";
+import UpdateOverlay from "./UpdateOverlay";
 import { router } from "expo-router";
 import { ScreenPaths } from "@/constants/ScreenPaths";
 import { DisplayMode } from "@/types/navigation";
@@ -43,9 +44,11 @@ type ListItemProps = {
   iconUrl: string;
   status: string;
   downloading: boolean;
+  downloadProgress?: number;
   onDownload: () => void;
   onRemove: () => void;
   displayMode?: DisplayMode;
+  isDefaultApp?: boolean;
 };
 
 const ListItem = React.memo(
@@ -60,9 +63,11 @@ const ListItem = React.memo(
     iconUrl,
     status,
     downloading,
+    downloadProgress,
     onDownload,
     onRemove,
     displayMode,
+    isDefaultApp = false,
   }: ListItemProps) => {
     const screenWidth = Dimensions.get("window").width;
     const colorScheme = useColorScheme() ?? "light";
@@ -91,11 +96,21 @@ const ListItem = React.memo(
           disabled={status !== DOWNLOADED}
         >
           <Image
-            style={styles.image}
+            style={[styles.image, downloading && styles.imageUpdating]}
             source={iconUrl}
             contentFit="contain"
             transition={1000}
           />
+          {downloading && downloadProgress !== undefined && (
+            <View style={styles.updateOverlay}>
+              <UpdateOverlay
+                size={32}
+                strokeWidth={3}
+                color="#ffffff"
+                progress={downloadProgress}
+              />
+            </View>
+          )}
         </TouchableOpacity>
         {/* Info Section */}
         <View style={styles.infoContainer}>
@@ -110,27 +125,41 @@ const ListItem = React.memo(
               <Text style={styles.versionText} allowFontScaling={false}>
                 Version {versions[0].version}
               </Text>
+              {downloading && (
+                <View style={styles.updatingContainer}>
+                  <Text style={styles.updatingText}>
+                    {router.canGoBack() ? "Installing..." : "Updating..."}
+                  </Text>
+                  <Text style={styles.progressText}>
+                    {downloadProgress !== undefined
+                      ? `${Math.round(downloadProgress)}%`
+                      : ""}
+                  </Text>
+                </View>
+              )}
             </View>
           </View>
         </View>
         {/* Button Section */}
-        <View style={styles.buttonContainer}>
-          {status === DOWNLOADED ? (
-            <ActionButton
-              label="Remove"
-              onPress={onRemove}
-              textColor={Colors.removeButtonTextColor}
-            />
-          ) : (
-            <ActionButton
-              label="Get"
-              onPress={onDownload}
-              textColor={Colors.actionButtonTextColor}
-              downloading={downloading}
-              fixedSize={true}
-            />
-          )}
-        </View>
+        {!isDefaultApp && (
+          <View style={styles.buttonContainer}>
+            {status === DOWNLOADED ? (
+              <ActionButton
+                label="Remove"
+                onPress={onRemove}
+                textColor={Colors.removeButtonTextColor}
+              />
+            ) : (
+              <ActionButton
+                label="Get"
+                onPress={onDownload}
+                textColor={Colors.actionButtonTextColor}
+                downloading={downloading}
+                fixedSize={true}
+              />
+            )}
+          </View>
+        )}
       </View>
     );
   }
@@ -168,6 +197,20 @@ const createStyles = (colorScheme: "light" | "dark") =>
     image: {
       width: 65,
       height: 65,
+      borderRadius: 10,
+    },
+    imageUpdating: {
+      opacity: 0.4,
+    },
+    updateOverlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(128, 128, 128, 0.7)",
       borderRadius: 10,
     },
     infoContainer: {
@@ -211,5 +254,21 @@ const createStyles = (colorScheme: "light" | "dark") =>
       alignItems: "center",
       borderRadius: 8,
       backgroundColor: Colors[colorScheme].secondaryBackgroundColor,
+    },
+    updatingContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: 2,
+    },
+    updatingText: {
+      fontSize: 9,
+      color: Colors.companyOrange,
+      fontWeight: "500",
+      marginRight: 4,
+    },
+    progressText: {
+      fontSize: 9,
+      color: Colors.companyOrange,
+      fontWeight: "600",
     },
   });
