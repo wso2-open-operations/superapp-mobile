@@ -31,6 +31,7 @@ import {
   removeDownloading,
   setApps,
   updateAppStatus,
+  updateDownloadProgress,
 } from "@/context/slices/appSlice";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -54,15 +55,21 @@ export const downloadMicroApp = async (
 ) => {
   try {
     dispatch(addDownloading(appId)); // Downloading status for indicator
+    dispatch(updateDownloadProgress({ appId, progress: 0 })); // Initialize progress
 
     if (!downloadUrl) {
       Alert.alert("Error", "Download URL is empty.");
       return;
     }
 
-    await downloadAndSaveFile(appId, downloadUrl); // Download react production build
+    await downloadAndSaveFile(dispatch, appId, downloadUrl); // Download react production build
+    dispatch(updateDownloadProgress({ appId, progress: 70 })); 
+
     await unzipFile(dispatch, appId); // Unzip downloaded zip file
+    dispatch(updateDownloadProgress({ appId, progress: 90 })); 
+
     await UpdateUserConfiguration(appId, DOWNLOADED, onLogout); // Update user configurations
+    dispatch(updateDownloadProgress({ appId, progress: 100 }));
   } catch (error) {
     await UpdateUserConfiguration(appId, NOT_DOWNLOADED, onLogout); // Update user configurations
     Alert.alert("Error", "Failed to download or save the file.");
@@ -71,7 +78,11 @@ export const downloadMicroApp = async (
   }
 };
 
-const downloadAndSaveFile = async (appId: string, downloadUrl: string) => {
+const downloadAndSaveFile = async (
+  dispatch: AppDispatch,
+  appId: string,
+  downloadUrl: string
+) => {
   const fileName = `${appId}.zip`;
   const customDir = `${documentDirectory}${MICRO_APP_STORAGE_DIR}/micro-apps/`;
 
@@ -80,7 +91,15 @@ const downloadAndSaveFile = async (appId: string, downloadUrl: string) => {
   }
 
   const fileUri = `${customDir}${fileName}`;
-  await downloadAsync(downloadUrl, fileUri);
+
+  await downloadAsync(downloadUrl, fileUri, {
+    sessionType: 0, 
+  });
+
+  for (let i = 0; i <= 60; i += 10) {
+    dispatch(updateDownloadProgress({ appId, progress: i }));
+    await new Promise((resolve) => setTimeout(resolve, 100)); 
+  }
 };
 
 const unzipFile = async (dispatch: AppDispatch, appId: string) => {
@@ -257,56 +276,82 @@ export const removeMicroApp = async (
 };
 
 // API services
+const loadStoredApps = async (): Promise<MicroApp[]> => {
+  const storedAppsJson = await AsyncStorage.getItem(APPS);
+  return storedAppsJson ? JSON.parse(storedAppsJson) : [];
+};
+
+const fetchLatestApps = async (
+  onLogout: () => Promise<void>
+): Promise<MicroApp[]> => {
+  const response = await apiRequest(
+    { url: `${BASE_URL}/micro-apps`, method: "GET" },
+    onLogout
+  );
+  return response?.data || [];
+};
+
+const shouldUpdateApp = (storedApp: MicroApp, latestApp: MicroApp): boolean => {
+  return (
+    storedApp.status === DOWNLOADED &&
+    storedApp.versions.length > 0 &&
+    latestApp.versions.length > 0 &&
+    latestApp.versions[0].version !== storedApp.versions[0].version
+  );
+};
+
+const mergeAppData = (latestApp: MicroApp, storedApp?: MicroApp): MicroApp => {
+  if (!storedApp) return latestApp;
+
+  return {
+    ...latestApp,
+    status: storedApp.status,
+    webViewUri: storedApp.webViewUri || "",
+    clientId: storedApp.clientId || "",
+    exchangedToken: storedApp.exchangedToken || "",
+    displayMode:
+      storedApp.displayMode || latestApp.displayMode || DEFAULT_VIEWING_MODE,
+  };
+};
+
 // Load app list and if updates available update apps
 export const loadMicroAppDetails = async (
   dispatch: AppDispatch,
-  onLogout: () => Promise<void>
+  onLogout: () => Promise<void>,
+  onUpdateStart?: (appId: string) => void,
+  onUpdateEnd?: (appId: string) => void
 ) => {
   try {
     // Load stored apps from AsyncStorage
-    const storedAppsJson = await AsyncStorage.getItem(APPS);
-    const storedApps: MicroApp[] = storedAppsJson
-      ? JSON.parse(storedAppsJson)
-      : [];
+    const storedApps = await loadStoredApps();
 
     // Dispatch stored apps initially
     dispatch(setApps(storedApps));
 
     // Fetch latest micro apps list from API
-    const response = await apiRequest(
-      { url: `${BASE_URL}/micro-apps`, method: "GET" },
-      onLogout
-    );
+    const latestApps = await fetchLatestApps(onLogout);
 
-    if (response?.data) {
+    if (latestApps.length > 0) {
       // Update apps list with status and webViewUri
-      let apps: MicroApp[] = response.data.map((app: MicroApp) => {
+      const apps: MicroApp[] = latestApps.map((latestApp: MicroApp) => {
         const storedApp = storedApps.find(
-          (stored) => stored.appId === app.appId
+          (stored) => stored.appId === latestApp.appId
         );
 
-        if (storedApp && storedApp.versions.length > 0) {
-          // If new version available automatically update
-          if (app.versions[0].version !== storedApp.versions[0].version) {
-            downloadMicroApp(
-              dispatch,
-              app.appId,
-              app.versions?.[0]?.downloadUrl,
-              onLogout
-            );
-          }
+        if (storedApp && shouldUpdateApp(storedApp, latestApp)) {
+          onUpdateStart?.(latestApp.appId);
 
-          return {
-            ...app,
-            status: storedApp?.status,
-            webViewUri: storedApp?.webViewUri || "",
-            clientId: storedApp?.clientId || "",
-            exchangedToken: storedApp?.exchangedToken || "",
-            displayMode:
-              storedApp?.displayMode || app.displayMode || DEFAULT_VIEWING_MODE,
-          };
+          downloadMicroApp(
+            dispatch,
+            latestApp.appId,
+            latestApp.versions[0].downloadUrl,
+            onLogout
+          ).finally(() => {
+            onUpdateEnd?.(latestApp.appId);
+          });
         }
-        return app;
+
+        return mergeAppData(latestApp, storedApp);
       });
 
       // Update Redux and AsyncStorage
