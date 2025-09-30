@@ -14,8 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { APPS, DEFAULT_VIEWING_MODE } from "@/constants/Constants";
+import { DEFAULT_VIEWING_MODE } from "@/constants/Constants";
 import { DisplayMode } from "@/types/navigation";
 
 export type Version = {
@@ -106,9 +105,6 @@ const appsSlice = createSlice({
           app.exchangedToken = exchangedToken;
         } else app.exchangedToken = "";
       }
-
-      // Ensure state is saved in AsyncStorage immediately
-      AsyncStorage.setItem(APPS, JSON.stringify(state.apps));
     },
     updateExchangedToken: (
       state,
@@ -117,9 +113,6 @@ const appsSlice = createSlice({
       const { appId, exchangedToken } = action.payload;
       const app = state.apps.find((app) => app.appId === appId);
       if (app) app.exchangedToken = exchangedToken;
-
-      // Ensure state is saved in AsyncStorage immediately
-      AsyncStorage.setItem(APPS, JSON.stringify(state.apps));
     },
   },
 });

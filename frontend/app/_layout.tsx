@@ -44,7 +44,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-
+import { restoreExchangedTokens } from "@/services/secureTokenService";
 // Component to handle app initialization
 function AppInitializer({ onReady }: { onReady: () => void }) {
   const dispatch = useDispatch<AppDispatch>(); // Ensure correct typing for async actions
@@ -60,17 +60,12 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
   useEffect(() => {
     const initialize = async () => {
       try {
-        const [savedApps, savedUserInfo] = await Promise.all([
-          AsyncStorage.getItem(APPS),
-          AsyncStorage.getItem(USER_INFO),
-        ]);
 
-        if (savedApps) dispatch(setApps(JSON.parse(savedApps)));
+        const savedUserInfo = await AsyncStorage.getItem(USER_INFO);
         if (savedUserInfo) dispatch(setUserInfo(JSON.parse(savedUserInfo)));
 
         // Initialize notifications
         await scheduleSessionNotifications();
-
         dispatch(getVersions(handleLogout));
         dispatch(getUserConfigurations(handleLogout));
         dispatch(getAppConfigurations(handleLogout));
@@ -147,21 +142,29 @@ export default function RootLayout() {
     return <SplashModal loading={showSplash} animationType="fade" />;
   }
 
+  function AfterRehydrate() {
+    useEffect(() => {
+      restoreExchangedTokens(store.getState, store.dispatch);
+    }, []);
+    return null;
+  }
+
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
-            <AppInitializer onReady={onAppLoadComplete} />
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="update" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="micro-app"
-                options={{ headerBackTitle: "Back" }}
-              />
-              <Stack.Screen name="+not-found" />
-            </Stack>
+            <AfterRehydrate />
+              <AppInitializer onReady={onAppLoadComplete} />
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="update" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="micro-app"
+                  options={{ headerBackTitle: "Back" }}
+                />
+                <Stack.Screen name="+not-found" />
+              </Stack>
           </PersistGate>
         </Provider>
         <StatusBar style="auto" />

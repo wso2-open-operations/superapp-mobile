@@ -127,16 +127,7 @@ export default function HomeScreen() {
     const initializeApp = async () => {
       try {
         if (!apps || apps.length === 0) {
-          await loadMicroAppDetails(
-            dispatch,
-            logout,
-            (appId: string) => {
-              setUpdatingApps((prev) => [...prev, appId]);
-            },
-            (appId: string) => {
-              setUpdatingApps((prev) => prev.filter((id) => id !== appId));
-            }
-          );
+          await dispatch(loadMicroAppDetails(logout));
         }
         if (!userConfigurations || userConfigurations.length === 0) {
           dispatch(getUserConfigurations(logout));

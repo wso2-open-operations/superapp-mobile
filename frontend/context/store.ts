@@ -16,6 +16,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
+import { stripExchangedTokenTransform,secureTokenMiddleware  } from "@/services/secureTokenService";
 import appReducer from "./slices/appSlice";
 import appConfigReducer from "./slices/appConfigSlice";
 import authReducer from "./slices/authSlice";
@@ -34,6 +35,7 @@ const appsPersistConfig = {
   key: "apps",
   storage: AsyncStorage,
   whitelist: ["apps"],
+  transforms: [stripExchangedTokenTransform],
 };
 
 const userConfigPersistConfig = {
@@ -77,7 +79,9 @@ const rootReducer = (
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }),
+    getDefaultMiddleware({ serializableCheck: false }).concat(
+      secureTokenMiddleware
+    ),
 });
 
 export const persistor = persistStore(store);
