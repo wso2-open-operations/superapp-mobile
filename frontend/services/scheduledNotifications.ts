@@ -34,12 +34,9 @@ interface SessionData {
   superapp_notification_title: string;
 }
 
-// Initialize Notifee permissions and channel
+// Function to initialize notification service
 export const initializeNotifications = async () => {
   try {
-    // Request permissions (iOS) and create channel (Android)
-    await notifee.requestPermission();
-
     if (isAndroid) {
       await notifee.createChannel({
         id: process.env.EXPO_PUBLIC_SESSION_NOTIFICATIONS_KEY as string,
