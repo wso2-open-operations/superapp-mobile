@@ -96,17 +96,17 @@ export const setupTokenRefreshListener = (
  */
 export function setupMessagingListener() {
   const unsubscribe = messaging.onMessage(async (remoteMessage) => {
-    showNotifeeNotification(remoteMessage);
+    showNotification(remoteMessage);
   });
 
   return unsubscribe;
 }
 
 /**
- * Displays a foregroundnotification using Notifee.
+ * Displays a foreground notification using Notifee.
  * @param remoteMessage - The remote message containing the notification data.
  */
-const showNotifeeNotification = async (
+const showNotification = async (
   remoteMessage: FirebaseMessagingTypes.RemoteMessage
 ) => {
   const { notification } = remoteMessage;
