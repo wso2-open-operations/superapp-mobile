@@ -26,6 +26,7 @@ import {
   getMessaging,
   getToken,
   hasPermission,
+  onMessage,
   onTokenRefresh,
   requestPermission,
 } from "@react-native-firebase/messaging";
@@ -95,7 +96,7 @@ export const setupTokenRefreshListener = (
  * @returns An unsubscribe function to be called on cleanup.
  */
 export function setupMessagingListener() {
-  const unsubscribe = messaging.onMessage(async (remoteMessage) => {
+  const unsubscribe = onMessage(messaging, async (remoteMessage) => {
     showNotification(remoteMessage);
   });
 
