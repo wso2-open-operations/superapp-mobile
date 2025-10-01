@@ -26,6 +26,7 @@ import {
   GOOGLE_WEB_CLIENT_ID,
   isIos,
 } from "@/constants/Constants";
+import { RootState } from "@/context/store";
 import { logout, tokenExchange } from "@/services/authService";
 import googleAuthenticationService, {
   getGoogleUserInfo,
@@ -54,7 +55,6 @@ import prompt from "react-native-prompt-android";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/context/store";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -151,6 +151,11 @@ const MicroApp = () => {
   // Function to send QR string to WebView
   const sendQrToWebView = (qrString: string) => {
     sendResponseToWeb("resolveQrCode", qrString);
+  };
+
+  // Function to send safe area insets to WebView
+  const sendSafeAreaInsetsToWebView = () => {
+    sendResponseToWeb("resolveDeviceSafeAreaInsets", { insets });
   };
 
   // Function to view alert from parent app
@@ -341,6 +346,9 @@ const MicroApp = () => {
           break;
         case TOPIC.NATIVE_LOG:
           handleNativeLog(data);
+          break;
+        case TOPIC.DEVICE_SAFE_AREA_INSETS:
+          sendSafeAreaInsetsToWebView();
           break;
         default:
           console.error("Unknown topic:", topic);
@@ -537,26 +545,14 @@ const MicroApp = () => {
           </View>
         )}
 
-        {!shouldShowHeader ? (
-          <View
-            style={[
-              styles.webViewContainer,
-              isScannerVisible && styles.webViewHidden,
-              { paddingTop: insets.top },
-            ]}
-          >
-            {renderWebView(isDeveloper ? webUri : webViewUri)}
-          </View>
-        ) : (
-          <View
-            style={[
-              styles.webViewContainer,
-              isScannerVisible && styles.webViewHidden,
-            ]}
-          >
-            {renderWebView(isDeveloper ? webUri : webViewUri)}
-          </View>
-        )}
+        <View
+          style={[
+            styles.webViewContainer,
+            isScannerVisible && styles.webViewHidden,
+          ]}
+        >
+          {renderWebView(isDeveloper ? webUri : webViewUri)}
+        </View>
       </View>
     </>
   );
