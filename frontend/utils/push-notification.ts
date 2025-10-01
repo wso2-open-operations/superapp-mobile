@@ -126,6 +126,6 @@ const showNotification = async (
       },
     });
   } else {
-    console.warn("No foregroundnotification object found");
+    console.warn("No foreground notification object found");
   }
 };
