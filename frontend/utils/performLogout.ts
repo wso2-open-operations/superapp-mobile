@@ -19,6 +19,7 @@ import { resetAll } from "@/context/slices/authSlice";
 import { clearDeviceState } from "@/context/slices/deviceSlice";
 import { persistor } from "@/context/store";
 import { logout } from "@/services/authService";
+import { clearNotifications } from "@/services/scheduledNotifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { router } from "expo-router";
@@ -37,6 +38,8 @@ export const performLogout = createAsyncThunk(
       await AsyncStorage.removeItem(AUTH_DATA);
       await AsyncStorage.removeItem(APPS);
       await AsyncStorage.removeItem(USER_INFO);
+      // Clear all scheduled notifications and stored notification data
+      await clearNotifications();
 
       Alert.alert(
         "Logout Successful",

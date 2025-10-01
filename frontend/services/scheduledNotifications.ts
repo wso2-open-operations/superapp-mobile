@@ -13,9 +13,12 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import * as Notifications from "expo-notifications";
+import notifee, {
+  AndroidImportance,
+  TimestampTrigger,
+  TriggerType,
+} from "@notifee/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Platform } from "react-native";
 import {
   LOCAL_NOTIFICATIONS_KEY,
   NOTIFICATION_LEAD_TIME_MINUTES,
@@ -33,38 +36,28 @@ interface SessionData {
 
 // Function to initialize notification service
 export const initializeNotifications = async () => {
-  // Request permissions
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
+  try {
+    if (isAndroid) {
+      await notifee.createChannel({
+        id: process.env.EXPO_PUBLIC_SESSION_NOTIFICATIONS_KEY as string,
+        name: "Session Notifications",
+        importance: AndroidImportance.HIGH,
+      });
+    }
 
-  if (existingStatus !== "granted") {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-
-  if (finalStatus !== "granted") {
+    return true;
+  } catch (error) {
+    console.error("Error initializing notifications:", error);
     return false;
   }
-
-  // Configure notifications
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-  });
-
-  return true;
 };
 
-// Function to schedule Notifications
+// Schedule notifications for sessions
 export const scheduleSessionNotifications = async () => {
   try {
-    // Clear any existing scheduled notifications
-    await Notifications.cancelAllScheduledNotificationsAsync();
+    // Cancel all previously scheduled notifications
+    await notifee.cancelAllNotifications();
 
-    // Get sessions from storage
     const sessionsData = await AsyncStorage.getItem(LOCAL_NOTIFICATIONS_KEY);
     if (!sessionsData) return;
 
@@ -84,42 +77,41 @@ export const scheduleSessionNotifications = async () => {
         sessionStartTime.getTime() - NOTIFICATION_LEAD_TIME_MINUTES * 60 * 1000
       );
 
-      const secondsUntilNotification = Math.floor(
-        (notificationTime.getTime() - now.getTime()) / 1000
-      );
+      if (notificationTime.getTime() > now.getTime()) {
+        const trigger: TimestampTrigger = {
+          type: TriggerType.TIMESTAMP,
+          timestamp: notificationTime.getTime(),
+        };
 
-      const triggerSeconds = secondsUntilNotification;
-
-      // Schedule notification
-      try {
-        if (isAndroid) {
-          await Notifications.setNotificationChannelAsync(
-            process.env.EXPO_PUBLIC_SESSION_NOTIFICATIONS_KEY as string,
-            {
-              name: "Session Notifications",
-              importance: Notifications.AndroidImportance.HIGH,
-            }
-          );
-        }
-
-        if (triggerSeconds > 0) {
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: sessionData.superapp_notification_title,
-              body: `${session.title} starts in ${NOTIFICATION_LEAD_TIME_MINUTES} minutes`,
-              data: { sessionId: session.id },
+        await notifee.createTriggerNotification(
+          {
+            title: sessionData.superapp_notification_title,
+            body: `${session.title} starts in ${NOTIFICATION_LEAD_TIME_MINUTES} minutes`,
+            android: {
+              channelId: process.env.EXPO_PUBLIC_SESSION_NOTIFICATIONS_KEY as string,
+              pressAction: {
+                id: "default",
+              },
             },
-            trigger: {
-              seconds: triggerSeconds,
-              type: "timeInterval",
-            } as Notifications.NotificationTriggerInput,
-          });
-        }
-      } catch (error) {
-        console.error("Error scheduling notification:", error);
+            data: {
+              sessionId: session.id,
+            },
+          },
+          trigger
+        );
       }
     }
   } catch (error) {
     console.error("Error scheduling notifications:", error);
+  }
+};
+
+// Clear notifications and local storage on logout
+export const clearNotifications = async () => {
+  try {
+    await notifee.cancelAllNotifications();
+    await AsyncStorage.removeItem(LOCAL_NOTIFICATIONS_KEY);
+  } catch (error) {
+    console.error("Error clearing notifications:", error);
   }
 };

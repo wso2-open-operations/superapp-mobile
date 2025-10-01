@@ -68,7 +68,6 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
         if (savedUserInfo) dispatch(setUserInfo(JSON.parse(savedUserInfo)));
 
         // Initialize notifications
-        await initializeNotifications();
         await scheduleSessionNotifications();
 
         dispatch(getVersions(handleLogout));
