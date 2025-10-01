@@ -128,7 +128,6 @@ const MicroApp = () => {
         if (!token) throw new Error("Token exchange failed");
         setToken(token);
         sendTokenToWebView(token);
-        console.log(token);
       } catch (error) {
         console.error("Token exchange error:", error);
       }
