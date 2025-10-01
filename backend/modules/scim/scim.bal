@@ -14,38 +14,11 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Calls the `searchGroups` function, processes its response, and stores the emails in a string array.
-#
-# + group - The filter string used to search groups from the SCIM operations service
-# + organization - The organization name used to search groups from the SCIM operations service
-# + return - An array of email strings, or an error if the operation fails
-public isolated function getGroupMemberEmails(string group, string organization) returns string[]|error {
-    GroupSearchResponse groupResponse = check searchGroups(group, organization);
-    if groupResponse.totalResults == 0 || groupResponse.Resources.length() == 0 {
-        return [];
-    }
-    GroupResource groupResource = groupResponse.Resources[0];
-    GroupMember[] members = groupResource.members;
-    string[] emails = [];
-
-    from GroupMember member in members
-    let string displayName = member.display
-    do {
-        if displayName.startsWith(STORE_NAME) {
-            emails.push(displayName.substring(STORE_NAME.length()));
-        } else {
-            emails.push(displayName);
-        }
-    };
-    return emails;
-}
-
-# Gets the response from the SCIM operations service.
-#
+# Gets the group response from the SCIM operations service.
+# 
 # + group - The group name used to search groups from the SCIM operations service
-# + organization - The organization name used to search groups from the SCIM operations service
 # + return - A `GroupSearchResponse` on success, or an error on failure
-public isolated function searchGroups(string group, string organization) returns GroupSearchResponse|error {
+public isolated function searchInternalGroups(string group) returns GroupSearchResponse|error {
     GroupSearchRequest searchRequest = {filter: string `displayName eq ${group}`};
-    return check scimClient->/organizations/[organization]/groups/search.post(searchRequest);
+    return check scimClient->/organizations/internal/groups/search.post(searchRequest);
 }
