@@ -13,17 +13,19 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import {
+  LOCAL_NOTIFICATIONS_KEY,
+  NOTIFICATION_CHANNEL_ID,
+  NOTIFICATION_CHANNEL_NAME,
+  NOTIFICATION_LEAD_TIME_MINUTES,
+  isAndroid,
+} from "@/constants/Constants";
 import notifee, {
   AndroidImportance,
   TimestampTrigger,
   TriggerType,
 } from "@notifee/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  LOCAL_NOTIFICATIONS_KEY,
-  NOTIFICATION_LEAD_TIME_MINUTES,
-  isAndroid,
-} from "@/constants/Constants";
 
 interface SessionData {
   data: Array<{
@@ -39,8 +41,8 @@ export const initializeNotifications = async () => {
   try {
     if (isAndroid) {
       await notifee.createChannel({
-        id: process.env.EXPO_PUBLIC_SESSION_NOTIFICATIONS_KEY as string,
-        name: "Session Notifications",
+        id: NOTIFICATION_CHANNEL_ID,
+        name: NOTIFICATION_CHANNEL_NAME,
         importance: AndroidImportance.HIGH,
       });
     }
@@ -88,7 +90,7 @@ export const scheduleSessionNotifications = async () => {
             title: sessionData.superapp_notification_title,
             body: `${session.title} starts in ${NOTIFICATION_LEAD_TIME_MINUTES} minutes`,
             android: {
-              channelId: process.env.EXPO_PUBLIC_SESSION_NOTIFICATIONS_KEY as string,
+              channelId: NOTIFICATION_CHANNEL_ID,
               pressAction: {
                 id: "default",
               },

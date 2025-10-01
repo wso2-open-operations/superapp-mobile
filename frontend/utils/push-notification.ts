@@ -13,9 +13,16 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { isAndroid, isIos } from "@/constants/Constants";
+import {
+  isAndroid,
+  isIos,
+  NOTIFICATION_CHANNEL_ID,
+  NOTIFICATION_CHANNEL_NAME,
+} from "@/constants/Constants";
+import notifee, { AndroidImportance } from "@notifee/react-native";
 import {
   AuthorizationStatus,
+  FirebaseMessagingTypes,
   getMessaging,
   getToken,
   hasPermission,
@@ -81,4 +88,43 @@ export const setupTokenRefreshListener = (
 ): (() => void) => {
   const unsubscribe = onTokenRefresh(messaging, onRefresh);
   return unsubscribe;
+};
+
+/**
+ * Sets up a listener for when the FCM message is received.
+ * @returns An unsubscribe function to be called on cleanup.
+ */
+export function setupMessagingListener() {
+  const unsubscribe = messaging.onMessage(async (remoteMessage) => {
+    showNotifeeNotification(remoteMessage);
+  });
+
+  return unsubscribe;
+}
+
+/**
+ * Displays a foregroundnotification using Notifee.
+ * @param remoteMessage - The remote message containing the notification data.
+ */
+const showNotifeeNotification = async (
+  remoteMessage: FirebaseMessagingTypes.RemoteMessage
+) => {
+  const { notification } = remoteMessage;
+  if (notification) {
+    const { title, body } = notification;
+    const channelId = await notifee.createChannel({
+      id: NOTIFICATION_CHANNEL_ID,
+      name: NOTIFICATION_CHANNEL_NAME,
+      importance: AndroidImportance.HIGH,
+    });
+    await notifee.displayNotification({
+      title,
+      body,
+      android: {
+        channelId,
+      },
+    });
+  } else {
+    console.warn("No foregroundnotification object found");
+  }
 };
