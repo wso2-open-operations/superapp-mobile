@@ -53,7 +53,8 @@ import {
 import prompt from "react-native-prompt-android";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/context/store";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -72,6 +73,9 @@ const MicroApp = () => {
   const pendingTokenRequests: ((token: string) => void)[] = [];
   const [webUri, setWebUri] = useState<string>(DEVELOPER_APP_DEFAULT_URL);
   const colorScheme = useColorScheme();
+  const appScopes = useSelector(
+    (state: RootState) => state.appConfig.appScopes
+  );
   const styles = createStyles(colorScheme ?? "light");
   const isDeveloper: boolean = appId.includes("developer");
   const isTotp: boolean = appId.includes("totp");
@@ -118,11 +122,13 @@ const MicroApp = () => {
           clientId,
           exchangedToken,
           appId,
+          appScopes,
           logout
         );
         if (!token) throw new Error("Token exchange failed");
         setToken(token);
         sendTokenToWebView(token);
+        console.log(token);
       } catch (error) {
         console.error("Token exchange error:", error);
       }
