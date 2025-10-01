@@ -26,6 +26,7 @@ configurable int maxHeaderSize = 16384; // 16KB header size for WSO2 Choreo supp
 configurable string[] restrictedAppsForNonLk = ?;
 configurable string lkLocation = "Sri Lanka";
 configurable string mobileAppReviewerEmail = ?; // App store reviewer email
+configurable AppScope[] appScopes = [];
 
 @display {
     label: "SuperApp Mobile Service",
@@ -56,6 +57,49 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
 
     function init() returns error? {
         log:printInfo("Super app mobile backend started.");
+    }
+
+    # Fetch application configuration details for the given user groups and config key.
+    #
+    # + ctx - Request context
+    # + return - `AppConfig` or `http:InternalServerError` if the operation fails.
+    resource function get app\-configs(http:RequestContext ctx) returns AppConfig|http:InternalServerError {
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {
+                    message: ERR_MSG_USER_HEADER_NOT_FOUND
+                }
+            };
+        }
+
+        string[]|error defaultMicroAppIds = database:getMicroAppIdsByGroups([database:defaultMicroAppsGroup]);
+        if defaultMicroAppIds is error {
+            string customError = "Failed to fetch default micro app IDs";
+            log:printError(customError, defaultMicroAppIds);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        database:AppConfig[]|error appConfigs = database:getAppConfigs();
+        if appConfigs is error {
+            string customError = "Error occurred while retrieving app settings!";
+            log:printError(customError, appConfigs);
+            return <http:InternalServerError>{
+                body: {
+                    message: customError
+                }
+            };
+        }
+
+        return <AppConfig>{
+            appConfigs,
+            defaultMicroAppIds,
+            appScopes
+        };
     }
 
     # Fetch user information of the logged in users.
@@ -220,12 +264,12 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         return versions;
     }
 
-    # Fetch the app configurations(downloaded microapps) of the logged in user.
+    # Fetch the user configurations(downloaded microapps) of the logged in user.
     #
     # + ctx - Request context
     # + return - User configurations or error
-    resource function get users/app\-configs(http:RequestContext ctx)
-        returns database:AppConfig[]|http:InternalServerError {
+    resource function get users/user\-configs(http:RequestContext ctx)
+        returns database:UserConfig[]|http:InternalServerError {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -236,10 +280,10 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        database:AppConfig[]|error appConfigs = database:getAppConfigsByEmail(userInfo.email);
-        if appConfigs is error {
+        database:UserConfig[]|error userConfigs = database:getUserConfigsByEmail(userInfo.email);
+        if userConfigs is error {
             string customError = "Error occurred while retrieving app configurations for the user!";
-            log:printError(customError, appConfigs);
+            log:printError(customError, userConfigs);
             return {
                 body: {
                     message: customError
@@ -247,16 +291,16 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        return appConfigs;
+        return userConfigs;
     }
 
-    # Add/Update app configurations(downloaded microapps) of the logged in user.
+    # Add/Update user configurations(downloaded microapps) of the logged in user.
     #
     # + ctx - Request context
-    # + configuration - User's app configurations including downloaded microapps
+    # + configuration - User's user configurations including downloaded microapps
     # + return - Created response or error
-    resource function post users/app\-configs(http:RequestContext ctx,
-        database:AppConfig configuration) returns http:Created|http:InternalServerError|http:BadRequest {
+    resource function post users/user\-configs(http:RequestContext ctx,
+        database:UserConfig configuration) returns http:Created|http:InternalServerError|http:BadRequest {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
         if userInfo is error {
@@ -278,7 +322,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         }
 
         database:ExecutionSuccessResult|error result =
-            database:updateAppConfigsByEmail(userInfo.email, configuration);
+            database:updateUserConfigsByEmail(userInfo.email, configuration);
         if result is error {
             string customError = "Error occurred while updating the user configuration!";
             log:printError(customError, result);
@@ -296,10 +340,9 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     #
     # + ctx - Request context
     # + group - The group name to search for members 
-    # + organization - The organization name to search groups 
     # + startIndex - Starting index for pagination
     # + return - Paginated FCM tokens response or an error
-    resource function get users/fcm\-tokens(http:RequestContext ctx, string group, string organization, int startIndex)
+    resource function get users/fcm\-tokens(http:RequestContext ctx, string group, int startIndex)
         returns database:FcmTokenResponse|http:InternalServerError|http:NotFound {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -309,7 +352,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
-        string[]|error memberEmails = scim:getGroupMemberEmails(group, organization);
+        string[]|error memberEmails = scim:getGroupMemberEmails(group);
         if memberEmails is error {
             string customError = "Error occurred while calling SCIM operations service";
             log:printError(customError, memberEmails);
@@ -323,7 +366,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
                 body: {message: customError}
             };
         }
-        
+
         database:FcmTokenResponse|error fcmTokensResponse = database:getFcmTokens(memberEmails, startIndex);
         if fcmTokensResponse is error {
             string customError = "Error occurred while retrieving FCM tokens";

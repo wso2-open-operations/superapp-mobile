@@ -18,14 +18,17 @@ import ballerina/sql;
 
 public configurable string defaultMicroAppsGroup = ?; // Default micro apps group name
 
+const DEFAULT_CONFIG_KEY = "superapp.apps.list"; // Default config key for user app list
+
 # Get list of all MicroApp IDs for given groups.
 #
 # + groups - User's groups
 # + return - Array of MicroApp IDs or an error
-isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
+public isolated function getMicroAppIdsByGroups(string[] groups) returns string[]|error {
     string[] effectiveGroups = groups;
     effectiveGroups.push(defaultMicroAppsGroup);
     stream<MicroAppId, sql:Error?> appIdStream = databaseClient->query(getMicroAppIdsByGroupsQuery(effectiveGroups));
+
     string[] appIds = check from MicroAppId microAppId in appIdStream
         select microAppId.appId;
 
@@ -103,37 +106,42 @@ public isolated function getVersionsByPlatform(string platform) returns Version[
         select version;
 }
 
-# Get all the app configurations for a given user email.
+# Get all the user configurations for a given user email.
 #
 # + email - email address of the user
 # + return - Array of app configurations or else an error
-public isolated function getAppConfigsByEmail(string email) returns AppConfig[]|error {
-    stream<AppConfig, sql:Error?> configStream =
-        databaseClient->query(getAppConfigsByEmailQuery(email));
-    AppConfig[] appConfigs = check from AppConfig appConfig in configStream
-        select appConfig;
-    foreach AppConfig config in appConfigs {
-        string[] configValues = check config.configValue.fromJsonWithType();
-        string[] defaultMicroAppIds = check getMicroAppIdsByGroups([]);
-        configValues.push(...defaultMicroAppIds);
-        config.configValue = configValues.toJson();
+public isolated function getUserConfigsByEmail(string email) returns UserConfig[]|error {
+    stream<UserConfig, sql:Error?> configStream =
+        databaseClient->query(getUserConfigsByEmailQuery(email));
+    UserConfig[] userConfigs = check from UserConfig userConfig in configStream
+        select userConfig;
+
+    if userConfigs.length() == 0 {
+        UserConfig userConfig = check addDefaultUserConfig(email, []);
+        userConfigs.push(userConfig);
+        return userConfigs;
     }
-    return appConfigs;
+    foreach UserConfig config in userConfigs {
+        string[] configValues = check config.configValue.fromJsonWithType();
+        UserConfig userConfig = check addDefaultUserConfig(email, configValues);
+        config.configValue = userConfig.configValue;
+    }
+    return userConfigs;
 }
 
-# Insert or update app configurations of the logged in user.
+# Insert or update user configurations of the logged in user.
 #
 # + email - email of the user
-# + appConfig - App configurations to be inserted or updated
+# + userConfig - User configurations to be inserted or updated
 # + return - Insert or update result, or an error
-public isolated function updateAppConfigsByEmail(string email, AppConfig appConfig)
+public isolated function updateUserConfigsByEmail(string email, UserConfig userConfig)
     returns ExecutionSuccessResult|error {
 
-    sql:ParameterizedQuery query = updateAppConfigsByEmailQuery(
+    sql:ParameterizedQuery query = updateUserConfigsByEmailQuery(
         email,
-        appConfig.configKey,
-        appConfig.configValue.toJsonString(),
-        appConfig.isActive);
+        userConfig.configKey,
+        userConfig.configValue.toJsonString(),
+        userConfig.isActive);
     sql:ExecutionResult result = check databaseClient->execute(query);
     return result.cloneWithType(ExecutionSuccessResult);
 }
@@ -163,7 +171,7 @@ public isolated function getFcmTokens(string[] emails, int startIndex) returns F
     };
 }
 
-# Inserts an FCM token into the `device_tokens` table for the given email.
+# Inserts an FCM token into the `device_token` table for the given email.
 #
 # + email - The user email
 # + fcmToken - The FCM token to be stored
@@ -188,4 +196,36 @@ public isolated function deleteFcmToken(string fcmToken) returns ExecutionSucces
     }
 
     return result.cloneWithType(ExecutionSuccessResult);
+}
+
+# Retrieve all application configurations from the database.
+#
+# + return - An array of `AppConfig`,or `error` if the configs cannot be retrieved
+public isolated function getAppConfigs() returns AppConfig[]|error {
+    stream<AppConfig, sql:Error?> resultStream = databaseClient->query(getAppConfigsQuery());
+    AppConfig[] rows = check from var row in resultStream
+        select row;
+    AppConfig[] results = [];
+
+    foreach var row in rows {
+        var value = check parseConfigValue(row);
+        results.push({configKey: row.configKey, value});
+    }
+    return results;
+}
+
+# Add default user configuration for a new user.
+# 
+# + email - Email of the user
+# + configValues - Initial configuration values
+# + return - UserConfig with default settings, or an error if the operation fails
+public isolated function addDefaultUserConfig(string email, string[] configValues) returns UserConfig|error {
+    string[] defaultMicroAppIds = check getMicroAppIdsByGroups([]);
+    configValues.push(...defaultMicroAppIds);
+    return {
+        email,
+        configKey: DEFAULT_CONFIG_KEY,
+        configValue: configValues.toJson(),
+        isActive: 1
+    };
 }

@@ -12,13 +12,18 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
-// under the License. 
+// under the License.
 
-# Gets the group response from the SCIM operations service.
-# 
-# + group - The group name used to search groups from the SCIM operations service
-# + return - A `GroupSearchResponse` on success, or an error on failure
-public isolated function searchInternalGroups(string group) returns GroupSearchResponse|error {
-    GroupSearchRequest searchRequest = {filter: string `displayName eq ${group}`};
-    return check scimClient->/organizations/internal/groups/search.post(searchRequest);
+# Parse the configuration value from a given `AppConfig` row based on its type.
+#
+# + row - The configuration setting record that contains the key, raw value, and type.
+# + return - The parsed configuration value as a `boolean`, `string`, or `int`, or an `error` if parsing fails.
+public isolated function parseConfigValue(AppConfig row) returns boolean|string|int|error {
+    if row.'type == "boolean" {
+        return row.value == "true";
+    } else if row.'type == "int" {
+        return int:fromString(row.value.toString());
+    } else {
+        return row.value;
+    }
 }

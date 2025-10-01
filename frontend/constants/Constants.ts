@@ -41,9 +41,6 @@ export const LIBRARY_ARTICLE_FALLBACK_IMAGE =
   process.env.EXPO_PUBLIC_LIBRARY_ARTICLE_FALLBACK_IMAGE ?? "";
 export const DEVELOPER_APP_DEFAULT_URL =
   process.env.EXPO_PUBLIC_DEVELOPER_APP_DEFAULT_URL ?? "";
-// Authenticator Micro App ID
-export const AUTHENTICATOR_APP_ID =
-  process.env.EXPO_PUBLIC_AUTHENTICATOR_APP_ID ?? "";
 export const GOOGLE_SCOPES = [
   "openid",
   "profile",
@@ -64,6 +61,9 @@ export const GOOGLE_DRIVE_FILE_DOWNLOAD_URL = (fileId: string) =>
 export const GOOGLE_TOKEN_INFO_URL = (accessToken: string) =>
   `${process.env.EXPO_PUBLIC_GOOGLE_TOKEN_INFO_URL ?? ""}${accessToken}`;
 export const EVENTS_URL = process.env.EXPO_PUBLIC_EVENTS_URL ?? "";
+export const LOCAL_NOTIFICATIONS_KEY =
+  process.env.EXPO_PUBLIC_LOCAL_NOTIFICATIONS_KEY ?? "";
+export const NOTIFICATION_LEAD_TIME_MINUTES = 10;
 
 export const SUCCESS = "success";
 export const APPS = "apps";

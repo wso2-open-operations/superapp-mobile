@@ -12,13 +12,28 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
-// under the License. 
+// under the License.
 
-# Gets the group response from the SCIM operations service.
-# 
-# + group - The group name used to search groups from the SCIM operations service
-# + return - A `GroupSearchResponse` on success, or an error on failure
-public isolated function searchInternalGroups(string group) returns GroupSearchResponse|error {
-    GroupSearchRequest searchRequest = {filter: string `displayName eq ${group}`};
-    return check scimClient->/organizations/internal/groups/search.post(searchRequest);
+export interface AppConfig {
+  configKey: string;
+  value: boolean | string | number;
+}
+
+export interface AppScope {
+  appId: string;
+  scopes: string;
+}
+
+export interface AppConfigResponse {
+  appConfigs: AppConfig[];
+  defaultMicroAppIds: string[];
+  appScopes: AppScope[];
+}
+
+export interface AppConfigState {
+  configs: AppConfig[];
+  defaultMicroAppIds: string[];
+  appScopes: AppScope[];
+  loading: boolean;
+  error: string | null;
 }

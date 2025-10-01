@@ -12,13 +12,23 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
-// under the License. 
+// under the License.
+import superapp_mobile_service.database;
 
-# Gets the group response from the SCIM operations service.
-# 
-# + group - The group name used to search groups from the SCIM operations service
-# + return - A `GroupSearchResponse` on success, or an error on failure
-public isolated function searchInternalGroups(string group) returns GroupSearchResponse|error {
-    GroupSearchRequest searchRequest = {filter: string `displayName eq ${group}`};
-    return check scimClient->/organizations/internal/groups/search.post(searchRequest);
-}
+# App scope record type.
+public type AppScope record {|
+    # Micro-app id
+    string appId;
+    # Scopes for the micro-app
+    string scopes;
+|};
+
+# App config info record type.
+public type AppConfig record {|
+    # App configs
+    database:AppConfig[] appConfigs;
+    # Micro App Ids
+    string[] defaultMicroAppIds;
+    # Micro App Scopes
+    AppScope[] appScopes;
+|};

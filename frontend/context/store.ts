@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import appReducer from "./slices/appSlice";
+import appConfigReducer from "./slices/appConfigSlice";
 import authReducer from "./slices/authSlice";
 import deviceReducer from "./slices/deviceSlice";
 import userConfigReducer from "./slices/userConfigSlice";
@@ -47,6 +48,12 @@ const userInfoPersistConfig = {
   whitelist: ["user-info"],
 };
 
+const appConfigPersistConfig = {
+  key: "app-config",
+  storage: AsyncStorage,
+  whitelist: ["appConfig"],
+};
+
 const appReducerCombined = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   apps: persistReducer(appsPersistConfig, appReducer),
@@ -54,6 +61,7 @@ const appReducerCombined = combineReducers({
   version: versionReducer,
   userInfo: persistReducer(userInfoPersistConfig, userInfoReducer),
   device: deviceReducer,
+  appConfig: persistReducer(appConfigPersistConfig, appConfigReducer),
 });
 
 const rootReducer = (

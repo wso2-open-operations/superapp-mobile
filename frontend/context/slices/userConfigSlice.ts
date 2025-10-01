@@ -15,6 +15,7 @@
 // under the License.
 import { BASE_URL, USER_CONFIGURATIONS } from "@/constants/Constants";
 import { apiRequest } from "@/utils/requestHandler";
+import { removeDuplicatesFromUserConfigs } from "@/utils/removeDuplicates";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
@@ -47,16 +48,21 @@ export const getUserConfigurations = createAsyncThunk(
   async (onLogout: () => Promise<void>, { rejectWithValue }) => {
     try {
       const response = await apiRequest(
-        { url: `${BASE_URL}/users/app-configs`, method: "GET" },
+        { url: `${BASE_URL}/users/user-configs`, method: "GET" },
         onLogout
       );
 
       if (response?.status === 200 && response?.data) {
+        // Remove duplicates from configValue arrays in response
+        const cleanedResponseData = removeDuplicatesFromUserConfigs(
+          response.data
+        );
+
         await AsyncStorage.setItem(
           USER_CONFIGURATIONS,
-          JSON.stringify(response.data)
+          JSON.stringify(cleanedResponseData)
         );
-        return response.data;
+        return cleanedResponseData;
       } else {
         return [];
       }
