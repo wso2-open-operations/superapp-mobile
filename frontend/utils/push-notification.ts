@@ -139,6 +139,6 @@ const showNotification = async (
       },
     });
   } else {
-    console.warn("No foreground notification object found");
+    console.warn("Remote message received without notification payload");
   }
 };
