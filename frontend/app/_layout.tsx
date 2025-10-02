@@ -15,7 +15,6 @@
 // under the License.
 import SplashModal from "@/components/SplashModal";
 import { APPS, USER_INFO } from "@/constants/Constants";
-import { getAppConfigurations } from "@/context/slices/appConfigSlice";
 import { setApps } from "@/context/slices/appSlice";
 import { restoreAuth } from "@/context/slices/authSlice";
 import { getUserConfigurations } from "@/context/slices/userConfigSlice";
