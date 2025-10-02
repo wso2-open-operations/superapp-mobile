@@ -26,6 +26,7 @@ import {
 } from "@/constants/Constants";
 import { updateExchangedToken } from "@/context/slices/appSlice";
 import { AppDispatch } from "@/context/store";
+import { AppScope } from "@/types/appConfig.types";
 import createAuthRequestBody from "@/utils/authBody";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -259,7 +260,7 @@ export const tokenExchange = async (
   exchangedToken: string,
   appId: string,
   onLogout: () => Promise<void>,
-  appScopes?: { appId: string; scopes: string }[]
+  appScopes?: AppScope[]
 ) => {
   try {
     // Find and append app specific scopes if available
