@@ -26,7 +26,6 @@ import {
 } from "@/constants/Constants";
 import { updateExchangedToken } from "@/context/slices/appSlice";
 import { AppDispatch } from "@/context/store";
-import { AppScope } from "@/types/appConfig.types";
 import createAuthRequestBody from "@/utils/authBody";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -42,7 +41,7 @@ const GRANT_TYPE_TOKEN_EXCHANGE =
 const SUBJECT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt";
 const REQUESTED_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token";
 const MILLISECONDS_IN_A_SECOND = 1000;
-
+const SCOPE = "openid email groups";
 let refreshPromise: Promise<AuthData | null> | null = null;
 
 export interface DecodedIdToken {
@@ -259,10 +258,14 @@ export const tokenExchange = async (
   clientId: string,
   exchangedToken: string,
   appId: string,
-  appScopes: AppScope[],
-  onLogout: () => Promise<void>
+  onLogout: () => Promise<void>,
+  appScopes?: { appId: string; scopes: string }[]
 ) => {
   try {
+    // Find and append app specific scopes if available
+    const appScope = appScopes?.find((scope) => scope.appId === appId);
+    const selectedScopes = appScope ? `${SCOPE} ${appScope.scopes}` : SCOPE;
+
     if (!clientId || clientId === "CLIENT_ID") return null;
 
     // Use existing exchanged token if it's still valid
@@ -298,8 +301,6 @@ export const tokenExchange = async (
       accessToken = newAuthData.accessToken;
     }
 
-    const appScopeConfig = appScopes.find((scope) => scope.appId === appId);
-
     // Function to attempt token exchange, with retry on 401 error
     const attemptTokenExchange = async (token: string) => {
       try {
@@ -311,7 +312,7 @@ export const tokenExchange = async (
             subjectToken: token,
             subjectTokenType: SUBJECT_TOKEN_TYPE,
             requestedTokenType: REQUESTED_TOKEN_TYPE,
-            scope: appScopeConfig?.scopes,
+            scope: selectedScopes,
           }),
           {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },

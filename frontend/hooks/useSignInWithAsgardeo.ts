@@ -15,8 +15,10 @@
 // under the License.
 import { AUTH_CONFIG } from "@/config/authConfig";
 import { setAuth, setAuthWithCheck } from "@/context/slices/authSlice";
+import { getAppConfigurations } from "@/context/slices/appConfigSlice";
 import { AppDispatch } from "@/context/store";
 import { processNativeAuthResult } from "@/services/authService";
+import { performLogout } from "@/utils/performLogout";
 import { AuthorizeResult, authorize } from "react-native-app-auth";
 import { useDispatch } from "react-redux";
 
@@ -30,6 +32,16 @@ export const useSignInWithAsgardeo = () => {
       if (authData) {
         dispatch(setAuth(authData));
         dispatch(setAuthWithCheck(authData));
+
+        // Load app configurations after successful login
+        try {
+          const handleLogout = async () => {
+            await dispatch(performLogout()).unwrap();
+          };
+          await dispatch(getAppConfigurations(handleLogout)).unwrap();
+        } catch (configError) {
+          console.error("Failed to load app configurations");
+        }
       }
     } catch (error) {
       console.error("Authentication failed:", error);
