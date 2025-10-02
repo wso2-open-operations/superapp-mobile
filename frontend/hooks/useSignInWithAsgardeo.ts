@@ -40,7 +40,7 @@ export const useSignInWithAsgardeo = () => {
           };
           await dispatch(getAppConfigurations(handleLogout)).unwrap();
         } catch (configError) {
-          console.error("Failed to load app configurations");
+          console.error("Failed to load app configurations", configError);
         }
       }
     } catch (error) {
