@@ -16,15 +16,9 @@
 import {
   LOCAL_NOTIFICATIONS_KEY,
   NOTIFICATION_CHANNEL_ID,
-  NOTIFICATION_CHANNEL_NAME,
   NOTIFICATION_LEAD_TIME_MINUTES,
-  isAndroid,
 } from "@/constants/Constants";
-import notifee, {
-  AndroidImportance,
-  TimestampTrigger,
-  TriggerType,
-} from "@notifee/react-native";
+import notifee, { TimestampTrigger, TriggerType } from "@notifee/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface SessionData {
@@ -35,24 +29,6 @@ interface SessionData {
   }>;
   superapp_notification_title: string;
 }
-
-// Function to initialize notification service
-export const initializeNotifications = async () => {
-  try {
-    if (isAndroid) {
-      await notifee.createChannel({
-        id: NOTIFICATION_CHANNEL_ID,
-        name: NOTIFICATION_CHANNEL_NAME,
-        importance: AndroidImportance.HIGH,
-      });
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Error initializing notifications:", error);
-    return false;
-  }
-};
 
 // Schedule notifications for sessions
 export const scheduleSessionNotifications = async () => {

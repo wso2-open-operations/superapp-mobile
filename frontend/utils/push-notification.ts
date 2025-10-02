@@ -34,6 +34,24 @@ import { PermissionsAndroid } from "react-native";
 
 const messaging = getMessaging();
 
+// Function to initialize notification service
+export const initializeNotifications = async () => {
+  try {
+    if (isAndroid) {
+      await notifee.createChannel({
+        id: NOTIFICATION_CHANNEL_ID,
+        name: NOTIFICATION_CHANNEL_NAME,
+        importance: AndroidImportance.HIGH,
+      });
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error initializing notifications:", error);
+    return false;
+  }
+};
+
 // Request notification permission for iOS
 const requestNotificationPermissionIOS = async () => {
   const authStatus = await requestPermission(messaging);
@@ -113,16 +131,11 @@ const showNotification = async (
   const { notification } = remoteMessage;
   if (notification) {
     const { title, body } = notification;
-    const channelId = await notifee.createChannel({
-      id: NOTIFICATION_CHANNEL_ID,
-      name: NOTIFICATION_CHANNEL_NAME,
-      importance: AndroidImportance.HIGH,
-    });
     await notifee.displayNotification({
       title,
       body,
       android: {
-        channelId,
+        channelId: NOTIFICATION_CHANNEL_ID,
       },
     });
   } else {

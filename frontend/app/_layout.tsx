@@ -26,7 +26,10 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { usePushNotificationHandler } from "@/hooks/usePushNotificationHandler";
 import { scheduleSessionNotifications } from "@/services/scheduledNotifications";
 import { performLogout } from "@/utils/performLogout";
-import { setupMessagingListener } from "@/utils/push-notification";
+import {
+  initializeNotifications,
+  setupMessagingListener,
+} from "@/utils/push-notification";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   DarkTheme,
@@ -113,6 +116,7 @@ export default function RootLayout() {
 
   // Setup FCM foreground messaging listener
   useEffect(() => {
+    initializeNotifications();
     const unsubscribe = setupMessagingListener();
     return () => unsubscribe();
   }, []);
