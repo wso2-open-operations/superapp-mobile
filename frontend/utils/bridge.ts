@@ -30,6 +30,7 @@ export const TOPIC = {
   CHECK_GOOGLE_AUTH_STATE: "check_google_auth_state",
   CLOSE_WEBVIEW_FROM_MICROAPP: "close_webview",
   NATIVE_LOG: "native_log",
+  DEVICE_SAFE_AREA_INSETS: "device_safe_area_insets",
 };
 
 // JavaScript code injected into the WebView to enable communication between
