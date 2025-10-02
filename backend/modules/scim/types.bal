@@ -26,53 +26,22 @@ type Oauth2Config record {|
     string[] scopes;
 |};
 
-# Request record for the SCIM group search request.
-public type GroupSearchRequest record {|
-    # The group name string used to query groups from the SCIM service
-    string filter;
-|};
-
-# Response record for the SCIM group search response.
-public type GroupSearchResponse record {|
-    # The total number of results that match the request
+# User search result.
+public type UserSearchResult record {|
+    # Total number of users
     int totalResults;
-    # The index of the first result returned 
+    # Starting index of the response
     int startIndex;
-    # The number of items returned per page
+    # Number of users returned in the response
     int itemsPerPage;
-    # The list of SCIM schema URIs 
-    string[] schemas;
-    # The array of group resources that match the search request
-    GroupResource[] Resources;
-|};
-
-# Record representing a SCIM group resource returned in a group search response.
-public type GroupResource record {|
-    # The unique identifier of the group
-    string id;
-    # The display name of the group
-    string displayName;
-    # The members that belong to the group
-    GroupMember[] members;
-    # Metadata about the group resource
-    GroupMeta meta;
-|};
-
-# Record representing a member of a SCIM group resource.
-public type GroupMember record {|
-    # The id of the member
-    string value;
-    # The email of the member
-    string display;
+    # List of group details
+    User[] Resources = [];
     json...;
 |};
 
-# Record representing metadata of a SCIM group resource.
-public type GroupMeta record {|
-    # The timestamp when the group resource was created
-    string created;
-    # The URI location of the group resource
-    string location;
-    # The timestamp when the group resource was last modified
-    string lastModified;
+# User.
+public type User record {|
+    # User name
+    string userName;
+    json...;
 |};
