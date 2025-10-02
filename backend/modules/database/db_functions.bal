@@ -167,7 +167,7 @@ public isolated function getFcmTokens(string[] emails, int startIndex) returns F
         fcmTokens: tokens,
         totalResults: countRecord.count,
         startIndex,
-        itemsPerPage: 'limit
+        itemsPerPage: countRecord.count > 'limit ? 'limit : countRecord.count
     };
 }
 

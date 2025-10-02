@@ -13,12 +13,27 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License. 
+import ballerina/log;
 
-# Gets the group response from the SCIM operations service.
+# Searches for users belonging to a specific group from the SCIM operations service.
 # 
-# + group - The group name used to search groups from the SCIM operations service
-# + return - A `GroupSearchResponse` on success, or an error on failure
-public isolated function searchInternalGroups(string group) returns GroupSearchResponse|error {
-    GroupSearchRequest searchRequest = {filter: string `displayName eq ${group}`};
-    return check scimClient->/organizations/internal/groups/search.post(searchRequest);
+# + group - Filter used to search users of a group from the SCIM operations service
+# + return - An array of User records, or an error if the operation fails
+public isolated function searchUsers(string group) returns User[]|error {
+    boolean moreUsersExists = true;
+    User[] users = [];
+    int startIndex = 1;
+    while moreUsersExists {
+        UserSearchResult usersResult = check scimClient->/organizations/internal/users/search.post({
+            domain: "DEFAULT",
+            attributes: ["userName"],
+            filter: string `groups eq ${group}`,
+            startIndex
+        });
+        users.push(...usersResult.Resources);
+        moreUsersExists = (startIndex + usersResult.itemsPerPage - 1) < usersResult.totalResults;
+        startIndex += usersResult.itemsPerPage;
+        log:printDebug(string `Fetched ${startIndex - 1} users successfully`);
+    }
+    return users;
 }

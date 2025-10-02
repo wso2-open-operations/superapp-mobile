@@ -89,3 +89,11 @@ export const DEFAULT_VIEWING_MODE = "default";
 
 // Keys for Secure Store
 export const LAST_SENT_FCM_TOKEN = "last_sent_fcm_token";
+
+// Notifee Channel ID and Name
+export const NOTIFICATION_CHANNEL_ID =
+  process.env.EXPO_PUBLIC_NOTIFICATION_CHANNEL_ID ??
+  "default_superapp_notification_channel";
+export const NOTIFICATION_CHANNEL_NAME =
+  process.env.EXPO_PUBLIC_NOTIFICATION_CHANNEL_NAME ??
+  "Default SuperApp Notification Channel";

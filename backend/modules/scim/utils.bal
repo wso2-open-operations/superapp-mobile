@@ -14,16 +14,13 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Calls the `searchInternalGroups` function, processes its response, and stores the emails in a string array.
-#
-# + group - The filter string used to search groups from the SCIM operations service
+# Gets the email addresses of users belonging to a specific group from the SCIM operations service.
+# 
+# + group - Filter used to search users of a group from the SCIM operations service
 # + return - An array of email strings, or an error if the operation fails
 public isolated function getGroupMemberEmails(string group) returns string[]|error {
-    GroupSearchResponse groupResponse = check searchInternalGroups(group);
-    if groupResponse.totalResults == 0 || groupResponse.Resources.length() == 0 {
-        return [];
-    }
-    return from GroupMember member in groupResponse.Resources[0].members
-        let string displayName = member.display
+    User[] users = check searchUsers(group);
+    return from User user in users
+        let string displayName = user.userName
         select displayName.startsWith(STORE_NAME) ? displayName.substring(STORE_NAME.length()) : displayName;
 }
