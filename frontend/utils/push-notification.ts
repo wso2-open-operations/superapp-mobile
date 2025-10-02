@@ -13,18 +13,44 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { isAndroid, isIos } from "@/constants/Constants";
+import {
+  isAndroid,
+  isIos,
+  NOTIFICATION_CHANNEL_ID,
+  NOTIFICATION_CHANNEL_NAME,
+} from "@/constants/Constants";
+import notifee, { AndroidImportance } from "@notifee/react-native";
 import {
   AuthorizationStatus,
+  FirebaseMessagingTypes,
   getMessaging,
   getToken,
   hasPermission,
+  onMessage,
   onTokenRefresh,
   requestPermission,
 } from "@react-native-firebase/messaging";
 import { PermissionsAndroid } from "react-native";
 
 const messaging = getMessaging();
+
+// Function to initialize notification service
+export const initializeNotifications = async () => {
+  try {
+    if (isAndroid) {
+      await notifee.createChannel({
+        id: NOTIFICATION_CHANNEL_ID,
+        name: NOTIFICATION_CHANNEL_NAME,
+        importance: AndroidImportance.HIGH,
+      });
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error initializing notifications:", error);
+    return false;
+  }
+};
 
 // Request notification permission for iOS
 const requestNotificationPermissionIOS = async () => {
@@ -81,4 +107,38 @@ export const setupTokenRefreshListener = (
 ): (() => void) => {
   const unsubscribe = onTokenRefresh(messaging, onRefresh);
   return unsubscribe;
+};
+
+/**
+ * Sets up a listener for when the FCM message is received.
+ * @returns An unsubscribe function to be called on cleanup.
+ */
+export function setupMessagingListener() {
+  const unsubscribe = onMessage(messaging, async (remoteMessage) => {
+    showNotification(remoteMessage);
+  });
+
+  return unsubscribe;
+}
+
+/**
+ * Displays a foreground notification using Notifee.
+ * @param remoteMessage - The remote message containing the notification data.
+ */
+const showNotification = async (
+  remoteMessage: FirebaseMessagingTypes.RemoteMessage
+) => {
+  const { notification } = remoteMessage;
+  if (notification) {
+    const { title, body } = notification;
+    await notifee.displayNotification({
+      title,
+      body,
+      android: {
+        channelId: NOTIFICATION_CHANNEL_ID,
+      },
+    });
+  } else {
+    console.warn("Remote message received without notification payload");
+  }
 };
