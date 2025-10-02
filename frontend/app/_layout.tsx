@@ -16,7 +16,6 @@
 import SplashModal from "@/components/SplashModal";
 import { APPS, USER_INFO } from "@/constants/Constants";
 import { setApps } from "@/context/slices/appSlice";
-import { getAppConfigurations } from "@/context/slices/appConfigSlice";
 import { restoreAuth } from "@/context/slices/authSlice";
 import { getUserConfigurations } from "@/context/slices/userConfigSlice";
 import { setUserInfo } from "@/context/slices/userInfoSlice";
@@ -72,7 +71,6 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
 
         dispatch(getVersions(handleLogout));
         dispatch(getUserConfigurations(handleLogout));
-        dispatch(getAppConfigurations(handleLogout));
         await dispatch(restoreAuth()).unwrap();
       } catch (error) {
         console.error("Initialization error:", error);

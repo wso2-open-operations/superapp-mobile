@@ -22,6 +22,7 @@ import {
 } from "../../services/authService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { removeGoogleAuthState } from "@/services/googleService";
+import { getAppConfigurations } from "./appConfigSlice";
 
 interface AuthState {
   accessToken: string | null;
@@ -40,21 +41,32 @@ const initialState: AuthState = {
 };
 
 // Async action to restore persisted auth state
-export const restoreAuth = createAsyncThunk("auth/restoreAuth", async () => {
-  let authData = await loadAuthData();
+export const restoreAuth = createAsyncThunk(
+  "auth/restoreAuth",
+  async (_, { dispatch }) => {
+    let authData = await loadAuthData();
 
-  if (authData) {
-    const isExpired = authData.expiresAt && Date.now() >= authData.expiresAt;
+    if (authData) {
+      const isExpired = authData.expiresAt && Date.now() >= authData.expiresAt;
 
-    if (isExpired) {
-      authData = await refreshAccessToken(logout);
+      if (isExpired) {
+        authData = await refreshAccessToken(logout);
+      }
+      // Load app configurations after restoring auth
+      if (authData) {
+        try {
+          await dispatch(getAppConfigurations(logout)).unwrap();
+        } catch (configError) {
+          console.error("Failed to load app configurations");
+        }
+      }
+
+      return authData;
     }
 
-    return authData;
+    return null;
   }
-
-  return null;
-});
+);
 
 // Async action to set auth and check Google auth state
 export const setAuthWithCheck = createAsyncThunk(

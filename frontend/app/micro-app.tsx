@@ -122,8 +122,8 @@ const MicroApp = () => {
           clientId,
           exchangedToken,
           appId,
-          appScopes,
-          logout
+          logout,
+          appScopes
         );
         if (!token) throw new Error("Token exchange failed");
         setToken(token);
