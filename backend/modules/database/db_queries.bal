@@ -208,7 +208,7 @@ public isolated function addFcmTokenQuery(string email, string fcmToken) returns
         fcm_token, 
         created_at
     )VALUES (
-        (SELECT id FROM user_config WHERE email = ${email}),
+        (SELECT id FROM user_config WHERE email = ${email} AND config_key = ${DEFAULT_CONFIG_KEY}),
         ${fcmToken},
         CURRENT_TIMESTAMP
     )
