@@ -34,8 +34,10 @@ import {
   updateDownloadProgress,
 } from "@/context/slices/appSlice";
 import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { apiRequest } from "@/utils/requestHandler";
 import {
+  APPS,
   BASE_URL,
   DOWNLOADED,
   NOT_DOWNLOADED,
@@ -43,7 +45,8 @@ import {
   DEFAULT_VIEWING_MODE,
 } from "@/constants/Constants";
 import { UpdateUserConfiguration } from "./userConfigService";
-
+import { persistAppsWithoutTokens } from "@/utils/exchangedTokenStore";
+import { restoreExchangedTokens } from "@/utils/exTokenRehydrator";
 // File handle services
 export const downloadMicroApp = async (
   dispatch: AppDispatch,
@@ -69,7 +72,6 @@ export const downloadMicroApp = async (
     await UpdateUserConfiguration(appId, DOWNLOADED, onLogout); // Update user configurations
     dispatch(updateDownloadProgress({ appId, progress: 100 }));
   } catch (error) {
-    console.error("downloadMicroApp failed:", error);
     await UpdateUserConfiguration(appId, NOT_DOWNLOADED, onLogout); // Update user configurations
     Alert.alert("Error", "Failed to download or save the file.");
   } finally {
@@ -251,26 +253,13 @@ export const removeMicroApp = async (
 ) => {
   try {
     const customDir = `${documentDirectory}${MICRO_APP_STORAGE_DIR}/micro-apps/`;
-    const extractedPath = `${customDir}${appId}-extracted/`;
-    const zipPath = `${customDir}${appId}.zip`;
+    await deleteAsync(`${customDir}/${appId}-extracted/`, {
+      idempotent: true,
+    });
+    await deleteAsync(`${customDir}${appId}.zip`, {
+      idempotent: true,
+    });
 
-    // Delete extracted folder
-    const extractedInfo = await getInfoAsync(extractedPath);
-    if (extractedInfo.exists) {
-      await deleteAsync(extractedPath, { idempotent: true });
-    }
-
-    // Delete zip file
-    const zipInfo = await getInfoAsync(zipPath);
-    if (zipInfo.exists) {
-      await deleteAsync(zipPath, { idempotent: true });
-    }
-
-    // Only update Redux if both are confirmed deleted
-    const stillExtracted = await getInfoAsync(extractedPath);
-    const stillZip = await getInfoAsync(zipPath);
-
-    if (!stillExtracted.exists && !stillZip.exists) {
     dispatch(
       updateAppStatus({
         appId,
@@ -282,11 +271,7 @@ export const removeMicroApp = async (
       })
     );
     await UpdateUserConfiguration(appId, NOT_DOWNLOADED, onLogout); // Update user configurations
-    } else {
-      Alert.alert("Error", "Could not fully delete app files. Please try again.");
-    }
   } catch (error) {
-    console.error("removeMicroApp failed:", error);
     Alert.alert("Error", "Failed to remove the app.");
   }
 };
@@ -331,23 +316,28 @@ const mergeAppData = (latestApp: MicroApp, storedApp?: MicroApp): MicroApp => {
 };
 
 // Load app list and if updates available update apps
-export const loadMicroAppDetails =
-  (onLogout: () => Promise<void>) =>
-  async (
-    dispatch: AppDispatch,
-    getState: () => { apps: { apps: MicroApp[] } }
-  ) => {
+export const loadMicroAppDetails = async (
+  dispatch: AppDispatch,
+  onLogout: () => Promise<void>,
+  onUpdateStart?: (appId: string) => void,
+  onUpdateEnd?: (appId: string) => void
+) => {
   try {
-    // Always use the latest Redux state (rehydrated by redux-persist)
-    const currentApps: MicroApp[] = getState().apps.apps || [];
-    const response = await apiRequest(
-      { url: `${BASE_URL}/micro-apps`, method: "GET" },
-      onLogout
-    );
+    // Load stored apps from AsyncStorage
+    const storedApps = await loadStoredApps();
 
-    if (response?.data) {
-      const apps: MicroApp[] = response.data.map((app: MicroApp) => {
-      const storedApp = currentApps.find((a) => a.appId === app.appId);
+    // Dispatch stored apps initially
+    dispatch(setApps(storedApps));
+
+    // Fetch latest micro apps list from API
+    const latestApps = await fetchLatestApps(onLogout);
+
+    if (latestApps.length > 0) {
+      // Update apps list with status and webViewUri
+      const apps: MicroApp[] = latestApps.map((latestApp: MicroApp) => {
+        const storedApp = storedApps.find(
+          (stored) => stored.appId === latestApp.appId
+        );
 
         if (storedApp && shouldUpdateApp(storedApp, latestApp)) {
           onUpdateStart?.(latestApp.appId);
@@ -367,6 +357,8 @@ export const loadMicroAppDetails =
 
       // Update Redux and AsyncStorage
       dispatch(setApps(apps));
+      await persistAppsWithoutTokens(apps);
+      await restoreExchangedTokens(apps, dispatch);
     }
   } catch (error) {
     console.error("Error loading micro apps:", error);

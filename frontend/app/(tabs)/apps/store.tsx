@@ -42,7 +42,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 
 const Store = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const { apps, downloading } = useSelector((state: RootState) => state.apps);
   const downloadProgress = useSelector(
     (state: RootState) => state.apps.downloadProgress
@@ -76,15 +76,19 @@ const Store = () => {
     };
   }, []);
 
-  const fetchedOnceRef = useRef(false);
+  // load micro apps list
   useEffect(() => {
     const initializeApps = async () => {
       if (!accessToken) return;
-      if (fetchedOnceRef.current) return;
+
       setIsLoading(true);
-      await dispatch(loadMicroAppDetails(logout));
-      setIsLoading(false);
-      fetchedOnceRef.current = true;
+      try {
+        await loadMicroAppDetails(dispatch, logout);
+      } finally {
+        if (isMountedRef.current) {
+          setIsLoading(false);
+        }
+      }
     };
 
     initializeApps();
