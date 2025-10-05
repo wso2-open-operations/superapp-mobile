@@ -102,17 +102,13 @@ const appsSlice = createSlice({
         app.webViewUri = webViewUri;
         app.clientId = clientId;
         app.displayMode = displayMode ?? app.displayMode;
-      if (exchangedToken !== undefined) {
-        app.exchangedToken = exchangedToken;
-        if (exchangedToken) {
-          // save to secure
-          void saveExchangedToken(appId, exchangedToken);
-        } else {
-          // clear from secure
-          void deleteExchangedToken(appId);
+        if (exchangedToken !== undefined) {
+          app.exchangedToken = exchangedToken;
+          void (exchangedToken
+            ? saveExchangedToken(appId, exchangedToken)
+            : deleteExchangedToken(appId));
         }
       }
-  }
   // persist without tokens
   void persistAppsWithoutTokens(state.apps);
 },
