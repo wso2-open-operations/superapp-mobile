@@ -361,4 +361,8 @@ const createStyles = (colorScheme: "light" | "dark") =>
       justifyContent: "center",
       elevation: 3,
     },
+<<<<<<< HEAD
   });
+=======
+  });
+>>>>>>> 2496a6e747d3828004d1966d76d0d33cf045c12a
