@@ -23,17 +23,18 @@ import deviceReducer from "./slices/deviceSlice";
 import userConfigReducer from "./slices/userConfigSlice";
 import userInfoReducer from "./slices/userInfoSlice";
 import versionReducer from "./slices/versionSlice";
+import { MicroApp } from "./slices/appSlice";
 
 // Strip exchangedToken from the apps array BEFORE persisting
 const stripExchangedTokens = createTransform(
-  (inbound: any) => {
+  (inbound: { apps?: MicroApp[] }) => {
     if (!inbound?.apps) return inbound;
     return {
       ...inbound,
-      apps: inbound.apps.map((a: any) => ({ ...a, exchangedToken: "" })),
+      apps: inbound.apps.map(a => ({ ...a, exchangedToken: "" })),
     };
   },
-  (outbound: any) => outbound,
+  (outbound: { apps?: MicroApp[] }) => outbound,
   { whitelist: ["apps"] }
 );
 

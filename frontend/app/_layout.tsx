@@ -43,7 +43,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { restoreExchangedTokens } from "@/utils/exTokenRehydrator";
+import { restoreExchangedTokens } from "@/utils/exchangedTokenRehydrator";
 
 // Component to handle app initialization
 function AppInitializer({ onReady }: { onReady: () => void }) {

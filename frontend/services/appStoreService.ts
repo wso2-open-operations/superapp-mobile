@@ -46,7 +46,7 @@ import {
 } from "@/constants/Constants";
 import { UpdateUserConfiguration } from "./userConfigService";
 import { persistAppsWithoutTokens } from "@/utils/exchangedTokenStore";
-import { restoreExchangedTokens } from "@/utils/exTokenRehydrator";
+import { restoreExchangedTokens } from "@/utils/exchangedTokenRehydrator";
 // File handle services
 export const downloadMicroApp = async (
   dispatch: AppDispatch,
