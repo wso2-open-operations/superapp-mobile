@@ -111,7 +111,7 @@ const appsSlice = createSlice({
           // clear from secure
           void deleteExchangedToken(appId);
         }
-    }
+      }
   }
   // persist without tokens
   void persistAppsWithoutTokens(state.apps);
