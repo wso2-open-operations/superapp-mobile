@@ -13,7 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { APPS, AUTH_DATA, USER_INFO } from "@/constants/Constants";
+import { APPS, USER_INFO } from "@/constants/Constants";
 import { ScreenPaths } from "@/constants/ScreenPaths";
 import { resetAll } from "@/context/slices/authSlice";
 import { clearDeviceState } from "@/context/slices/deviceSlice";
@@ -24,6 +24,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { router } from "expo-router";
 import { Alert } from "react-native";
+import { clearAuthDataFromSecureStore } from "@/utils/authTokenStore";
 
 // Logout user
 export const performLogout = createAsyncThunk(
@@ -31,11 +32,11 @@ export const performLogout = createAsyncThunk(
   async (_, { dispatch }) => {
     try {
       await logout(); // Call Asgardeo logout
+      await clearAuthDataFromSecureStore();
       await persistor.purge(); // Clear redux-persist storage
       dispatch(resetAll()); // Reset Redux state completely
       dispatch(clearDeviceState()); // Reset device state
 
-      await AsyncStorage.removeItem(AUTH_DATA);
       await AsyncStorage.removeItem(APPS);
       await AsyncStorage.removeItem(USER_INFO);
       // Clear all scheduled notifications and stored notification data

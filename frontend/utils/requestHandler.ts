@@ -13,12 +13,11 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { AUTH_DATA } from "@/constants/Constants";
 import { refreshAccessToken } from "@/services/authService";
 import axios, { AxiosRequestConfig } from "axios";
 import { jwtDecode } from "jwt-decode";
 import dayjs from "dayjs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { loadAuthDataFromSecureStore } from "@/utils/authTokenStore";
 
 // General API request handler
 export const apiRequest = async (
@@ -81,7 +80,7 @@ const isAccessTokenExpired = (accessToken: string): boolean => {
 
 // Helper function to get the stored access token
 const getAccessToken = async (): Promise<string> => {
-  const storedData = await AsyncStorage.getItem(AUTH_DATA);
-  if (!storedData) return "";
-  return JSON.parse(storedData)?.accessToken || "";
+  const secure = await loadAuthDataFromSecureStore();
+  if (!secure) return "";
+  return secure?.accessToken || "";
 };
