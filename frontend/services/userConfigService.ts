@@ -92,7 +92,7 @@ export const UpdateUserConfiguration = async (
     const state = store.getState();
     const email = state.auth.email;
     if (!email) {
-      console.error("User email not found in auth state.");
+      console.error("Missing auth.email in Redux (expected after SecureStore restore).");
       return false;
     }
 

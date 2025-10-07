@@ -43,8 +43,8 @@ export async function handleFreshInstall() {
       SecureStore.deleteItemAsync(EXPIRES_AT_KEY),
       SecureStore.deleteItemAsync(AUTH_EMAIL_KEY),
     ]);
-  } catch (e) {
-    console.warn("failed to clear SecureStore", e);
+  } catch (error) {
+    console.warn("Failed to clear SecureStore", error);
   } finally {
     await AsyncStorage.setItem(INSTALL_MARKER, "1");
   }
