@@ -412,7 +412,7 @@ export const processNativeAuthResult = async (
         accessToken: authResult.accessToken,
         refreshToken: authResult.refreshToken,
         idToken: authResult.idToken,
-        email,
+        email: email,
         expiresAt: exp * MILLISECONDS_IN_A_SECOND,
       };
 
