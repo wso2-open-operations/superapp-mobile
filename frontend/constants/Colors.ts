@@ -19,6 +19,41 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
+// Theme colors interface
+interface ThemeColors {
+  text: string;
+  icon: string;
+  tabIconDefault: string;
+  primaryTextColor: string;
+  secondaryTextColor: string;
+  ternaryTextColor: string;
+  defaultAppTextColor: string;
+  primaryBackgroundColor: string;
+  secondaryBackgroundColor: string;
+  profileFontColor: string;
+  profileBackgroundColor: string;
+  libraryCardBackgroundColor: string;
+  mutedTextColor: string;
+  articleTextColor: string;
+  borderColor: string;
+  discoveryContentBackgroundColor: string;
+  ternaryBackgroundColor: string;
+  skeletonColorOne: string;
+  skeletonColorTwo: string;
+  contentItemBackgroundColor: string;
+  overLayColor: string;
+  modalBorderColor: string;
+}
+
+// App colors interface
+interface AppColors {
+  light: ThemeColors;
+  dark: ThemeColors;
+  companyOrange: string;
+  actionButtonTextColor: string;
+  removeButtonTextColor: string;
+}
+
 /**
  * Global color palette for light and dark themes.
  *
@@ -27,7 +62,7 @@
  *   const backgroundColor = Colors.light.primaryBackgroundColor;
  */
 
-export const Colors = {
+export const Colors: AppColors = {
   light: {
     text: "#1F2937", // Main text color (gray-950)
     icon: "#687076", // Default icon color
@@ -36,6 +71,8 @@ export const Colors = {
     primaryTextColor: "#1F2937", // Primary content text
     secondaryTextColor: "#374151", // Secondary/description text
     ternaryTextColor: "#000000", // Minor/deemphasized text
+
+    defaultAppTextColor: "#989898", // Default app text color
 
     primaryBackgroundColor: "#FFFFFF", // Main app background
     secondaryBackgroundColor: "#EEEEEF", // Card/section background
@@ -68,6 +105,7 @@ export const Colors = {
     primaryTextColor: "#9CA3AF", // Primary content text
     secondaryTextColor: "#6B7280", // Secondary/description text
     ternaryTextColor: "#DCE0E6", // Minor/deemphasized text
+    defaultAppTextColor: "#606b8a", // Default app text color
 
     primaryBackgroundColor: "#030712", // Main app background
     secondaryBackgroundColor: "#1F2937", // Card/section background
