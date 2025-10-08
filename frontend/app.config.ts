@@ -165,6 +165,15 @@ const config: ExpoConfig = {
       "@react-native-google-signin/google-signin",
       { iosUrlScheme: IOS_URL_SCHEME },
     ],
+    [
+      "react-native-edge-to-edge",
+      {
+        android: {
+          parentTheme: "Default",
+          enforceNavigationBarContrast: false,
+        },
+      },
+    ],
   ],
   experiments: { typedRoutes: true },
   extra: {
