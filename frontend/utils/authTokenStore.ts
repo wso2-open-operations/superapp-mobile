@@ -52,16 +52,7 @@ export async function loadAuthDataFromSecureStore(): Promise<SecureAuthData | nu
       SecureStore.getItemAsync(AUTH_EMAIL_KEY),
     ]);
 
-  if (!accessToken || !refreshToken || !idToken || !expiresAtStr) {
-    const missing = [
-      !accessToken && "accessToken",
-      !refreshToken && "refreshToken",
-      !idToken && "idToken",
-      !expiresAtStr && "expiresAt",
-    ].filter(Boolean);
-    console.error("Auth token loading failed. Missing fields:", missing);
-    return null;
-  }
+  if (!accessToken || !refreshToken || !idToken || !expiresAtStr) return null;
 
   return {
     accessToken,
