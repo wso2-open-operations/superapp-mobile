@@ -13,25 +13,24 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  useColorScheme,
-  TouchableOpacity,
-} from "react-native";
-import { Image } from "expo-image";
 import { Colors } from "@/constants/Colors";
+import { DOWNLOADED } from "@/constants/Constants";
+import { ScreenPaths } from "@/constants/ScreenPaths";
 import { Version } from "@/context/slices/appSlice";
-import {DOWNLOADED} from "@/constants/Constants";
+import { DisplayMode } from "@/types/navigation";
+import { Image } from "expo-image";
+import { router } from "expo-router";
 import React from "react";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
 import ActionButton from "./ActionButton";
 import UpdateOverlay from "./UpdateOverlay";
-import { router } from "expo-router";
-import { ScreenPaths } from "@/constants/ScreenPaths";
-import { DisplayMode } from "@/types/navigation";
-
 
 type ListItemProps = {
   appId: string;
@@ -141,9 +140,9 @@ const ListItem = React.memo(
           </View>
         </View>
         {/* Button Section */}
-        {!isDefaultApp && (
-          <View style={styles.buttonContainer}>
-            {status === DOWNLOADED ? (
+        <View style={styles.buttonContainer}>
+          {!isDefaultApp &&
+            (status === DOWNLOADED ? (
               <ActionButton
                 label="Remove"
                 onPress={onRemove}
@@ -157,9 +156,9 @@ const ListItem = React.memo(
                 downloading={downloading}
                 fixedSize={true}
               />
-            )}
-          </View>
-        )}
+            ))}
+          {isDefaultApp && <Text style={styles.defaultAppText}>Default</Text>}
+        </View>
       </View>
     );
   }
@@ -234,6 +233,14 @@ const createStyles = (colorScheme: "light" | "dark") =>
     versionText: {
       color: Colors[colorScheme].primaryTextColor,
       fontSize: 10,
+    },
+    defaultAppText: {
+      fontSize: 14,
+      color: Colors[colorScheme].defaultAppTextColor,
+      fontStyle: "italic",
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      minWidth: 50,
     },
     descriptionText: {
       fontWeight: "normal",
