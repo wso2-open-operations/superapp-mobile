@@ -85,10 +85,9 @@ const MicroApp = () => {
   const shouldShowHeader: boolean = displayMode !== FULL_SCREEN_VIEWING_MODE;
 
   /**
-   * Create styles for the micro app. If a micro app has a display mode of full screen,
-   * the bottom safe area will be 0.
+   * Create styles for the micro app.
    * @param colorScheme - The color scheme of the micro app
-   * @param bottomSafeArea - The bottom safe area of the micro app
+   * @param bottomSafeArea - The bottom safe area of the micro app.
    * @returns The styles for the micro app
    */
   const styles = createStyles(
