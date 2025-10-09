@@ -20,7 +20,7 @@ import { restoreAuth } from "@/context/slices/authSlice";
 import { getUserConfigurations } from "@/context/slices/userConfigSlice";
 import { setUserInfo } from "@/context/slices/userInfoSlice";
 import { getVersions } from "@/context/slices/versionSlice";
-import { RootState, AppDispatch, persistor, store } from "@/context/store";
+import { AppDispatch, persistor, store } from "@/context/store";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { usePushNotificationHandler } from "@/hooks/usePushNotificationHandler";
 import { scheduleSessionNotifications } from "@/services/scheduledNotifications";
@@ -44,6 +44,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { restoreExchangedTokens } from "@/utils/exchangedTokenRehydrator";
+import { handleFreshInstall } from "@/utils/freshInstall";
 
 // Component to handle app initialization
 function AppInitializer({ onReady }: { onReady: () => void }) {
@@ -60,6 +61,7 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
   useEffect(() => {
     const initialize = async () => {
       try {
+        await handleFreshInstall();
         const [savedApps, savedUserInfo] = await Promise.all([
           AsyncStorage.getItem(APPS),
           AsyncStorage.getItem(USER_INFO),

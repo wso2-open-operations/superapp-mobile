@@ -57,10 +57,15 @@ export const getUserConfigurations = createAsyncThunk(
         const cleanedResponseData = removeDuplicatesFromUserConfigs(
           response.data
         );
+        // Persist without email
+        const sanitizedUserConfigs = cleanedResponseData.map((config: UserConfig) => {
+          const { email, ...rest } = config;
+          return rest;
+        });
 
         await AsyncStorage.setItem(
           USER_CONFIGURATIONS,
-          JSON.stringify(cleanedResponseData)
+          JSON.stringify(sanitizedUserConfigs)
         );
         return cleanedResponseData;
       } else {

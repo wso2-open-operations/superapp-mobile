@@ -38,12 +38,6 @@ const stripExchangedTokens = createTransform(
   { whitelist: ["apps"] }
 );
 
-const authPersistConfig = {
-  key: "auth",
-  storage: AsyncStorage,
-  whitelist: ["auth"],
-};
-
 const appsPersistConfig = {
   key: "apps",
   storage: AsyncStorage,
@@ -70,7 +64,7 @@ const appConfigPersistConfig = {
 };
 
 const appReducerCombined = combineReducers({
-  auth: persistReducer(authPersistConfig, authReducer),
+  auth: authReducer,
   apps: persistReducer(appsPersistConfig, appReducer),
   userConfig: persistReducer(userConfigPersistConfig, userConfigReducer),
   version: versionReducer,

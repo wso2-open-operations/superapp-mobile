@@ -31,11 +31,12 @@ export const UpdateUserConfiguration = async (
   onLogout: () => Promise<void>
 ) => {
   try {
+    type CachedUserConfig = Omit<UserConfig, "email">;
     // Get the latest state directly from AsyncStorage each time
     const storedUserConfigsJson = await AsyncStorage.getItem(
       USER_CONFIGURATIONS
     );
-    let storedUserConfigs: UserConfig[] = storedUserConfigsJson
+    let storedUserConfigs: CachedUserConfig[] = storedUserConfigsJson
       ? JSON.parse(storedUserConfigsJson)
       : [];
 
@@ -52,7 +53,6 @@ export const UpdateUserConfiguration = async (
         {
           configKey: APP_LIST_CONFIG_KEY,
           configValue: [],
-          email,
           isActive: 1,
         },
       ];
@@ -89,6 +89,12 @@ export const UpdateUserConfiguration = async (
       USER_CONFIGURATIONS,
       JSON.stringify(updatedUserConfigs)
     );
+    const state = store.getState();
+    const email = state.auth.email;
+    if (!email) {
+      console.error("Missing auth.email in Redux (expected after SecureStore restore).");
+      return false;
+    }
 
     const response = await apiRequest(
       {
@@ -97,7 +103,7 @@ export const UpdateUserConfiguration = async (
         data: {
           configKey: APP_LIST_CONFIG_KEY,
           configValue: updatedConfigValue,
-          email: appUserConfigs.email,
+          email,
           isActive: appUserConfigs.isActive,
         },
       },
