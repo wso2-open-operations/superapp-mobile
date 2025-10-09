@@ -123,6 +123,10 @@ const config: ExpoConfig = {
           compileSdkVersion: 35,
           targetSdkVersion: 35,
           minSdkVersion: 24,
+          extraMavenRepos: [
+            // https://github.com/invertase/notifee/issues/799#issuecomment-2569217836
+            "../../node_modules/@notifee/react-native/android/libs",
+          ],
         },
         // Comment this if you are not using Firebase for iOS
         ios: {
@@ -164,6 +168,15 @@ const config: ExpoConfig = {
     [
       "@react-native-google-signin/google-signin",
       { iosUrlScheme: IOS_URL_SCHEME },
+    ],
+    [
+      "react-native-edge-to-edge",
+      {
+        android: {
+          parentTheme: "Default",
+          enforceNavigationBarContrast: false,
+        },
+      },
     ],
   ],
   experiments: { typedRoutes: true },

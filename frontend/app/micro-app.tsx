@@ -24,6 +24,7 @@ import {
   GOOGLE_IOS_CLIENT_ID,
   GOOGLE_SCOPES,
   GOOGLE_WEB_CLIENT_ID,
+  isAndroid,
   isIos,
 } from "@/constants/Constants";
 import { RootState } from "@/context/store";
@@ -65,6 +66,8 @@ const MicroApp = () => {
 
   const { webViewUri, appName, clientId, exchangedToken, appId, displayMode } =
     useLocalSearchParams<MicroAppParams>();
+  const { bottom: bottomSafeArea } = useSafeAreaInsets();
+
   const [hasError, setHasError] = useState(false);
   const webviewRef = useRef<WebView>(null);
   const [token, setToken] = useState<string | null>();
@@ -76,11 +79,21 @@ const MicroApp = () => {
   const appScopes = useSelector(
     (state: RootState) => state.appConfig.appScopes
   );
-  const styles = createStyles(colorScheme ?? "light");
   const isDeveloper: boolean = appId.includes("developer");
   const isTotp: boolean = appId.includes("totp");
   const insets = useSafeAreaInsets();
   const shouldShowHeader: boolean = displayMode !== FULL_SCREEN_VIEWING_MODE;
+
+  /**
+   * Create styles for the micro app.
+   * @param colorScheme - The color scheme of the micro app
+   * @param bottomSafeArea - The bottom safe area of the micro app.
+   * @returns The styles for the micro app
+   */
+  const styles = createStyles(
+    colorScheme ?? "light",
+    shouldShowHeader ? bottomSafeArea : 0
+  );
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: GOOGLE_IOS_CLIENT_ID,
@@ -560,7 +573,7 @@ const MicroApp = () => {
 
 export default MicroApp;
 
-const createStyles = (colorScheme: "light" | "dark") =>
+const createStyles = (colorScheme: "light" | "dark", bottomSafeArea: number) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -576,6 +589,7 @@ const createStyles = (colorScheme: "light" | "dark") =>
       flex: 1,
       opacity: 1,
       pointerEvents: "auto",
+      paddingBottom: isAndroid ? bottomSafeArea : 0,
     },
     webViewHidden: {
       opacity: 0,
