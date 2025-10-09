@@ -53,6 +53,14 @@ export async function loadAuthDataFromSecureStore(): Promise<SecureAuthData | nu
     ]);
 
   if (!accessToken || !refreshToken || !idToken || !expiresAtStr) return null;
+  // Dev-only debug logs below, keep commented in production.
+  // console.log("[AUTH][loadAuthDataFromSecureStore] Retrieved values:", {
+  // hasAccessToken: !!accessToken,
+  // hasRefreshToken: !!refreshToken,
+  // hasIdToken: !!idToken,
+  // hasExpiresAt: !!expiresAtStr,
+  // hasEmail: !!email,
+  // });
 
   return {
     accessToken,

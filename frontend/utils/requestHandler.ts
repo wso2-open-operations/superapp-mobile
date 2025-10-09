@@ -80,7 +80,7 @@ const isAccessTokenExpired = (accessToken: string): boolean => {
 
 // Helper function to get the stored access token
 const getAccessToken = async (): Promise<string> => {
-  const secure = await loadAuthDataFromSecureStore();
-  if (!secure) return "";
-  return secure?.accessToken || "";
+  const secureStore = await loadAuthDataFromSecureStore();
+  if (!secureStore) return "";
+  return secureStore?.accessToken || "";
 };
