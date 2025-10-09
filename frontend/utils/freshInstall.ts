@@ -22,6 +22,7 @@ import {
   EXPIRES_AT_KEY,
   AUTH_EMAIL_KEY,
 } from "@/constants/Constants";
+import { GOOGLE_USER_INFO_KEY , GOOGLE_ACCESS_TOKEN_KEY,GOOGLE_REFRESH_TOKEN_KEY } from "@/constants/Constants";
 
 const INSTALL_MARKER = "install_marker_v1";
 /**
@@ -42,6 +43,9 @@ export async function handleFreshInstall() {
       SecureStore.deleteItemAsync(ID_TOKEN),
       SecureStore.deleteItemAsync(EXPIRES_AT_KEY),
       SecureStore.deleteItemAsync(AUTH_EMAIL_KEY),
+      SecureStore.deleteItemAsync(GOOGLE_ACCESS_TOKEN_KEY),
+      SecureStore.deleteItemAsync(GOOGLE_REFRESH_TOKEN_KEY),
+      SecureStore.deleteItemAsync(GOOGLE_USER_INFO_KEY),
     ]);
   } catch (error) {
     console.warn("Failed to clear SecureStore", error);
