@@ -14,13 +14,17 @@
 // specific language governing permissions and limitations
 // under the License.
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SecureStore from "expo-secure-store";
+import { deleteItemAsync } from "expo-secure-store";
 import {
   ACCESS_TOKEN,
   REFRESH_TOKEN,
   ID_TOKEN,
   EXPIRES_AT_KEY,
   AUTH_EMAIL_KEY,
+  GOOGLE_USER_INFO_KEY,
+  GOOGLE_ACCESS_TOKEN_KEY,
+  GOOGLE_REFRESH_TOKEN_KEY,
+  USER_INFO,
 } from "@/constants/Constants";
 
 const INSTALL_MARKER = "install_marker_v1";
@@ -37,11 +41,15 @@ export async function handleFreshInstall() {
   try {
     // Wipe all auth secrets that might have survived uninstall in SecureStore
     await Promise.all([
-      SecureStore.deleteItemAsync(ACCESS_TOKEN),
-      SecureStore.deleteItemAsync(REFRESH_TOKEN),
-      SecureStore.deleteItemAsync(ID_TOKEN),
-      SecureStore.deleteItemAsync(EXPIRES_AT_KEY),
-      SecureStore.deleteItemAsync(AUTH_EMAIL_KEY),
+      deleteItemAsync(ACCESS_TOKEN),
+      deleteItemAsync(REFRESH_TOKEN),
+      deleteItemAsync(ID_TOKEN),
+      deleteItemAsync(EXPIRES_AT_KEY),
+      deleteItemAsync(AUTH_EMAIL_KEY),
+      deleteItemAsync(USER_INFO),
+      deleteItemAsync(GOOGLE_ACCESS_TOKEN_KEY),
+      deleteItemAsync(GOOGLE_REFRESH_TOKEN_KEY),
+      deleteItemAsync(GOOGLE_USER_INFO_KEY),
     ]);
   } catch (error) {
     console.warn("Failed to clear SecureStore", error);

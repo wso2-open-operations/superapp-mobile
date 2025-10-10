@@ -20,7 +20,7 @@ import {
   logout,
   refreshAccessToken,
 } from "../../services/authService";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getItemAsync, setItemAsync } from "expo-secure-store";
 import { removeGoogleAuthState } from "@/services/googleService";
 import { getAppConfigurations } from "./appConfigSlice";
 
@@ -72,7 +72,7 @@ export const restoreAuth = createAsyncThunk(
 export const setAuthWithCheck = createAsyncThunk(
   "auth/setAuthWithCheck",
   async (authPayload: AuthData, { dispatch }) => {
-    const previousAuthMail = await AsyncStorage.getItem("authMail");
+    const previousAuthMail = await getItemAsync("authMail");
     if (previousAuthMail) {
       const parsedMail = JSON.parse(previousAuthMail);
       if (authPayload.email && authPayload.email !== parsedMail) {
@@ -80,7 +80,7 @@ export const setAuthWithCheck = createAsyncThunk(
       }
     }
 
-    await AsyncStorage.setItem("authMail", JSON.stringify(authPayload.email));
+    await setItemAsync("authMail", JSON.stringify(authPayload.email));
     dispatch(setAuth(authPayload));
   }
 );

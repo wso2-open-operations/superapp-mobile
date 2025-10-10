@@ -25,6 +25,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { router } from "expo-router";
 import { Alert } from "react-native";
 import { clearAuthDataFromSecureStore } from "@/utils/authTokenStore";
+import { deleteItemAsync } from "expo-secure-store";
 
 // Logout user
 export const performLogout = createAsyncThunk(
@@ -38,7 +39,7 @@ export const performLogout = createAsyncThunk(
       dispatch(clearDeviceState()); // Reset device state
 
       await AsyncStorage.removeItem(APPS);
-      await AsyncStorage.removeItem(USER_INFO);
+      await deleteItemAsync(USER_INFO);
       // Clear all scheduled notifications and stored notification data
       await clearNotifications();
 

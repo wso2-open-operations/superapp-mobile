@@ -13,7 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import * as SecureStore from "expo-secure-store";
+import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
 import {
   ACCESS_TOKEN,
   REFRESH_TOKEN,
@@ -32,24 +32,24 @@ export type SecureAuthData = {
 
 export async function saveAuthDataToSecureStore(authData: SecureAuthData) {
   await Promise.all([
-    SecureStore.setItemAsync(ACCESS_TOKEN, authData.accessToken),
-    SecureStore.setItemAsync(REFRESH_TOKEN, authData.refreshToken),
-    SecureStore.setItemAsync(ID_TOKEN, authData.idToken),
-    SecureStore.setItemAsync(EXPIRES_AT_KEY, String(authData.expiresAt)),
+    setItemAsync(ACCESS_TOKEN, authData.accessToken),
+    setItemAsync(REFRESH_TOKEN, authData.refreshToken),
+    setItemAsync(ID_TOKEN, authData.idToken),
+    setItemAsync(EXPIRES_AT_KEY, String(authData.expiresAt)),
     authData.email
-      ? SecureStore.setItemAsync(AUTH_EMAIL_KEY, authData.email)
-      : SecureStore.deleteItemAsync(AUTH_EMAIL_KEY),
+      ? setItemAsync(AUTH_EMAIL_KEY, authData.email)
+      : deleteItemAsync(AUTH_EMAIL_KEY),
   ]);
 }
 
 export async function loadAuthDataFromSecureStore(): Promise<SecureAuthData | null> {
   const [accessToken, refreshToken, idToken, expiresAtStr, email] =
     await Promise.all([
-      SecureStore.getItemAsync(ACCESS_TOKEN),
-      SecureStore.getItemAsync(REFRESH_TOKEN),
-      SecureStore.getItemAsync(ID_TOKEN),
-      SecureStore.getItemAsync(EXPIRES_AT_KEY),
-      SecureStore.getItemAsync(AUTH_EMAIL_KEY),
+      getItemAsync(ACCESS_TOKEN),
+      getItemAsync(REFRESH_TOKEN),
+      getItemAsync(ID_TOKEN),
+      getItemAsync(EXPIRES_AT_KEY),
+      getItemAsync(AUTH_EMAIL_KEY),
     ]);
 
   if (!accessToken || !refreshToken || !idToken || !expiresAtStr) return null;
@@ -73,10 +73,10 @@ export async function loadAuthDataFromSecureStore(): Promise<SecureAuthData | nu
 
 export async function clearAuthDataFromSecureStore() {
   await Promise.all([
-    SecureStore.deleteItemAsync(ACCESS_TOKEN),
-    SecureStore.deleteItemAsync(REFRESH_TOKEN),
-    SecureStore.deleteItemAsync(ID_TOKEN),
-    SecureStore.deleteItemAsync(EXPIRES_AT_KEY),
-    SecureStore.deleteItemAsync(AUTH_EMAIL_KEY),
+    deleteItemAsync(ACCESS_TOKEN),
+    deleteItemAsync(REFRESH_TOKEN),
+    deleteItemAsync(ID_TOKEN),
+    deleteItemAsync(EXPIRES_AT_KEY),
+    deleteItemAsync(AUTH_EMAIL_KEY),
   ]);
 }

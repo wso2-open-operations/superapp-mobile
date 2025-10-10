@@ -45,6 +45,7 @@ import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { restoreExchangedTokens } from "@/utils/exchangedTokenRehydrator";
 import { handleFreshInstall } from "@/utils/freshInstall";
+import { getItemAsync } from "expo-secure-store";
 
 // Component to handle app initialization
 function AppInitializer({ onReady }: { onReady: () => void }) {
@@ -64,7 +65,7 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
         await handleFreshInstall();
         const [savedApps, savedUserInfo] = await Promise.all([
           AsyncStorage.getItem(APPS),
-          AsyncStorage.getItem(USER_INFO),
+          getItemAsync(USER_INFO),
         ]);
 
         if (savedApps) {

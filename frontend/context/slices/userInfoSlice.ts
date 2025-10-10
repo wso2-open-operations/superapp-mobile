@@ -16,7 +16,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BASE_URL, USER_INFO } from "@/constants/Constants";
 import { apiRequest } from "@/utils/requestHandler";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setItemAsync } from "expo-secure-store";
 
 export type UserInfo = {
   workEmail: string;
@@ -77,7 +77,7 @@ const userInfoSlice = createSlice({
         state.loading = false;
         state.userInfo = action.payload;
 
-        AsyncStorage.setItem(USER_INFO, JSON.stringify(state.userInfo));
+        setItemAsync(USER_INFO, JSON.stringify(state.userInfo));
       })
       .addCase(getUserInfo.rejected, (state, action) => {
         state.loading = false;
