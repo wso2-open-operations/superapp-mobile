@@ -24,12 +24,16 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from '@asgardeo/auth-react';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import { createAppTheme } from './theme';
 
 const rootEl = document.getElementById('root') as HTMLElement;
 const root = ReactDOM.createRoot(rootEl);
 
 root.render(
   <React.StrictMode>
+  <ThemeProvider theme={createAppTheme('light')}>
+      <CssBaseline />
     <AuthProvider
       config={{
         // Use environment variables for configuration
@@ -42,6 +46,7 @@ root.render(
     >
       <App />
     </AuthProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
 
