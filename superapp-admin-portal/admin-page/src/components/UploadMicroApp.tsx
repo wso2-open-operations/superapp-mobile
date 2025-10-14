@@ -216,7 +216,7 @@ const UploadMicroApp: React.FC<Props> = ({ onUploaded }: Props) => {
       if (fileInputRef.current) fileInputRef.current.value = "";
       // Notify parent to refresh list / close view
       try {
-        onUploaded && onUploaded();
+        onUploaded?.();
       } catch (_) {
         /* no-op */
       }
