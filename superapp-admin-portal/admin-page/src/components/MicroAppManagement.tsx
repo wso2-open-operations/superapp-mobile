@@ -40,7 +40,6 @@ type MicroApp = {
 type AuthContextLike = {
   state?: { isAuthenticated?: boolean };
   getAccessToken?: () => Promise<string>;
-  
 };
 
 // UploadMicroApp is now fully typed in TypeScript
@@ -50,7 +49,7 @@ export default function MicroAppManagement(): React.ReactElement {
   const auth = useAuthContext() as AuthContextLike;
 
   // Component state management
-  const [showUpload, setShowUpload] = useState<boolean>(false);
+  const [showUpload, setShowUpload] = useState(false);
   const [microApps, setMicroApps] = useState<MicroApp[]>([]);
   const [loadingList, setLoadingList] = useState<boolean>(false);
   const [listError, setListError] = useState<string>("");

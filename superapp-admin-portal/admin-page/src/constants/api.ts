@@ -19,8 +19,8 @@
  */
 
 // Base API URL for the SuperApp Backend
-export const API_BASE_URL =(process.env.REACT_APP_API_BASE_URL && process.env.REACT_APP_API_BASE_URL.replace(/\/$/, ""));
 
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
 
 // Predefined endpoints for different admin portal operations
 export const ENDPOINTS: Record<string, string> = {
