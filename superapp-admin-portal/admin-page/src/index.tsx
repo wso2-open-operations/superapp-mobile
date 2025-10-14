@@ -32,15 +32,12 @@ root.render(
   <React.StrictMode>
     <AuthProvider
       config={{
-        // Production URLs (currently active for deployment)
-        signInRedirectURL: '',
-        signOutRedirectURL: '',
-        // Local development URLs (commented out - uncomment for local dev)
-        //signInRedirectURL: 'http://localhost:3000',
-        //signOutRedirectURL: 'http://localhost:3000',
-        clientID: '<CLIENT_ID>',
-        baseUrl: 'https://api.asgardeo.io/t/<TENANT_NAME>',
-        scope: ['<SCOPE>'],
+        // Use environment variables for configuration
+        signInRedirectURL: process.env.REACT_APP_SIGN_IN_REDIRECT_URL || window.location.origin,
+        signOutRedirectURL: process.env.REACT_APP_SIGN_OUT_REDIRECT_URL || window.location.origin,
+        clientID: process.env.REACT_APP_CLIENT_ID || '',
+        baseUrl: process.env.REACT_APP_BASE_URL || '',
+        scope: (process.env.REACT_APP_SCOPE ? process.env.REACT_APP_SCOPE.split(',') : ['openid']),
       }}
     >
       <App />
