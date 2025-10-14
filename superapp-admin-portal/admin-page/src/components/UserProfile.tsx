@@ -67,8 +67,9 @@ export default function UserProfile({ state }: Props) {
           if (mounted) setBasicInfo(info || null);
         }
       } catch (e) {
-        console.error("Failed to fetch user info from Asgardeo:", e);
-        if (mounted) setError("Could not fetch user details");
+        const errorMsg = "Error occurred while fetching user details";
+        console.error(errorMsg, e);
+        if (mounted) setError(errorMsg);
       } finally {
         if (mounted) setLoading(false);
       }
