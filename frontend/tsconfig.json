@@ -1,5 +1,4 @@
 {
-  // "extends": "@expo/tsconfig/tsconfig.base", // Removed because file not found
   "compilerOptions": {
     "strict": true,
     "paths": {
