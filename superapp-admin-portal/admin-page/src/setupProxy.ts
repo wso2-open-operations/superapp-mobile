@@ -28,7 +28,7 @@ type AppLike = {
  */
 export default function setupProxy(app: AppLike): void {
   // Upstream host (no path). Keep existing env override behavior.
-  let target = 'https://41200aa1-4106-4e6c-babf-311dce37c04a-prod.e1-us-east-azure.choreoapps.dev';
+  let target = '';
   // Normalize common mistakes (e.g., 'http:localhost:9090' or missing protocol)
   if (/^https?:localhost:\d+/.test(target)) {
     target = target.replace(/^(https?):/, '$1://');
@@ -39,7 +39,7 @@ export default function setupProxy(app: AppLike): void {
 
 
   // Final full URL = {target}/gov-superapp/microappbackendprodbranch/v1.0/admin-portal/upload
-  const upstreamUploadPath = '/gov-superapp/microappbackendprodbranch/v1.0/admin-portal/upload';
+  const upstreamUploadPath = '';
 
   app.use(['/upload', '/api/payslips/upload'], createProxyMiddleware({
     target,
@@ -66,9 +66,9 @@ export default function setupProxy(app: AppLike): void {
 
   // ---------------------------------------------------------------------------
   // Micro-app upload proxy (avoids browser CORS when calling remote gateway)
-  const microAppsTarget = 'https://41200aa1-4106-4e6c-babf-311dce37c04a-prod.e1-us-east-azure.choreoapis.dev';
-  const microAppsBasePath = '/gov-superapp/superappbackendprodbranch/v1.0';
-  const microAppsUploadPath = '/micro-apps/upload';
+  const microAppsTarget = '<MICRO_APPS_TARGET>';
+  const microAppsBasePath = '<MICRO_APPS_BASE_PATH>';
+  const microAppsUploadPath = '/<MICRO_APPS_UPLOAD_PATH>';
 
   app.use('/api/microapps', createProxyMiddleware({
     target: microAppsTarget,

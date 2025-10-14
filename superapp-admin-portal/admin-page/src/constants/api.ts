@@ -19,14 +19,14 @@
  */
 
 // Base API URL for the SuperApp Backend
-export const API_BASE_URL =
-  "https://41200aa1-4106-4e6c-babf-311dce37c04a-prod.e1-us-east-azure.choreoapis.dev/gov-superapp/superappbackendprodbranch/v1.0";
+export const API_BASE_URL ='<API_BASE_URL>';
+
 
 // Predefined endpoints for different admin portal operations
 export const ENDPOINTS: Record<string, string> = {
-  MICROAPPS_LIST: `${API_BASE_URL}/micro-apps`,
-  MICROAPPS_UPLOAD: `${API_BASE_URL}/micro-apps/upload`,
-  USERS: `${API_BASE_URL}/users`,
+  MICROAPPS_LIST: `${API_BASE_URL}/`,
+  MICROAPPS_UPLOAD: `${API_BASE_URL}/`,
+  USERS: `${API_BASE_URL}/`,
 };
 
 export type EndpointKey = "MICROAPPS_LIST" | "MICROAPPS_UPLOAD" | "USERS_BASE" | "USERS";

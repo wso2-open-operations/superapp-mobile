@@ -95,7 +95,7 @@ export default function UserProfile({ state }: Props) {
       setProfileError("");
       try {
         const encoded = encodeURIComponent(email);
-        const endpoint = `${base}/users/${encoded}`.replace(/([^:])\/\//g, "$1/");
+        const endpoint = new URL(`users/${encoded}`, base).toString();
 
         const headers: Record<string, string> = {};
         try {

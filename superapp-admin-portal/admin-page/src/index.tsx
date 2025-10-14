@@ -33,14 +33,14 @@ root.render(
     <AuthProvider
       config={{
         // Production URLs (currently active for deployment)
-        //signInRedirectURL: 'https://a96477cc-362b-4509-95ad-fcdb6507c34a.e1-us-east-azure.choreoapps.dev',
-        //signOutRedirectURL: 'https://a96477cc-362b-4509-95ad-fcdb6507c34a.e1-us-east-azure.choreoapps.dev',
+        signInRedirectURL: '',
+        signOutRedirectURL: '',
         // Local development URLs (commented out - uncomment for local dev)
-        signInRedirectURL: 'http://localhost:3000',
-        signOutRedirectURL: 'http://localhost:3000',
-        clientID: 'aVro3ATf5ZSglZHItEDj0Kd7M4wa',
-        baseUrl: 'https://api.asgardeo.io/t/lsfproject',
-        scope: ['openid', 'profile', 'groups'],
+        //signInRedirectURL: 'http://localhost:3000',
+        //signOutRedirectURL: 'http://localhost:3000',
+        clientID: '<CLIENT_ID>',
+        baseUrl: 'https://api.asgardeo.io/t/<TENANT_NAME>',
+        scope: ['<SCOPE>'],
       }}
     >
       <App />
