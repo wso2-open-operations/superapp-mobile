@@ -67,9 +67,13 @@ export default function setupProxy(app: AppLike): void {
 
   // ---------------------------------------------------------------------------
   // Micro-app upload proxy (avoids browser CORS when calling remote gateway)
-  const microAppsTarget = '<MICRO_APPS_TARGET>';
-  const microAppsBasePath = '<MICRO_APPS_BASE_PATH>';
-  const microAppsUploadPath = '/<MICRO_APPS_UPLOAD_PATH>';
+  // Micro-app proxy configuration. Set these environment variables as needed:
+  //   MICRO_APPS_TARGET: upstream host (e.g., 'http://localhost:9000')
+  //   MICRO_APPS_BASE_PATH: base path for micro-apps (e.g., '/gov-superapp/microappbackendprodbranch/v1.0/admin-portal')
+  //   MICRO_APPS_UPLOAD_PATH: upload endpoint path (e.g., '/upload')
+  const microAppsTarget = process.env.MICRO_APPS_TARGET || '';
+  const microAppsBasePath = process.env.MICRO_APPS_BASE_PATH || '';
+  const microAppsUploadPath = process.env.MICRO_APPS_UPLOAD_PATH || '/upload';
 
   app.use('/api/microapps', createProxyMiddleware({
     target: microAppsTarget,
