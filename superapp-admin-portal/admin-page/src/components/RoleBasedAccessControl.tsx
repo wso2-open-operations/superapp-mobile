@@ -121,7 +121,6 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
       } catch (accessTokenError) {
         console.warn('Could not access token payload:', accessTokenError);
       }
-      // return [];
       return [];
     } catch (error) {
       console.error('Error extracting user groups:', error);
