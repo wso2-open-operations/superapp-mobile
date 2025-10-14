@@ -27,8 +27,25 @@ type AppLike = {
  * and documentation. Keep the JS file alongside to remain effective.
  */
 export default function setupProxy(app: AppLike): void {
-  // Upstream host (no path). Keep existing env override behavior.
-  let target = '';
+  // ===================== Payslip upload proxy =====================
+  // Derive origin+path from env when available; fall back to previous defaults.
+  const payslipUploadUrlFromEnv =
+    process.env.DEV_PROXY_PAYSLIP_UPLOAD_URL ||
+    process.env.REACT_APP_PAYSLIP_UPLOAD_URL ||
+    '';
+
+  // Base host-or-origin for payslip uploads; used when only base is provided.
+  let payslipTargetOrigin =
+    process.env.DEV_PROXY_PAYSLIP_TARGET_ORIGIN ||
+    (() => {
+      try {
+        if (payslipUploadUrlFromEnv) return new URL(payslipUploadUrlFromEnv).origin;
+      } catch {}
+      return 'https://41200aa1-4106-4e6c-babf-311dce37c04a-prod.e1-us-east-azure.choreoapps.dev';
+    })();
+
+  // Normalize common mistakes (e.g., 'http:localhost:9090' or missing protocol)
+  let target = payslipTargetOrigin;
   // Normalize common mistakes (e.g., 'http:localhost:9090' or missing protocol)
   if (/^https?:localhost:\d+/.test(target)) {
     target = target.replace(/^(https?):/, '$1://');
@@ -38,8 +55,15 @@ export default function setupProxy(app: AppLike): void {
   }
 
 
-  // Final full URL = {target}/gov-superapp/microappbackendprodbranch/v1.0/admin-portal/upload
-  const upstreamUploadPath = '';
+  // Final full URL = {target}{upstreamUploadPath}
+  const upstreamUploadPath =
+    process.env.DEV_PROXY_PAYSLIP_UPLOAD_PATH ||
+    (() => {
+      try {
+        if (payslipUploadUrlFromEnv) return new URL(payslipUploadUrlFromEnv).pathname;
+      } catch {}
+      return '/gov-superapp/microappbackendprodbranch/v1.0/admin-portal/upload';
+    })();
 
   app.use(['/upload', '/api/payslips/upload'], createProxyMiddleware({
     target,
@@ -51,10 +75,7 @@ export default function setupProxy(app: AppLike): void {
       }
       return path;
     },
-    onProxyReq: (proxyReq: any, req: any) => {
-      const host = proxyReq.getHeader?.('host');
-    },
-    onError: (err: Error, req: any, res: any) => {
+    onError: (err: Error, res: any) => {
       // eslint-disable-next-line no-console
       console.error('[setupProxy] Proxy error:', err.message);
       if (!res.headersSent) {
@@ -66,9 +87,28 @@ export default function setupProxy(app: AppLike): void {
 
   // ---------------------------------------------------------------------------
   // Micro-app upload proxy (avoids browser CORS when calling remote gateway)
-  const microAppsTarget = '<MICRO_APPS_TARGET>';
-  const microAppsBasePath = '<MICRO_APPS_BASE_PATH>';
-  const microAppsUploadPath = '/<MICRO_APPS_UPLOAD_PATH>';
+  const apiBase = process.env.REACT_APP_API_BASE_URL;
+  const microAppsTarget =
+    process.env.DEV_PROXY_MICROAPPS_TARGET_ORIGIN ||
+    (() => {
+      try {
+        if (apiBase) return new URL(apiBase).origin;
+      } catch {}
+      return 'https://41200aa1-4106-4e6c-babf-311dce37c04a-prod.e1-us-east-azure.choreoapis.dev';
+    })();
+
+  const microAppsBasePath =
+    process.env.DEV_PROXY_MICROAPPS_BASE_PATH ||
+    (() => {
+      try {
+        if (apiBase) return new URL(apiBase).pathname.replace(/\/$/, '');
+      } catch {}
+      return '/gov-superapp/superappbackendprodbranch/v1.0';
+    })();
+
+  const microAppsUploadPath =
+    process.env.DEV_PROXY_MICROAPPS_UPLOAD_PATH || '/micro-apps/upload';
+
 
   app.use('/api/microapps', createProxyMiddleware({
     target: microAppsTarget,

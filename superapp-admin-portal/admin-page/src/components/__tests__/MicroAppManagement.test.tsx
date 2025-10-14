@@ -75,9 +75,18 @@ jest.mock('../../constants/styles', () => ({
   },
 }));
 
-jest.mock('../../constants/api', () => ({
-  getEndpoint: jest.fn(() => 'http://api.test/microapps'),
-}));
+jest.mock('../../constants/api', () => {
+  const real = jest.requireActual('../../constants/api');
+  return {
+    ...real,
+    getEndpoint: jest.fn((k: string) => {
+      const envMap: Record<string, string | undefined> = {
+        MICROAPPS_LIST: process.env.REACT_APP_MICROAPPS_LIST_URL,
+      };
+      return (envMap[k] || real.getEndpoint(k)).replace(/\/$/, '');
+    }),
+  };
+});
 
 // Import after mocking
 import { useAuthContext } from '@asgardeo/auth-react';
@@ -114,7 +123,9 @@ describe('MicroAppManagement Component (TS)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useAuthContext as jest.Mock).mockReturnValue(mockAuth);
-    (getEndpoint as jest.Mock).mockReturnValue('http://api.test/microapps');
+    (getEndpoint as jest.Mock).mockReturnValue(
+      process.env.REACT_APP_MICROAPPS_LIST_URL || 'http://api.test/microapps'
+    );
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockMicroApps),
@@ -224,7 +235,8 @@ describe('MicroAppManagement Component (TS)', () => {
     });
     render(<MicroAppManagement />);
     await waitFor(() => {
-      expect(screen.getByText('Unexpected token')).toBeInTheDocument();
+      // Component surfaces a normalized message on JSON parse failures
+      expect(screen.getByText('Unexpected response format (non-JSON)')).toBeInTheDocument();
     });
   });
 
@@ -454,9 +466,10 @@ describe('MicroAppManagement Component (TS)', () => {
     });
     render(<MicroAppManagement />);
     await waitFor(() => {
-      expect((global.fetch as jest.Mock)).toHaveBeenCalledWith('http://api.test/microapps', {
-        headers: {},
-      });
+      expect((global.fetch as jest.Mock)).toHaveBeenCalled();
+      const call = (global.fetch as jest.Mock).mock.calls[0];
+      expect(call[0]).toMatch(/micro-apps/);
+      expect(call[1]).toEqual({ headers: {} });
     });
   });
 

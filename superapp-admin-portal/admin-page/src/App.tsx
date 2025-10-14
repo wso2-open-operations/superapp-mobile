@@ -24,8 +24,6 @@ import { Box, Container } from '@mui/material';
 import UserProfile from './components/UserProfile';
 import MicroAppManagement from './components/MicroAppManagement';
 import MenuBar from './components/MenuBar';
-// import RoleBasedAccessControl from "./components/RoleBasedAccessControl";
-// import GroupDebugger from './components/GroupDebugger';
 import { COMMON_STYLES, COLORS } from './constants/styles';
 
 // Minimal shape for Asgardeo's state object we use
@@ -71,7 +69,7 @@ export default function App(): React.ReactElement {
   const onNavigate = (key: 'microapp' | 'profile') => setActiveKey(key);
 
   return (
-    <Box sx={{ minHeight: '100vh' }} data-testid="layout">
+    <Box sx={{ minHeight: '100vh', display: 'flex' }} data-testid="layout">
       {isAuthed ? (
         <>
           <MenuBar
@@ -82,6 +80,7 @@ export default function App(): React.ReactElement {
             placement="left"
           />
           <Box sx={{ ml: '200px' , mt:'-680px'}}>
+            <Box component="main" sx={{ flexGrow: 1 }}></Box>
             <Container data-testid="content" sx={{ p: 0 }}>
               <div className="greeting" style={COMMON_STYLES.greeting}>
                 Hi {firstName},

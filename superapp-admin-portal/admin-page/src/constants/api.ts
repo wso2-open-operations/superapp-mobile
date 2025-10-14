@@ -19,13 +19,14 @@
  */
 
 // Base API URL for the SuperApp Backend
-export const API_BASE_URL ='<API_BASE_URL>';
+export const API_BASE_URL =(process.env.REACT_APP_API_BASE_URL && process.env.REACT_APP_API_BASE_URL.replace(/\/$/, ""));
 
 
 // Predefined endpoints for different admin portal operations
 export const ENDPOINTS: Record<string, string> = {
   MICROAPPS_LIST: `${API_BASE_URL}/`,
   MICROAPPS_UPLOAD: `${API_BASE_URL}/`,
+  USERS_BASE: `${API_BASE_URL}/`,
   USERS: `${API_BASE_URL}/`,
 };
 
@@ -40,9 +41,10 @@ export const getEndpoint = (key: EndpointKey | string): string => {
     MICROAPPS_LIST: process.env.REACT_APP_MICROAPPS_LIST_URL,
     MICROAPPS_UPLOAD: process.env.REACT_APP_MICROAPPS_UPLOAD_URL,
     USERS_BASE: process.env.REACT_APP_USERS_BASE_URL,
+    USERS: process.env.REACT_APP_USERS_URL,
   };
 
   const fromEnv = envMap[key];
   const fromDefaults = ENDPOINTS[key as keyof typeof ENDPOINTS];
-  return (fromEnv || fromDefaults || API_BASE_URL).replace(/\/$/, "");
+  return ((fromEnv || fromDefaults || API_BASE_URL) ?? "").replace(/\/$/, "");
 };

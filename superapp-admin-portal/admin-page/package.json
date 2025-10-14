@@ -1,5 +1,6 @@
 {
-  "name": "admin-page",
+  "name": "superapp-admin-portal",
+  "description": "Admin portal for SuperApp to manage micro-apps.",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

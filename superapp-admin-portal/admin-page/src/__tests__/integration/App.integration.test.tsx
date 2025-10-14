@@ -38,13 +38,21 @@ jest.mock('@asgardeo/auth-react', () => ({
 // No UI library mocks needed; components render semantic elements with data-testids
 
 // MicroAppManagement relies on this to fetch apps
-jest.mock('../../constants/api', () => ({
-  getEndpoint: jest.fn((key: string) => {
-    if (key === 'MICROAPPS_LIST') return 'http://api.test/microapps';
-    if (key === 'USERS_BASE') return 'http://api.test';
-    return 'http://api.test';
-  })
-}));
+jest.mock('../../constants/api', () => {
+  const real = jest.requireActual('../../constants/api');
+  return {
+    ...real,
+    getEndpoint: jest.fn((k: string) => {
+      const envMap: Record<string, string | undefined> = {
+        MICROAPPS_LIST: process.env.REACT_APP_MICROAPPS_LIST_URL,
+        MICROAPPS_UPLOAD: process.env.REACT_APP_MICROAPPS_UPLOAD_URL,
+        USERS_BASE: process.env.REACT_APP_USERS_BASE_URL,
+        USERS: process.env.REACT_APP_USERS_URL,
+      };
+      return (envMap[k] || real.getEndpoint(k)).replace(/\/$/, '');
+    }),
+  };
+});
 
 // Keep Button/Card/Loading simple to stabilize assertions
 jest.mock('../../components/common/Button', () => {
