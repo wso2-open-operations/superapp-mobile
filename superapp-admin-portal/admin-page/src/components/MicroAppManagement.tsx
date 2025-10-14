@@ -40,7 +40,6 @@ type MicroApp = {
 type AuthContextLike = {
   state?: { isAuthenticated?: boolean };
   getAccessToken?: () => Promise<string>;
-  
 };
 
 // UploadMicroApp is now fully typed in TypeScript
