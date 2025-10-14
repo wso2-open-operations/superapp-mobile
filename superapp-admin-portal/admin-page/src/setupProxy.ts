@@ -28,12 +28,13 @@ type AppLike = {
  */
 export default function setupProxy(app: AppLike): void {
   // Upstream host (no path). Keep existing env override behavior.
-  let target = '';
+  // Set target from environment variable, fallback to empty string if not set
+  let target = process.env.PROXY_TARGET || '';
   // Normalize common mistakes (e.g., 'http:localhost:9090' or missing protocol)
   if (/^https?:localhost:\d+/.test(target)) {
     target = target.replace(/^(https?):/, '$1://');
   }
-  if (!/^https?:\/\//.test(target)) {
+  if (target && !/^https?:\/\//.test(target)) {
     target = 'http://' + target; // fallback assumption
   }
 
