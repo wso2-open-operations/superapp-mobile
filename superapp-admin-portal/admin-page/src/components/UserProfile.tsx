@@ -222,7 +222,7 @@ export default function UserProfile({ state }: Props) {
               <b style={{ color: COLORS.primary }}>Last name:</b> {profile.last_name}
             </div>
           )}
-          {profile?.user_id && (
+          {profile?.employee_id && (
             <div>
               <b style={{ color: COLORS.primary }}>Employee ID:</b> {profile.employee_id}
             </div>
