@@ -86,7 +86,6 @@ export default function App(): React.ReactElement {
                 Hi {firstName},
               </div>
               <main style={{ paddingBottom: 24 }}>
-                {/* <GroupDebugger /> */}
                 {activeKey === 'microapp' && (
                   <section style={{ ...COMMON_STYLES.section, marginTop: 0 }}>
                     <MicroAppManagement />
