@@ -514,7 +514,7 @@ const MicroApp = () => {
                         [
                           {
                             text: "Cancel",
-                            onPress: () =>
+                            onPress: () => {},
                             style: "cancel",
                           },
                           {
