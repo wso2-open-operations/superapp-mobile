@@ -102,12 +102,7 @@ export default function UserProfile({ state }: UserProfileProps) {
         const headers: Record<string, string> = {};
         try {
           if (ctx?.state?.isAuthenticated) {
-            const isLocalHost =
-              typeof window !== "undefined" && /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname);
-            const includeAssertion =
-              process.env.REACT_APP_INCLUDE_X_JWT_ASSERTION === "true" || isLocalHost;
-            const idToken = await ctx.getIDToken?.().catch(() => undefined);
-            if (idToken && includeAssertion) headers["x-jwt-assertion"] = idToken;
+            
             const access = await ctx.getAccessToken?.().catch(() => undefined);
             if (access) headers["Authorization"] = `Bearer ${access}`;
           }

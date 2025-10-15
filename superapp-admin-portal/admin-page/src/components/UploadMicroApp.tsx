@@ -109,7 +109,7 @@ const UploadMicroApp: React.FC<UploadMicroAppProps> = ({ onUploaded }) => {
           const accessToken = await auth.getAccessToken?.().catch(() => undefined);
           if (accessToken) {
             headers["Authorization"] = `Bearer ${accessToken}`;
-            headers["x-jwt-assertion"] = accessToken; // make same as Bearer
+            //headers["x-jwt-assertion"] = accessToken; // make same as Bearer
           }
         }
       } catch (e) {
@@ -118,19 +118,6 @@ const UploadMicroApp: React.FC<UploadMicroAppProps> = ({ onUploaded }) => {
       }
 
       const uploadUrl = getEndpoint("MICROAPPS_UPLOAD");
-      // Optionally suppress x-jwt-assertion if remote gateway rejects it
-      if (
-        process.env.REACT_APP_MICROAPPS_SUPPRESS_ASSERTION === "true" &&
-        headers["x-jwt-assertion"]
-      ) {
-        delete headers["x-jwt-assertion"];
-      }
-      if (!headers["x-jwt-assertion"]) {
-        console.warn(
-          "UploadMicroApp: x-jwt-assertion header is missing before request (user likely not authenticated)"
-        );
-      }
-
       const res = await fetch(uploadUrl, {
         method: "POST",
         headers, // let browser set multipart boundary
