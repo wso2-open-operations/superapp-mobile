@@ -43,7 +43,7 @@ export const generateInjectedJavaScript = () => {
     methods.push(`
     ${requestMethod}: (...args) => {
       const data = args[0];
-      const requestId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      const requestId = Date.now() + '_' + Math.random().toString(36).slice(2, 11);
       
       // Store promise resolvers if needed (for new Promise-based usage)
       if (!window.nativebridge._pendingPromises) {
