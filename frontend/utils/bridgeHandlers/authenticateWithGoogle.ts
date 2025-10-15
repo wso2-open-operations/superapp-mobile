@@ -29,6 +29,7 @@ export const BRIDGE_FUNCTION: BridgeFunction = {
   handler: async (params, context) => {
     if (context.promptAsync) {
       await context.promptAsync();
+      context.resolve();
     } else {
       console.error("promptAsync not available in bridge context");
       context.reject?.("Google authentication not available");
