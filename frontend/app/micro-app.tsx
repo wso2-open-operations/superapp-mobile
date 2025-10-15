@@ -67,7 +67,7 @@ const MicroApp = () => {
   const [token, setToken] = useState<string | null>();
   const dispatch = useDispatch();
   const router = useRouter();
-  const pendingTokenRequests: ((token: string) => void)[] = [];
+  const pendingTokenRequestsRef = useRef<((token: string) => void)[]>([]);
   const [webUri, setWebUri] = useState<string>(DEVELOPER_APP_DEFAULT_URL);
   const qrScanCallbackRef = useRef<((qrCode: string) => void) | null>(null);
   const colorScheme = useColorScheme();
