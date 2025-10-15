@@ -11,8 +11,8 @@
   "@testing-library/dom": "^10.4.1",
   "@emotion/react": "^11.13.3",
   "@emotion/styled": "^11.13.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5"
@@ -22,7 +22,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "print:token": "node ./scripts/print-token.js"
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "eslintConfig": {
     "extends": [
@@ -50,6 +51,7 @@
   "@types/node": "^22.9.3",
   "@types/react": "^19.0.8",
   "@types/react-dom": "^19.0.3",
+  "prettier": "^3.3.3",
   "jest": "^27.5.1",
   "typescript": "^5.6.3"
   }
