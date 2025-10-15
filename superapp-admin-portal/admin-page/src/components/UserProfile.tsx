@@ -29,6 +29,7 @@ import { COLORS } from "../constants/styles";
 import { getEndpoint } from "../constants/api";
 
 type AuthCtx = {
+type AuthContext = {
   state?: { isAuthenticated?: boolean };
   getBasicUserInfo?: () => Promise<any>;
   getAccessToken?: () => Promise<string>;
