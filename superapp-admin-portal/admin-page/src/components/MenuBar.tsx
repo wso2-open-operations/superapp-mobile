@@ -48,10 +48,10 @@ export default function MenuBar({ onNavigate, isAuthed, onSignOut, activeKey, pl
       anchor={placement}
       open
       sx={{
-        width: drawerWidth,
+        width: DRAWER_WIDTH,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
-          width: drawerWidth,
+          width: DRAWER_WIDTH,
           boxSizing: 'border-box',
         },
       }}
