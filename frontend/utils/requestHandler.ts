@@ -14,10 +14,10 @@
 // specific language governing permissions and limitations
 // under the License.
 import { refreshAccessToken } from "@/services/authService";
-import axios, { AxiosRequestConfig } from "axios";
-import { jwtDecode } from "jwt-decode";
-import dayjs from "dayjs";
 import { loadAuthDataFromSecureStore } from "@/utils/authTokenStore";
+import axios, { AxiosRequestConfig } from "axios";
+import dayjs from "dayjs";
+import { jwtDecode } from "jwt-decode";
 
 // General API request handler
 export const apiRequest = async (
@@ -43,7 +43,6 @@ export const apiRequest = async (
   config.headers = {
     ...config.headers,
     Authorization: `Bearer ${accessToken}`,
-    "x-jwt-assertion": `${accessToken}`,
   };
 
   try {
