@@ -27,6 +27,21 @@ type AppLike = {
  * and documentation. Keep the JS file alongside to remain effective.
  */
 export default function setupProxy(app: AppLike): void {
+
+  // Resolve proxy log level from env with validation
+  const allowedLogLevels = ["debug", "info", "warn", "error", "silent"] as const;
+  type LogLevel = typeof allowedLogLevels[number];
+  const normalizeLogLevel = (val: string | undefined, fallback: LogLevel): LogLevel => {
+    if (!val) return fallback;
+    const lc = val.toLowerCase();
+    return (allowedLogLevels as readonly string[]).includes(lc) ? (lc as LogLevel) : fallback;
+  };
+  // Global/default log level for proxies
+  const defaultLogLevel: LogLevel = normalizeLogLevel(
+    process.env.PROXY_LOG_LEVEL || process.env.REACT_APP_PROXY_LOG_LEVEL,
+    "debug",
+  );
+
   // Upstream host (no path). Keep existing env override behavior.
   // Upstream host (no path). Keep existing env override behavior.
   let target = process.env.UPSTREAM_TARGET || '';
@@ -50,7 +65,7 @@ export default function setupProxy(app: AppLike): void {
   app.use(['/upload', '/api/payslips/upload'], createProxyMiddleware({
     target,
     changeOrigin: true,
-    logLevel: 'debug',
+    logLevel: defaultLogLevel,
     pathRewrite: (path: string) => {
       if (path === '/upload' || path === '/api/payslips/upload') {
         return upstreamUploadPath;
@@ -82,10 +97,16 @@ export default function setupProxy(app: AppLike): void {
     throw new Error('[setupProxy] MICRO_APPS_UPLOAD_PATH environment variable is not set. Please set it to a valid upload path.');
   }
 
+  // Allow an override specific to micro-apps proxy, falling back to default
+  const microAppsLogLevel: LogLevel = normalizeLogLevel(
+    process.env.MICROAPPS_PROXY_LOG_LEVEL || process.env.REACT_APP_MICROAPPS_PROXY_LOG_LEVEL,
+    defaultLogLevel,
+  );
+
   app.use('/api/microapps', createProxyMiddleware({
     target: microAppsTarget,
     changeOrigin: true,
-    logLevel: 'debug',
+    logLevel: microAppsLogLevel,
     pathRewrite: (path: string) => {
       if (path === '/api/microapps/upload') {
         const rewritten = microAppsBasePath + microAppsUploadPath;
