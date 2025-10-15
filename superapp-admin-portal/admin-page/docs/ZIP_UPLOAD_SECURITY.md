@@ -1,4 +1,4 @@
-# ZIP upload security 
+# ZIP upload security
 
 Scope: simple, reliable checks you can do in the browser without extracting or parsing entries inside the ZIP file. These checks improve security and reduce obvious risks.
 
@@ -38,15 +38,7 @@ Scope: simple, reliable checks you can do in the browser without extracting or p
 
 7) Filenames Verification
 
-- no suspicious paths such as:- `../` (directory traversal), absolute paths (`/etc/...`), hidden files (`.bashrc`, `.DS_Store`, `.gitignore`, etc.)
-
-8) Verification of file extensions inside the zip
-
-- allow only expected safe types (e.g., `.txt`, `.csv`, `.json`, `.png`, `.pdf`).
-
-9) Disallow executable or script types
-
-- `.exe`, `.dll`, `.js`, `.jar`, `.py`, `.sh`, `.bat`, `.php`, `.html`, `.htm`, `.jsp`, `.war`, etc.
+- no suspicious paths such as:- `../` (directory traversal), absolute paths (`/etc/...`), hidden files (`.bashrc`, `.DS_Store`, `.gitignore`, etc.).
 
 10) Verification of number of files
 
