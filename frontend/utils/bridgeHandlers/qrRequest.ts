@@ -28,14 +28,12 @@ import { BridgeFunction } from "../../types/bridge.types";
 export const BRIDGE_FUNCTION: BridgeFunction = {
   topic: "qr_request",
   handler: async (params, context) => {
-    // Store the callback so Scanner can call it when QR is scanned
-    if (context.qrScanCallback) {
-      // Set the callback to resolve with the scanned QR code
-      context.qrScanCallback = (qrCode: string) => {
-        context.resolve(qrCode);
-      };
-    }
-    
+
+    // Set the callback to resolve with the scanned QR code
+    context.qrScanCallback = (qrCode: string) => {
+      context.resolve(qrCode);
+    };
+
     // Open the scanner
     context.setScannerVisible(true);
   }
