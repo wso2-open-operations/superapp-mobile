@@ -176,7 +176,7 @@ export default function MicroAppManagement(): React.ReactElement {
       {listError && !showUpload && (
         <Card
           style={{
-            background: "#2d1f1f",
+            background: Theme.CardBackground,
             border: "1px solid #5a2f2f",
             color: "#fca5a5",
             padding: 12,
