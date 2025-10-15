@@ -45,7 +45,7 @@ export default function setupProxy(app: AppLike): void {
 
 
   // Final full URL = {target}/gov-superapp/microappbackendprodbranch/v1.0/admin-portal/upload
-  const upstreamUploadPath = '';
+  const upstreamUploadPath = process.env.UPSTREAM_UPLOAD_PATH || '/gov-superapp/microappbackendprodbranch/v1.0/admin-portal/upload';
 
   app.use(['/upload', '/api/payslips/upload'], createProxyMiddleware({
     target,
