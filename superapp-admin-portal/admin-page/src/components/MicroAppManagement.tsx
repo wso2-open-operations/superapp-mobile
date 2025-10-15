@@ -72,22 +72,19 @@ export default function MicroAppManagement(): React.ReactElement {
     setListError("");
 
     try {
-      const headers: Record<string, string> = { Accept: 'application/json' };
+      const headers: Record<string, string> = { Accept: "application/json" };
       if (auth?.state?.isAuthenticated) {
-        if (typeof auth?.getAccessToken === "function") {
-          try {
-            const access = await auth.getAccessToken();
-            if (access) {
-              headers["Authorization"] = `Bearer ${access}`;
-            }
-          } catch (e) {
-            console.error("Authentication token acquisition failed:", e);
+        // Use access token for both Authorization and x-jwt-assertion (invoker).
+        try {
+          const access = await auth.getAccessToken?.().catch(() => undefined);
+
+          if (access) {
+            headers["Authorization"] = `Bearer ${access}`;
+            //headers["x-jwt-assertion"] = access;
           }
-        } else {
-          console.warn(
-            "Authentication token acquisition failed:",
-            new Error("getAccessToken is not a function")
-          );
+        } catch (e) {
+          const err = e instanceof Error ? e : new Error(String(e));
+          console.warn("Authentication token acquisition failed:", err);
         }
       }
 
