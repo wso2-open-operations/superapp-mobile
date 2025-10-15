@@ -42,7 +42,7 @@ export default function App(): React.ReactElement {
   const signOut: (() => Promise<void>) | undefined = ctx?.signOut;
 
   // Authentication state derived from Asgardeo context
-  const isAuthed = Boolean(state?.isAuthenticated);
+  const isAuthenticated = Boolean(state?.isAuthenticated);
 
   // Extract user information from authentication state with fallbacks
   const username = state?.username || '';
@@ -63,18 +63,18 @@ export default function App(): React.ReactElement {
         }
       })();
     }
-  }, [isAuthed, username, ctx]);
+  }, [isAuthenticated, username, ctx]);
 
   // Navigation handler for switching between admin sections
   const onNavigate = (key: 'microapp' | 'profile') => setActiveKey(key);
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex' }} data-testid="layout">
-      {isAuthed ? (
+      {isAuthenticated ? (
         <>
           <MenuBar
             onNavigate={(k) => onNavigate(k as 'microapp' | 'profile')}
-            isAuthed={isAuthed}
+            isAuthed={isAuthenticated}
             onSignOut={() => void signOut?.()}
             activeKey={activeKey}
             placement="left"
