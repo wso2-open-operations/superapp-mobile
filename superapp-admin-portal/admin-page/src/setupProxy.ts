@@ -28,7 +28,13 @@ type AppLike = {
  */
 export default function setupProxy(app: AppLike): void {
   // Upstream host (no path). Keep existing env override behavior.
-  let target = '';
+  // Upstream host (no path). Keep existing env override behavior.
+  let target = process.env.UPSTREAM_TARGET || '';
+  if (!target) {
+    throw new Error(
+      '[setupProxy] UPSTREAM_TARGET environment variable is not set. Please set it to a valid upstream URL.'
+    );
+  }
   // Normalize common mistakes (e.g., 'http:localhost:9090' or missing protocol)
   if (/^https?:localhost:\d+/.test(target)) {
     target = target.replace(/^(https?):/, '$1://');
