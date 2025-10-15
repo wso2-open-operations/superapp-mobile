@@ -186,7 +186,7 @@ const MicroApp = () => {
             `window.nativebridge.${method}(${JSON.stringify(data)}, "${idToUse}");`
           );
         },
-        pendingTokenRequests,
+        pendingTokenRequests: pendingTokenRequestsRef.current,
 
         resolve: (data?: any, reqId?: string) => {
           const methodName = getResolveMethod(topic);
