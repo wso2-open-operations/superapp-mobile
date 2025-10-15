@@ -69,9 +69,18 @@ export default function setupProxy(app: AppLike): void {
 
   // ---------------------------------------------------------------------------
   // Micro-app upload proxy (avoids browser CORS when calling remote gateway)
-  const microAppsTarget = '<MICRO_APPS_TARGET>';
-  const microAppsBasePath = '<MICRO_APPS_BASE_PATH>';
-  const microAppsUploadPath = '/<MICRO_APPS_UPLOAD_PATH>';
+  const microAppsTarget = process.env.MICRO_APPS_TARGET || '';
+  const microAppsBasePath = process.env.MICRO_APPS_BASE_PATH || '';
+  const microAppsUploadPath = process.env.MICRO_APPS_UPLOAD_PATH || '';
+  if (!microAppsTarget) {
+    throw new Error('[setupProxy] MICRO_APPS_TARGET environment variable is not set. Please set it to a valid upstream URL.');
+  }
+  if (!microAppsBasePath) {
+    throw new Error('[setupProxy] MICRO_APPS_BASE_PATH environment variable is not set. Please set it to a valid base path.');
+  }
+  if (!microAppsUploadPath) {
+    throw new Error('[setupProxy] MICRO_APPS_UPLOAD_PATH environment variable is not set. Please set it to a valid upload path.');
+  }
 
   app.use('/api/microapps', createProxyMiddleware({
     target: microAppsTarget,
