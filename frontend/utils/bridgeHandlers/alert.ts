@@ -30,6 +30,18 @@ export const BRIDGE_FUNCTION: BridgeFunction = {
   handler: async (params, context) => {
     const { title, message, buttonText } = params;
     console.log("Displaying alert with params:", title, message, buttonText);
-    Alert.alert(title, message, [{ text: buttonText }], { cancelable: false });
+    Alert.alert(
+      title,
+      message,
+      [
+        {
+          text: buttonText,
+          onPress: () => {
+            context.resolve(true);
+          }
+        }
+      ],
+      { cancelable: false }
+    );
   }
 };
