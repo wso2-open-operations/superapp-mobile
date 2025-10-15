@@ -79,7 +79,7 @@ export default function App(): React.ReactElement {
             activeKey={activeKey}
             placement="left"
           />
-          <Box sx={{ ml: '200px' , mt:'-680px'}}>
+          <Box sx={{ ml: '200px', mt: { xs: 2, md: 4 } }}>
             <Box component="main" sx={{ flexGrow: 1 }}></Box>
             <Container data-testid="content" sx={{ p: 0 }}>
               <div className="greeting" style={COMMON_STYLES.greeting}>
