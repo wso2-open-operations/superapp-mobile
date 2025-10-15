@@ -25,6 +25,7 @@
 import React, { useRef, useState } from "react";
 import { useAuthContext } from "@asgardeo/auth-react";
 import { getEndpoint } from "../constants/api";
+import { validateZipFile } from "../utils/zip";
 
 export type UploadMicroAppProps = {
   onUploaded?: () => void;
