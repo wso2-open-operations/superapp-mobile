@@ -28,7 +28,7 @@ import Card from "./common/Card";
 import { COLORS } from "../constants/styles";
 import { getEndpoint } from "../constants/api";
 
-type AuthCtx = {
+
 type AuthContext = {
   state?: { isAuthenticated?: boolean };
   getBasicUserInfo?: () => Promise<any>;
@@ -48,7 +48,7 @@ type Props = {
 };
 
 export default function UserProfile({ state }: Props) {
-  const ctx = useAuthContext() as AuthCtx;
+  const ctx = useAuthContext() as AuthContext;
 
   // State management for user data from different sources
   const [basicInfo, setBasicInfo] = useState<any | null>(null);
