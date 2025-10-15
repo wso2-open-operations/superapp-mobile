@@ -47,7 +47,7 @@ type UserProfileProps = {
   state?: ExternalAuthState;
 };
 
-export default function UserProfile({ state }: Props) {
+export default function UserProfile({ state }: UserProfileProps) {
   const ctx = useAuthContext() as AuthContext;
 
   // State management for user data from different sources
