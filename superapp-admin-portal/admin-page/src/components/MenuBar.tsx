@@ -32,6 +32,7 @@ const DRAWER_WIDTH = 200;
 
 export default function MenuBar({ onNavigate, isAuthed, onSignOut, activeKey, placement = 'left' }: MenuBarProps) {
   const items: Array<{ key: string; icon: React.ReactNode; label: string; danger?: boolean }> = [
+  const items: Array<MenuBarItem> = [
     { key: 'microapp', icon: <AppsIcon />, label: 'Micro App Management' },
     { key: 'profile', icon: <PersonIcon />, label: 'User Profile' },
   ];
