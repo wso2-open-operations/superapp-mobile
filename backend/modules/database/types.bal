@@ -78,6 +78,14 @@ public type MicroApp record {|
     int isMandatory;
     # List of versions available for the microapp
     MicroAppVersion[] versions = [];
+    # List of roles/groups that have access to the microapp
+    MicroAppRole[] roles = [];
+|};
+
+# Record type to represent a role/group mapping for a MicroApp.
+public type MicroAppRole record {|
+    # Role/group name that has access to the microapp
+    string role;
 |};
 
 # Record type to represent each MicroApp versions.
