@@ -161,7 +161,7 @@ export const themeSettings = (mode: PaletteMode) => {
           }),
     },
     typography: {
-      fontSize: 11,
+      fontSize: 14,
       fontFamily: ['Poppins', 'Inter', 'system-ui', 'Segoe UI', 'sans-serif'].join(','),
       h1: { fontSize: 38, fontWeight: 700 },
       h2: { fontSize: 32, fontWeight: 600 },
