@@ -80,7 +80,6 @@ export default function MicroAppManagement(): React.ReactElement {
 
           if (access) {
             headers["Authorization"] = `Bearer ${access}`;
-            //headers["x-jwt-assertion"] = access;
           }
         } catch (e) {
           const err = e instanceof Error ? e : new Error(String(e));
