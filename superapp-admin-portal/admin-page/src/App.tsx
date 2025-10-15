@@ -53,7 +53,7 @@ export default function App(): React.ReactElement {
   const [activeKey, setActiveKey] = useState<'microapp' | 'profile'>('microapp');
 
   useEffect(() => {
-    if (isAuthed) {
+    if (isAuthenticated) {
       (async () => {
         try {
           const token = await ctx?.getAccessToken?.();
