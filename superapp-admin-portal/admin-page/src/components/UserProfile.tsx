@@ -43,7 +43,7 @@ type ExternalAuthState = {
   family_name?: string;
 };
 
-type Props = {
+type UserProfileProps = {
   state?: ExternalAuthState;
 };
 
