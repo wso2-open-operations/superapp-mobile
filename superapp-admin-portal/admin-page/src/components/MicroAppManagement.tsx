@@ -26,6 +26,7 @@ import Loading from "./common/Loading";
 import Card from "./common/Card";
 import { COLORS } from "../constants/styles";
 import { getEndpoint } from "../constants/api";
+import { ApiKey } from "../constants/apiKeys";
 
 const UploadMicroAppTyped = UploadMicroApp as unknown as ReactNamespace.FC<{ onUploaded?: () => void }>;
 
@@ -41,6 +42,18 @@ type AuthContextLike = {
   state?: { isAuthenticated?: boolean };
   getAccessToken?: () => Promise<string>;
 };
+
+// Common container keys likely used by various backends for array payloads
+enum ContainerKey {
+  Items = 'items',
+  Data = 'data',
+  Content = 'content',
+  Results = 'results',
+  Records = 'records',
+  List = 'list',
+  MicroApps = 'microApps',
+  Microapps = 'microapps',
+}
 
 // UploadMicroApp is now fully typed in TypeScript
 
@@ -66,7 +79,6 @@ export default function MicroAppManagement(): React.ReactElement {
             const access = await auth.getAccessToken();
             if (access) {
               headers["Authorization"] = `Bearer ${access}`;
-            
             }
           } catch (e) {
             console.error("Authentication token acquisition failed:", e);
@@ -79,7 +91,7 @@ export default function MicroAppManagement(): React.ReactElement {
         }
       }
 
-      const endpoint = getEndpoint("MICROAPPS_LIST");
+      const endpoint = getEndpoint(API_KEYS.MICROAPPS_LIST);
       const res = await fetch(endpoint, { headers });
 
       if (!res.ok) {
@@ -99,16 +111,15 @@ export default function MicroAppManagement(): React.ReactElement {
         if (Array.isArray(d)) return d as MicroApp[];
         if (!d || typeof d !== 'object') return [];
         // Common container keys
-        const candidates = [
-          'items', 'data', 'content', 'results', 'records', 'list', 'microApps', 'microapps'
-        ];
+        // Check common container keys
+        const candidates = Object.values(ContainerKey) as string[];
         for (const key of candidates) {
-          const v = d[key];
+          const v = (d as any)[key];
           if (Array.isArray(v)) return v as MicroApp[];
           if (v && typeof v === 'object') {
             // Nested container like { data: { items: [...] } }
             for (const k2 of candidates) {
-              const v2 = v[k2];
+              const v2 = (v as any)[k2];
               if (Array.isArray(v2)) return v2 as MicroApp[];
             }
           }
