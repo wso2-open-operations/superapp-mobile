@@ -69,7 +69,7 @@ export default function MicroAppManagement(): React.ReactElement {
             
             }
           } catch (e) {
-            console.warn("Authentication token acquisition failed:", e);
+            console.error("Authentication token acquisition failed:", e);
           }
         } else {
           console.warn(
