@@ -13,12 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
-public enum TokenExchangeType {
-    EXCHANGE = "EXCHANGE",
-    SUPER_APP = "SUPER APP"
-}
-
 public enum RequestFormat {
     FORM = "application/x-www-form-urlencoded",
     JSON = "application/json",

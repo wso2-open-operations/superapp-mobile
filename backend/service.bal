@@ -28,6 +28,7 @@ configurable string lkLocation = "Sri Lanka";
 configurable string mobileAppReviewerEmail = ?; // App store reviewer email
 configurable AppScope[] appScopes = [];
 configurable TokenExchangeConfig tokenExchangeConfig = ?;
+configurable string tokenExchangeType = ?;
 
 @display {
     label: "SuperApp Mobile Service",
@@ -99,7 +100,8 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         return <AppConfig>{
             appConfigs,
             defaultMicroAppIds,
-            appScopes
+            appScopes,
+            tokenExchangeType
         };
     }
 
