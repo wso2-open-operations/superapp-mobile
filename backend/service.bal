@@ -27,6 +27,7 @@ configurable string[] restrictedAppsForNonLk = ?;
 configurable string lkLocation = "Sri Lanka";
 configurable string mobileAppReviewerEmail = ?; // App store reviewer email
 configurable AppScope[] appScopes = [];
+configurable TokenExchangeConfig tokenExchangeConfig = ?;
 
 @display {
     label: "SuperApp Mobile Service",
@@ -101,6 +102,11 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             appScopes
         };
     }
+
+    # Fetch token exchange configuration details.
+    # 
+    # + return - Token exchange configuration relevant to the implementation
+    resource function get micro\-app/token\-exchange\-configs() returns TokenExchangeConfig => tokenExchangeConfig;
 
     # Fetch user information of the logged in users.
     #
