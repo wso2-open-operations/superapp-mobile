@@ -100,17 +100,17 @@ public isolated function getMicroAppById(string appId, string[] groups) returns 
 # + microApp - MicroApp record to insert/update
 # + createdBy - User who performs the operation
 # + return - ExecutionSuccessResult on success or error
-public isolated function addMicroApp(MicroApp microApp, string createdBy) returns ExecutionSuccessResult|error {
-    sql:ExecutionResult result = check databaseClient->execute(insertMicroAppQuery(microApp, createdBy));
+public isolated function upsertMicroApp(MicroApp microApp, string createdBy) returns ExecutionSuccessResult|error {
+    sql:ExecutionResult result = check databaseClient->execute(upsertMicroAppQuery(microApp, createdBy));
     if microApp.roles.length() > 0 {
-        foreach MicroAppRole roleMapping in microApp.roles {
-            var _ = check databaseClient->execute(insertMicroAppRoleQuery(microApp.appId, roleMapping, createdBy));
+        foreach MicroAppRole appRole in microApp.roles {
+            _ = check databaseClient->execute(upsertMicroAppRoleQuery(microApp.appId, appRole, createdBy));
         }
     }
 
     if microApp.versions.length() > 0 {
-        foreach MicroAppVersion ver in microApp.versions {
-            _ = check databaseClient->execute(insertMicroAppVersionQuery(microApp.appId, ver, createdBy));
+        foreach MicroAppVersion version in microApp.versions {
+            _ = check databaseClient->execute(upsertMicroAppVersionQuery(microApp.appId, version, createdBy));
         }
     }
 
@@ -123,9 +123,10 @@ public isolated function addMicroApp(MicroApp microApp, string createdBy) return
 # + version - MicroAppVersion record to insert/update
 # + createdBy - User who performs the operation
 # + return - ExecutionSuccessResult on success or error
-public isolated function addMicroAppVersion(string appId, MicroAppVersion version, string createdBy) 
+public isolated function upsertMicroAppVersion(string appId, MicroAppVersion version, string createdBy) 
     returns ExecutionSuccessResult|error {
-    sql:ExecutionResult result = check databaseClient->execute(insertMicroAppVersionQuery(appId, version, createdBy));
+        
+    sql:ExecutionResult result = check databaseClient->execute(upsertMicroAppVersionQuery(appId, version, createdBy));
     if result.affectedRowCount == 0 {
         return error("Failed to add micro app version.");
     }
@@ -136,12 +137,13 @@ public isolated function addMicroAppVersion(string appId, MicroAppVersion versio
 # Inserts or updates a role mapping for a MicroApp.
 #
 # + appId - MicroApp ID to which this role mapping belongs
-# + roleMapping - MicroAppRole record containing the role name
+# + appRole - MicroAppRole record containing the role name
 # + createdBy - User who performs the operation
 # + return - ExecutionSuccessResult on success or error
-public isolated function addMicroAppRole(string appId, MicroAppRole roleMapping, string createdBy) 
+public isolated function upsertMicroAppRole(string appId, MicroAppRole appRole, string createdBy) 
     returns ExecutionSuccessResult|error {
-    sql:ExecutionResult result = check databaseClient->execute(insertMicroAppRoleQuery(appId, roleMapping, createdBy));
+
+    sql:ExecutionResult result = check databaseClient->execute(upsertMicroAppRoleQuery(appId, appRole, createdBy));
     if result.affectedRowCount == 0 {
         return error("Failed to add micro app role mapping.");
     }
