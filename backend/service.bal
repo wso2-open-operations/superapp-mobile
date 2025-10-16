@@ -37,11 +37,11 @@ service class ErrorInterceptor {
 
     remote function interceptResponseError(error err, http:RequestContext ctx) returns http:BadRequest|error {
         if err is http:PayloadBindingError {
-            string errorMessage = err.message();
-            log:printError("Payload binding failed", err);
+            string customError = "Payload binding failed!";
+            log:printError(customError, err);
             return {
                 body: {
-                    message: errorMessage
+                    message: customError
                 }
             };
         }
@@ -277,10 +277,6 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             return <http:InternalServerError>{
                 body: {message: ERR_MSG_USER_HEADER_NOT_FOUND}
             };
-        }
-        
-        if microApp.roles.length() == 0 {
-            microApp.roles = [{ role: database:defaultMicroAppsGroup }];
         }
         
         database:ExecutionSuccessResult|error result = database:upsertMicroApp(microApp, userInfo.email);
