@@ -18,18 +18,17 @@ import type { AppDispatch } from "@/context/store";
 import { updateExchangedToken } from "@/context/slices/appSlice";
 import { loadExchangedToken } from "./exchangedTokenStore";
 
-/** After redux is hydrated (apps loaded), rehydrate tokens from SecureStore */
-export async function restoreExchangedTokens(apps: MicroApp[], dispatch: AppDispatch) {
-  await Promise.all(
+/** Fetch exchanged tokens from SecureStore and merge into app state.*/
+export async function buildAppsWithTokens(apps: MicroApp[]): Promise<MicroApp[]> {
+  const withTokens = await Promise.all(
     apps.map(async (app) => {
       try {
         const token = await loadExchangedToken(app.appId);
-        if (token) {
-          dispatch(updateExchangedToken({ appId: app.appId, exchangedToken: token }));
-        }
-      } catch (error) {
-        console.warn("RestoreExchangedTokens failed");
+        return token ? { ...app, exchangedToken: token } : app;
+      } catch {
+        return app;
       }
     })
   );
+  return withTokens;
 }
