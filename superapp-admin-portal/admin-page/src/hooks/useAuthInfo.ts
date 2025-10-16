@@ -77,7 +77,9 @@ function decodeJwtPayload(token: string): JWTPayload | null {
   const json = atob(padded);
   const payload: JWTPayload = JSON.parse(json);
     return payload;
-  } catch {
+  } catch (err) {
+    // Keep token details out of logs; just note the failure.
+    console.error("useAuthInfo.decodeJwtPayload: Failed to decode JWT payload", err);
     return null;
   }
 }
@@ -101,8 +103,8 @@ export function useAuthInfo(): AuthInfo {
           if (fromAccess.length > 0) return fromAccess;
         }
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("useAuthInfo.extractUserGroups: Access token processing failed", err);
     }
 
     // 2) Try ID token (decoded claims)
@@ -115,8 +117,8 @@ export function useAuthInfo(): AuthInfo {
           if (fromId.length > 0) return fromId;
         }
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("useAuthInfo.extractUserGroups: ID token processing failed", err);
     }
 
     // 3) Try basic user info endpoint
@@ -126,8 +128,8 @@ export function useAuthInfo(): AuthInfo {
         const fromUserInfo = extractGroupsFromClaims(basic);
         if (fromUserInfo.length > 0) return fromUserInfo;
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("useAuthInfo.extractUserGroups: Basic user info processing failed", err);
     }
 
     // 4) Try access token payload from state
@@ -135,8 +137,8 @@ export function useAuthInfo(): AuthInfo {
       const payload = auth?.state?.accessTokenPayload as unknown;
       const fromState = extractGroupsFromClaims(payload);
       if (fromState.length > 0) return fromState;
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("useAuthInfo.extractUserGroups: Access token payload from state processing failed", err);
     }
 
     // Nothing found
