@@ -183,10 +183,10 @@ public isolated function upsertMicroAppVersionQuery(string appId, MicroAppVersio
 # Query to insert a role mapping into `micro_app_role` table.
 #
 # + appId - MicroApp id
-# + roleMapping - MicroAppRole record containing the role name
+# + appRole - MicroAppRole record containing the role name
 # + createdBy - User who performs the insertion (used for created_by/updated_by)
 # + return - Generated query to insert micro app role mapping
-public isolated function upsertMicroAppRoleQuery(string appId, MicroAppRole roleMapping, string createdBy)
+public isolated function upsertMicroAppRoleQuery(string appId, MicroAppRole appRole, string createdBy)
     returns sql:ParameterizedQuery => `
     INSERT INTO micro_app_role (
         micro_app_id,
@@ -198,7 +198,7 @@ public isolated function upsertMicroAppRoleQuery(string appId, MicroAppRole role
         updated_at
     ) VALUES (
         ${appId},
-        ${roleMapping.role},
+        ${appRole.role},
         1,
         ${createdBy},
         ${createdBy},
@@ -216,8 +216,7 @@ public isolated function upsertMicroAppRoleQuery(string appId, MicroAppRole role
 # + appId - The micro app ID to be deleted
 # + updatedBy - User who performs the deletion (used for updated_by)
 # + return - Generated query to soft delete the micro app from the `micro_app` table
-public isolated function deleteMicroAppQuery(string appId, string updatedBy) returns 
-sql:ParameterizedQuery =>
+public isolated function deleteMicroAppQuery(string appId, string updatedBy) returns sql:ParameterizedQuery =>
     `UPDATE micro_app SET 
         active = 0, 
         updated_at = CURRENT_TIMESTAMP, 
@@ -230,8 +229,7 @@ sql:ParameterizedQuery =>
 # + appId - The micro app ID whose versions should be deleted
 # + updatedBy - User who performs the deletion (used for updated_by)
 # + return - Generated query to soft delete all versions from the `micro_app_version` table
-public isolated function deleteMicroAppVersionQuery(string appId, string updatedBy) returns 
-sql:ParameterizedQuery =>
+public isolated function deleteMicroAppVersionQuery(string appId, string updatedBy) returns sql:ParameterizedQuery =>
     `UPDATE micro_app_version SET 
         active = 0, 
         updated_at = CURRENT_TIMESTAMP, 
@@ -244,8 +242,7 @@ sql:ParameterizedQuery =>
 # + appId - The micro app ID whose role mappings should be deleted
 # + updatedBy - User who performs the deletion (used for updated_by)
 # + return - Generated query to soft delete all role mappings from the `micro_app_role` table
-public isolated function deleteMicroAppRoleQuery(string appId, string updatedBy) returns 
-sql:ParameterizedQuery =>
+public isolated function deleteMicroAppRoleQuery(string appId, string updatedBy) returns sql:ParameterizedQuery =>
     `UPDATE micro_app_role SET 
         active = 0, 
         updated_at = CURRENT_TIMESTAMP, 
