@@ -15,11 +15,6 @@
 // under the License.
 import superapp_mobile_service.database;
 
-public enum TokenExchangeType {
-    EXCHANGE = "EXCHANGE",
-    SUPER_APP = "SUPER_APP"
-}
-
 # App scope record type.
 public type AppScope record {|
     # Micro-app id
@@ -45,7 +40,7 @@ public type TokenExchangeConfig record {|
     # Token exchange endpoint
     string tokenUrl;
     # Request format
-    string requestFormat;
+    RequestFormat requestFormat;
     # Optional parameters
     map<string> optionalParams?;
 |};
