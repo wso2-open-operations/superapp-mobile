@@ -43,7 +43,6 @@ export default function setupProxy(app: AppLike): void {
   );
 
   // Upstream host (no path). Keep existing env override behavior.
-  // Upstream host (no path). Keep existing env override behavior.
   let target = process.env.UPSTREAM_TARGET || '';
   if (!target) {
     throw new Error(
