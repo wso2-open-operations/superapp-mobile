@@ -16,7 +16,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuthContext } from '@asgardeo/auth-react';
-import { extractGroupsFromClaims } from '../constants/authorization';
+import { extractGroupsFromClaims } from '../utils/autherization';
 
 type AuthContextLike = {
   state?: {
