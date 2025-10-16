@@ -102,7 +102,6 @@ export default function UserProfile({ state }: UserProfileProps) {
         const headers: Record<string, string> = {};
         try {
           if (ctx?.state?.isAuthenticated) {
-            
             const access = await ctx.getAccessToken?.().catch(() => undefined);
             if (access) headers["Authorization"] = `Bearer ${access}`;
           }
