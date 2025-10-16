@@ -16,7 +16,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuthContext } from '@asgardeo/auth-react';
-import { extractGroupsFromClaims } from '../utils/autherization';
+import { extractGroupsFromClaims } from '../utils/authorization';
 
 // Minimal JWT payload shape we care about, with common registered claims
 // and known group/role claim variants used in this app.
