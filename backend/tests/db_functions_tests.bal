@@ -1,12 +1,28 @@
-import ballerina/test;
-import ballerina/io;
+// Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
+//
+// WSO2 LLC. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
 
 import superapp_mobile_service.database as db;
+
+import ballerina/io;
+import ballerina/test;
 
 // Test case for adding a new micro app with versions and default role
 @test:Config
 function testAddMicroApp_InsertsSuccessfully() returns error? {
-    
+
     string uniqueId = "test-leave-app";
 
     db:MicroApp microApp = {
@@ -28,9 +44,9 @@ function testAddMicroApp_InsertsSuccessfully() returns error? {
         ]
     };
 
-    db:ExecutionSuccessResult result = check db:addMicroApp(microApp, "test-user@wso2.com");
+    db:ExecutionSuccessResult result = check db:upsertMicroApp(microApp, "test-user@wso2.com");
     io:println("Insert Result: ", result);
-    test:assertTrue(result.affectedRowCount > 0, msg = "Expected insert to affect at least one row"); 
+    test:assertTrue(result.affectedRowCount > 0, msg = "Expected insert to affect at least one row");
     io:println("Default role 'default' should have been created automatically for: ", uniqueId);
 }
 
@@ -44,7 +60,7 @@ function testAddMicroAppVersion() returns error? {
         iconUrl: "https://example.com/icon-1.0.1.png",
         downloadUrl: "https://lsf-superapp-test/payslip-viewer.zip"
     };
-    db:ExecutionSuccessResult result = check db:addMicroAppVersion("test-leave-app", version, "test-user@wso2.com");
+    db:ExecutionSuccessResult result = check db:upsertMicroAppVersion("test-leave-app", version, "test-user@wso2.com");
     io:println("==============================================================");
     io:println("Insert Version Result: ", result);
     test:assertTrue(result.affectedRowCount > 0, msg = "Expected insert to affect at least one row");
@@ -58,9 +74,9 @@ function testAddMicroAppRole_InsertsSuccessfully() returns error? {
         role: "hr-staff"
     };
 
-    db:ExecutionSuccessResult result = check db:addMicroAppRole(appId, roleMapping, "test-user@wso2.com"); 
+    db:ExecutionSuccessResult result = check db:upsertMicroAppRole(appId, roleMapping, "test-user@wso2.com");
     io:println("==============================================================");
-    io:println("Insert Role Result: ", result);    
+    io:println("Insert Role Result: ", result);
     test:assertTrue(result.affectedRowCount > 0, msg = "Expected insert to affect at least one row");
 }
 
