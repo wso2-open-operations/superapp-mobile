@@ -1,7 +1,7 @@
 /**
  * Role-Based Access Control Component (TypeScript)
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import { useAuthContext } from '@asgardeo/auth-react';
 import type { AuthContextLike } from '../types/authentication';
 import useAuthInfo from '../hooks/useAuthInfo';
@@ -29,6 +29,12 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
 
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
+  // Create a stable key for requiredGroups to avoid JSON.stringify in deps.
+  // Sort and lowercase so order/case changes don't retrigger unnecessarily.
+  const requiredGroupsKey = useMemo(() => {
+    return [...requiredGroups].map((g) => g.toLowerCase()).sort().join("|");
+  }, [requiredGroups]);
+
   const hasRequiredAccess = (userGroups: string[], requiredGroupsList: string[]): boolean => {
     return requiredGroupsList.some((requiredGroup) =>
       userGroups.some((userGroup) => userGroup.toLowerCase().includes(requiredGroup.toLowerCase()))
@@ -39,7 +45,7 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
     const groups = userGroups;
     const authorized = isAuthenticated && hasRequiredAccess(groups, requiredGroups);
     setIsAuthorized(authorized);
-  }, [isAuthenticated, userGroups, JSON.stringify(requiredGroups)]);
+  }, [isAuthenticated, userGroups, requiredGroupsKey]);
 
   if (loading) {
     return (
