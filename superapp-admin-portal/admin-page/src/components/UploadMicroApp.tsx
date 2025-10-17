@@ -107,7 +107,6 @@ const UploadMicroApp: React.FC<UploadMicroAppProps> = ({ onUploaded }) => {
           const accessToken = await auth.getAccessToken?.().catch(() => undefined);
           if (accessToken) {
             headers["Authorization"] = `Bearer ${accessToken}`;
-            //headers["x-jwt-assertion"] = accessToken; // make same as Bearer
           }
         }
       } catch (e) {
