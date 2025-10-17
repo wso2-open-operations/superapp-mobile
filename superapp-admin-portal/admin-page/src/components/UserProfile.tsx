@@ -191,9 +191,17 @@ export default function UserProfile({ state }: UserProfileProps) {
         <h2 style={{ marginTop: 0, marginBottom: 12, color: COLORS.primary }}>User Profile</h2>
 
         {loading && <Loading message="Loading user details…" />}
-        {error && <div style={{ color: COLORS.error, marginBottom: 12 }}>{error}</div>}
+        {error && (
+          <div style={{ color: COLORS.error, marginBottom: 12 }}>
+            <b>Asgardeo:</b> {error}
+          </div>
+        )}
         {profileLoading && <Loading message="Loading profile…" />}
-        {profileError && <div style={{ color: COLORS.error, marginBottom: 12 }}>{profileError}</div>}
+        {profileError && (
+          <div style={{ color: COLORS.error, marginBottom: 12 }}>
+            <b>Backend:</b> {profileError}
+          </div>
+        )}
 
         <div style={{ display: "grid", gap: 8 }}>
           {givenName && (
