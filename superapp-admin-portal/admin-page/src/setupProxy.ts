@@ -115,9 +115,12 @@ export default function setupProxy(app: AppLike): void {
     },
     onProxyReq: (proxyReq: any) => {
       const shouldStrip = process.env.MICROAPPS_STRIP_ASSERTION === 'true';
-      const assertion = proxyReq.getHeader?.('x-jwt-assertion');
-      if (shouldStrip && assertion) {
-        proxyReq.removeHeader?.('x-jwt-assertion');
+      // Type guard: ensure getHeader and removeHeader are functions before calling
+      const hasGetHeader = typeof proxyReq.getHeader === 'function';
+      const hasRemoveHeader = typeof proxyReq.removeHeader === 'function';
+      const assertion = hasGetHeader ? proxyReq.getHeader('x-jwt-assertion') : undefined;
+      if (shouldStrip && assertion && hasRemoveHeader) {
+        proxyReq.removeHeader('x-jwt-assertion');
       }
     },
     onError: (err: Error, req: any, res: any) => {
