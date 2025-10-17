@@ -46,7 +46,7 @@ export default function setupProxy(app: AppLike): void {
   let target = process.env.UPSTREAM_TARGET || '';
   if (!target) {
     throw new Error(
-      '[setupProxy] UPSTREAM_TARGET environment variable is not set. Please set it to a valid upstream URL.'
+      '[setupProxy] UPSTREAM_TARGET environment variable is not set for payslips upload proxy. Please set UPSTREAM_TARGET to a valid upstream URL for the payslips upload proxy.'
     );
   }
   // Normalize common mistakes (e.g., 'http:localhost:9090' or missing protocol)
