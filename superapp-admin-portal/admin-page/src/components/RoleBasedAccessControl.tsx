@@ -42,8 +42,7 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
   };
 
   useEffect(() => {
-    const groups = userGroups;
-    const authorized = isAuthenticated && hasRequiredAccess(groups, requiredGroups);
+    const authorized = isAuthenticated && hasRequiredAccess(userGroups, requiredGroups);
     setIsAuthorized(authorized);
   }, [isAuthenticated, userGroups, requiredGroupsKey]);
 
