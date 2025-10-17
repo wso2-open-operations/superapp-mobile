@@ -89,7 +89,7 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
         onSignOut={async () => {
           try {
             // Execute signOut if available; ignore any return value for compatibility
-            await Promise.resolve(auth?.signOut?.());
+            await auth?.signOut?.();
           } catch {
             console.error("Sign-out failed");
           }
