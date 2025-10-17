@@ -225,9 +225,9 @@ export default function MicroAppManagement(): React.ReactElement {
             </Card>
           )}
 
-          {microApps.map((app) => (
+          {microApps.map((app, index) => (
         <Card
-              key={app.micro_app_id || app.app_id || Math.random().toString(36)}
+              key={app.micro_app_id || app.app_id || index}
               style={{
                 padding: 16,
                 background: COLORS.cardBackground,
