@@ -104,7 +104,7 @@ export default function UserProfile({ state }: UserProfileProps) {
             if (access) headers["Authorization"] = `Bearer ${access}`;
           }
         } catch {
-          // Non-fatal: continue without tokens
+          console.error("UserProfile: Access token acquisition failed");
         }
 
         const res = await fetch(endpoint, { headers });
