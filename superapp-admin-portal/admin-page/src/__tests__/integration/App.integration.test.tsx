@@ -85,13 +85,15 @@ beforeEach(() => {
       username: '',
       displayName: '',
     },
-    signIn: jest.fn(),
-    signOut: jest.fn(),
-    getAccessToken: jest.fn().mockResolvedValue('token-abc'),
-    getIDToken: jest.fn().mockResolvedValue('id-123'),
+    signIn: jest.fn<void, []>(),
+    signOut: jest.fn<void, []>(),
+    getAccessToken: jest.fn<Promise<string>, []>().mockResolvedValue(
+      "token-abc",
+    ),
+    getIDToken: jest.fn<Promise<string>, []>().mockResolvedValue("id-123"),
     getDecodedIDToken: jest.fn(),
     getBasicUserInfo: jest.fn(),
-  } as unknown as MockAuth;
+  };
 
   // @ts-ignore
   global.fetch = jest.fn().mockResolvedValue({
