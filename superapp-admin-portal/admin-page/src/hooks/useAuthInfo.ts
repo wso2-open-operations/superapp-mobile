@@ -39,7 +39,10 @@ function base64UrlDecode(input: string): string {
   return atob(padded);
 }
 
-function decodeJwtPayload(token: string): JWTPayload | null {
+function decodeJwtPayload(
+  token: string,
+  source: "access" | "id" | "unknown" = "unknown",
+): JWTPayload | null {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
@@ -49,7 +52,7 @@ function decodeJwtPayload(token: string): JWTPayload | null {
     return payload;
   } catch (err) {
     // Keep token details out of logs; just note the failure.
-    console.error("useAuthInfo.decodeJwtPayload: Failed to decode JWT payload", err);
+    console.error(`useAuthInfo.decodeJwtPayload: Failed to decode JWT payload (source=${source})`, err);
     return null;
   }
 }
@@ -67,7 +70,7 @@ export function useAuthInfo(): AuthInfo {
     try {
       const accessToken = await auth?.getAccessToken?.();
       if (accessToken) {
-        const payload = decodeJwtPayload(accessToken);
+        const payload = decodeJwtPayload(accessToken, "access");
         if (payload) {
           const fromAccess = extractGroupsFromClaims(payload);
           if (fromAccess.length > 0) return fromAccess;
