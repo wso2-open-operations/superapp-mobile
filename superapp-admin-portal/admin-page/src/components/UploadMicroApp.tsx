@@ -24,6 +24,7 @@
 
 import React, { useRef, useState } from "react";
 import { useAuthContext } from "@asgardeo/auth-react";
+import type { AuthContextLike } from "../types/authentication";
 import { getEndpoint } from "../constants/api";
 import { validateZipFile } from "../utils/zip";
 
@@ -33,10 +34,7 @@ export type UploadMicroAppProps = {
 
 const UploadMicroApp: React.FC<UploadMicroAppProps> = ({ onUploaded }) => {
   // Authentication context for secure API calls
-  const auth = useAuthContext() as unknown as {
-    state?: { isAuthenticated?: boolean };
-    getAccessToken?: () => Promise<string>;
-  };
+  const auth = useAuthContext() as AuthContextLike;
 
   // Form field state management
   const [name, setName] = useState("");

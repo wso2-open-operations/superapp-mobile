@@ -3,22 +3,10 @@
  */
 import React, { useEffect, useState } from 'react';
 import { useAuthContext } from '@asgardeo/auth-react';
+import type { AuthContextLike } from '../types/authentication';
 import useAuthInfo from '../hooks/useAuthInfo';
 import { Card, CardContent, Typography } from '@mui/material';
 import AccessDenied from './common/AccessDenied';
-
-type AuthContextLike = {
-  state?: {
-    isAuthenticated?: boolean;
-    accessToken?: string | null;
-    accessTokenPayload?: any;
-  };
-  getAccessToken?: () => Promise<string | null | undefined>;
-  getIDToken?: () => Promise<string | null | undefined>;
-  getDecodedIDToken?: () => any;
-  getBasicUserInfo?: () => Promise<any>;
-  signOut?: () => void | Promise<void>;
-};
 
 type RoleBasedAccessControlProps = {
   children?: React.ReactNode;
@@ -36,7 +24,7 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
   children,
   requiredGroups = ['superapp_admin'],
 }) => {
-  const auth = useAuthContext() as unknown as AuthContextLike;
+  const auth = useAuthContext() as AuthContextLike;
   const { isAuthenticated, groups: userGroups, loading, error, refresh } = useAuthInfo();
 
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
@@ -79,7 +67,14 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
         requiredGroups={requiredGroups}
         userGroups={userGroups}
         error={error}
-        onSignOut={() => auth?.signOut?.()}
+        onSignOut={async () => {
+          try {
+            // Execute signOut if available; ignore any return value for compatibility
+            await Promise.resolve(auth?.signOut?.());
+          } catch {
+            console.error("Sign-out failed");
+          }
+        }}
         onRetry={() => refresh()}
       />
     );

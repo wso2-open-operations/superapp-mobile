@@ -23,18 +23,13 @@
 
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "@asgardeo/auth-react";
+import type { AuthContextLike } from "../types/authentication";
 import Loading from "./common/Loading";
 import Card from "./common/Card";
 import { COLORS } from "../constants/styles";
 import { getEndpoint } from "../constants/api";
 
-
-type AuthContext = {
-  state?: { isAuthenticated?: boolean };
-  getBasicUserInfo?: () => Promise<any>;
-  getAccessToken?: () => Promise<string>;
-  getIDToken?: () => Promise<string>;
-};
+type AuthContext = AuthContextLike;
 
 type ExternalAuthState = {
   email?: string;
@@ -51,12 +46,12 @@ export default function UserProfile({ state }: UserProfileProps) {
   const ctx = useAuthContext() as AuthContext;
 
   // State management for user data from different sources
-  const [basicInfo, setBasicInfo] = useState<any | null>(null);
+  const [basicInfo, setBasicInfo] = useState<unknown | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState("");
-  const [profile, setProfile] = useState<any | null>(null);
+  const [profile, setProfile] = useState<unknown | null>(null);
 
   // Effect: Fetch Basic User Info from Asgardeo
   useEffect(() => {
@@ -64,10 +59,10 @@ export default function UserProfile({ state }: UserProfileProps) {
     (async () => {
       try {
         if (ctx?.getBasicUserInfo) {
-          const info = await ctx.getBasicUserInfo();
-          if (mounted) setBasicInfo(info || null);
-        }
-      } catch (e) {
+            const info = await ctx.getBasicUserInfo();
+            if (mounted) setBasicInfo(info ?? null);
+          }
+        } catch (e) {
         const errorMsg = "Error occurred while fetching user details";
         console.error(errorMsg, e);
         if (mounted) setError(errorMsg);
@@ -82,8 +77,11 @@ export default function UserProfile({ state }: UserProfileProps) {
 
   // Effect: Fetch Extended Profile from Backend Service
   useEffect(() => {
-    const email = (basicInfo as any)?.email || state?.email || (basicInfo as any)?.username || state?.username;
-    if (!email) return;
+    // Guarded extraction from possibly-unknown basicInfo
+  const basicObj = (basicInfo && typeof basicInfo === "object") ? (basicInfo as Record<string, unknown>) : null;
+  const email = basicObj?.email || state?.email || basicObj?.username || state?.username;
+  const emailStr = typeof email === "string" ? email : String(email || "");
+  if (!emailStr) return;
 
     const base = getEndpoint("USERS_BASE") || getEndpoint("MICROAPPS_LIST").replace("/micro-apps", "");
     if (!base || base.trim() === "") {
@@ -96,7 +94,7 @@ export default function UserProfile({ state }: UserProfileProps) {
       setProfileLoading(true);
       setProfileError("");
       try {
-        const encoded = encodeURIComponent(email);
+        const encoded = encodeURIComponent(emailStr);
         const endpoint = new URL(`users/${encoded}`, base).toString();
 
         const headers: Record<string, string> = {};
@@ -124,7 +122,7 @@ export default function UserProfile({ state }: UserProfileProps) {
           throw new Error(`Profile fetch failed (${res.status}) ${snippet ? "- " + snippet : ""}`);
         }
 
-        let data: any;
+        let data: unknown;
         if (/json/i.test(contentType)) {
           try {
             data = JSON.parse(bodyText || "null");
@@ -158,11 +156,18 @@ export default function UserProfile({ state }: UserProfileProps) {
     };
   }, [basicInfo, state, ctx]);
 
-  const givenName = (basicInfo as any)?.given_name || state?.given_name || "";
-  const familyName = (basicInfo as any)?.family_name || state?.family_name || "";
-  const locale = (basicInfo as any)?.locale || "";
-  const updatedAt = (basicInfo as any)?.updated_at || "";
-  const picture = (basicInfo as any)?.picture || "";
+  const basic = (basicInfo && typeof basicInfo === "object") ? (basicInfo as Record<string, unknown>) : null;
+  const givenName = (typeof basic?.given_name === "string" && basic?.given_name) || state?.given_name || "";
+  const familyName = (typeof basic?.family_name === "string" && basic?.family_name) || state?.family_name || "";
+  const locale = (typeof basic?.locale === "string" && basic?.locale) || "";
+  const updatedAt = (typeof basic?.updated_at === "string" && basic?.updated_at) || "";
+  const picture = (typeof basic?.picture === "string" && basic?.picture) || "";
+
+  const prof = profile && typeof profile === "object" ? (profile as Record<string, unknown>) : null;
+  const firstName = typeof prof?.first_name === "string" ? prof.first_name : null;
+  const lastName = typeof prof?.last_name === "string" ? prof.last_name : null;
+  const employeeId = prof?.employee_id != null ? String(prof.employee_id) : null;
+  const department = typeof prof?.department === "string" ? prof.department : null;
 
   return (
     <Card
@@ -212,24 +217,24 @@ export default function UserProfile({ state }: UserProfileProps) {
             </div>
           )}
 
-          {profile?.first_name && (
+          {firstName && (
             <div>
-              <b style={{ color: COLORS.primary }}>First name:</b> {profile.first_name}
+              <b style={{ color: COLORS.primary }}>First name:</b> {firstName}
             </div>
           )}
-          {profile?.last_name && (
+          {lastName && (
             <div>
-              <b style={{ color: COLORS.primary }}>Last name:</b> {profile.last_name}
+              <b style={{ color: COLORS.primary }}>Last name:</b> {lastName}
             </div>
           )}
-          {profile?.employee_id && (
+          {employeeId && (
             <div>
-              <b style={{ color: COLORS.primary }}>Employee ID:</b> {profile.employee_id}
+              <b style={{ color: COLORS.primary }}>Employee ID:</b> {employeeId}
             </div>
           )}
-          {profile?.department && (
+          {department && (
             <div>
-              <b style={{ color: COLORS.primary }}>Department:</b> {profile.department}
+              <b style={{ color: COLORS.primary }}>Department:</b> {department}
             </div>
           )}
         </div>

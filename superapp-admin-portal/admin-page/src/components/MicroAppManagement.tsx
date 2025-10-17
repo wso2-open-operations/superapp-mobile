@@ -20,7 +20,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useAuthContext } from "@asgardeo/auth-react";
 import UploadMicroApp from "./UploadMicroApp";
-import type ReactNamespace from 'react';
 import Button from "./common/Button";
 import Loading from "./common/Loading";
 import Card from "./common/Card";
@@ -28,7 +27,6 @@ import { COLORS, COMMON_STYLES } from "../constants/styles";
 import { getEndpoint } from "../constants/api";
 import { API_KEYS, ApiKey } from "../constants/apiKeys";
 
-const UploadMicroAppTyped = UploadMicroApp as unknown as ReactNamespace.FC<{ onUploaded?: () => void }>;
 
 type MicroApp = {
   micro_app_id?: string;
@@ -95,7 +93,7 @@ export default function MicroAppManagement(): React.ReactElement {
       }
 
       // Attempt robust JSON parsing and normalization
-      let data: any = null;
+      let data: unknown = null;
       try {
         data = await res.json();
       } catch (err) {
@@ -103,19 +101,22 @@ export default function MicroAppManagement(): React.ReactElement {
         throw new Error('Unexpected response format (non-JSON)');
       }
 
-      const normalize = (d: any): MicroApp[] => {
+      const normalize = (d: unknown): MicroApp[] => {
         if (Array.isArray(d)) return d as MicroApp[];
         if (!d || typeof d !== 'object') return [];
+
+        const obj = d as Record<string, unknown>;
         // Common container keys
         // Check common container keys
         const candidates = Object.values(ContainerKey) as string[];
         for (const key of candidates) {
-          const v = (d as any)[key];
+          const v = obj[key];
           if (Array.isArray(v)) return v as MicroApp[];
           if (v && typeof v === 'object') {
+            const nested = v as Record<string, unknown>;
             // Nested container like { data: { items: [...] } }
             for (const k2 of candidates) {
-              const v2 = (v as any)[k2];
+              const v2 = nested[k2];
               if (Array.isArray(v2)) return v2 as MicroApp[];
             }
           }
@@ -188,7 +189,7 @@ export default function MicroAppManagement(): React.ReactElement {
 
   {showUpload && (
         <Card style={{ padding: 16, marginBottom: 20 }}>
-          <UploadMicroAppTyped
+          <UploadMicroApp
             onUploaded={() => {
               fetchMicroApps();
               setShowUpload(false);
