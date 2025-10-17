@@ -281,7 +281,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         
         database:ExecutionSuccessResult|error result = database:upsertMicroApp(microApp, userInfo.email);
         if result is error {
-            string customError = "Error occurred while inserting/updating Micro App!";
+            string customError = "Error occurred while upserting Micro App!";
             log:printError(customError, result);
             return <http:InternalServerError>{body: {message: customError}};
         }
@@ -307,7 +307,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         
         database:ExecutionSuccessResult|error result = database:upsertMicroAppVersion(appId, version, userInfo.email);
         if result is error {
-            string customError = "Error occurred while inserting/updating Micro App version!";
+            string customError = "Error occurred while upserting Micro App version!";
             log:printError(customError, result);
             return <http:InternalServerError>{body: {message: customError}};
         }
@@ -319,9 +319,9 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
     #
     # + ctx - Request context
     # + appId - MicroApp ID to which the role mapping belongs
-    # + roleMapping - MicroAppRole payload containing the role name
+    # + appRole - MicroAppRole payload containing the role name
     # + return - `http:Created` on success or errors on failure
-    resource function post micro\-apps/[string appId]/roles(http:RequestContext ctx, database:MicroAppRole roleMapping) 
+    resource function post micro\-apps/[string appId]/roles(http:RequestContext ctx, database:MicroAppRole appRole) 
         returns http:Created|http:InternalServerError|http:BadRequest {
 
         authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
@@ -331,9 +331,9 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
         
-        database:ExecutionSuccessResult|error result = database:upsertMicroAppRole(appId, roleMapping, userInfo.email);
+        database:ExecutionSuccessResult|error result = database:upsertMicroAppRole(appId, appRole, userInfo.email);
         if result is error {
-            string customError = "Error occurred while adding role mapping to Micro App!";
+            string customError = "Error occurred while upserting role mapping to Micro App!";
             log:printError(customError, result);
             return <http:InternalServerError>{body: {message: customError}};
         }
