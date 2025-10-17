@@ -108,8 +108,7 @@ export default function setupProxy(app: AppLike): void {
     logLevel: microAppsLogLevel,
     pathRewrite: (path: string) => {
       if (path === '/api/microapps/upload') {
-        const rewritten = microAppsBasePath + microAppsUploadPath;
-        return rewritten;
+        return microAppsBasePath + microAppsUploadPath;
       }
       return path;
     },
