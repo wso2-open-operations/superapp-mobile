@@ -61,7 +61,7 @@ export default function UserProfile({ state }: UserProfileProps) {
         if (ctx?.getBasicUserInfo) {
             const info = await ctx.getBasicUserInfo();
             if (mounted) setBasicInfo(info ?? null);
-          }
+        }
         } catch (e) {
         const errorMsg = "Error occurred while fetching user details";
         console.error(errorMsg, e);
