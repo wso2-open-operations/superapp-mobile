@@ -270,9 +270,11 @@ export default function MicroAppManagement(): React.ReactElement {
                       return app.micro_app_id || app.app_id || app.name;
                     })()}
                   </div>
-                  <div style={{ color: COLORS.textMuted, fontSize: 12 }}>
-                    v{app.version || '—'}
-                  </div>
+                  {typeof app.version === "string" && app.version.trim() ? (
+                    <div style={{ color: COLORS.textMuted, fontSize: 12 }}>
+                      v{app.version}
+                    </div>
+                  ) : null}
                 </div>
               </div>
 
