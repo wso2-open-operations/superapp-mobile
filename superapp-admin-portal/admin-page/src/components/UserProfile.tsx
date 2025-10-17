@@ -63,7 +63,7 @@ export default function UserProfile({ state }: UserProfileProps) {
             if (mounted) setBasicInfo(info ?? null);
         }
         } catch (e) {
-        const errorMsg = "Error occurred while fetching user details";
+        const errorMsg = `Failed to fetch basic user info from Asgardeo${e && e.message ? `: ${e.message}` : ""}. Please check your network connection and try again, or contact support if the problem persists.`;
         console.error(errorMsg, e);
         if (mounted) setError(errorMsg);
       } finally {
