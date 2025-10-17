@@ -25,7 +25,7 @@ import Loading from "./common/Loading";
 import Card from "./common/Card";
 import { COLORS, COMMON_STYLES } from "../constants/styles";
 import { getEndpoint } from "../constants/api";
-import { API_KEYS, ApiKey } from "../constants/apiKeys";
+import { API_KEYS } from "../constants/apiKeys";
 
 
 type MicroApp = {

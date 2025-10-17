@@ -13,9 +13,6 @@ type RoleBasedAccessControlProps = {
   requiredGroups?: string[];
 };
 
-const Title: React.FC<React.ComponentProps<typeof Typography>> = ({ children, ...props }) => (
-  <Typography variant="h4" gutterBottom {...props}>{children}</Typography>
-);
 const Paragraph: React.FC<React.ComponentProps<typeof Typography>> = ({ children, ...props }) => (
   <Typography variant="body1" {...props}>{children}</Typography>
 );
@@ -42,7 +39,8 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
   };
 
   useEffect(() => {
-    const authorized = isAuthenticated && hasRequiredAccess(userGroups, requiredGroups);
+    const required = requiredGroupsKey.split("|").filter(Boolean);
+    const authorized = isAuthenticated && hasRequiredAccess(userGroups, required);
     setIsAuthorized(authorized);
   }, [isAuthenticated, userGroups, requiredGroupsKey]);
 

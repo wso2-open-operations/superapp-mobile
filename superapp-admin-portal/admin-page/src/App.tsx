@@ -56,8 +56,8 @@ export default function App(): React.ReactElement {
     if (isAuthenticated) {
       (async () => {
         try {
-          const token = await ctx?.getAccessToken?.();
-          // You can use the token here if needed
+          // Fetch access token (ignored result)
+          await ctx?.getAccessToken?.();
         } catch (error) {
           console.error('Failed to get access token:', error);
         }
