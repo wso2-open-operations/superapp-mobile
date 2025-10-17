@@ -64,7 +64,7 @@ const UploadMicroApp: React.FC<UploadMicroAppProps> = ({ onUploaded }) => {
     if (!name.trim() || !version.trim() || !appId.trim() || !description.trim()) {
       setIsError(false);
       setIsWarning(true);
-      setMessage("Please provide name, version, appId, and description.");
+      setMessage("Please provide name, version, App ID, and description.");
       setShowModal(true);
       return false;
     }
