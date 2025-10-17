@@ -43,7 +43,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { restoreExchangedTokens } from "@/utils/exchangedTokenRehydrator";
+import { buildAppsWithTokens } from "@/utils/exchangedTokenRehydrator";
 import { handleFreshInstall } from "@/utils/freshInstall";
 import { getItemAsync } from "expo-secure-store";
 
@@ -68,11 +68,7 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
           getItemAsync(USER_INFO),
         ]);
 
-        if (savedApps) {
-          const parsed = JSON.parse(savedApps);
-          dispatch(setApps(parsed));
-          restoreExchangedTokens(parsed, dispatch);
-        }
+        if (savedApps) dispatch(setApps(await buildAppsWithTokens(JSON.parse(savedApps))));
 
         if (savedUserInfo) dispatch(setUserInfo(JSON.parse(savedUserInfo)));
 
