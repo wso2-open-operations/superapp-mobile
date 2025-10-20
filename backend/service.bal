@@ -27,6 +27,8 @@ configurable string[] restrictedAppsForNonLk = ?;
 configurable string lkLocation = "Sri Lanka";
 configurable string mobileAppReviewerEmail = ?; // App store reviewer email
 configurable AppScope[] appScopes = [];
+configurable TokenExchangeConfig tokenExchangeConfig = ?;
+configurable string tokenExchangeType = ?;
 
 @display {
     label: "SuperApp Mobile Service",
@@ -98,9 +100,15 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         return <AppConfig>{
             appConfigs,
             defaultMicroAppIds,
-            appScopes
+            appScopes,
+            tokenExchangeType
         };
     }
+
+    # Fetch token exchange configuration details.
+    # 
+    # + return - Token exchange configuration relevant to the implementation
+    resource function get micro\-apps/token\-exchange\-configs() returns TokenExchangeConfig => tokenExchangeConfig;
 
     # Fetch user information of the logged in users.
     #
@@ -262,6 +270,108 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         }
 
         return versions;
+    }
+
+    # Create or update a MicroApp along with provided versions and roles.
+    #
+    # + ctx - Request context
+    # + microApp - MicroApp payload to create/update
+    # + return - `http:Created` on success or errors on failure
+    resource function post micro\-apps(http:RequestContext ctx, database:MicroApp microApp)
+        returns http:Created|http:InternalServerError|http:BadRequest {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {message: ERR_MSG_USER_HEADER_NOT_FOUND}
+            };
+        }
+        
+        database:ExecutionSuccessResult|error result = database:upsertMicroApp(microApp, userInfo.email);
+        if result is error {
+            string customError = "Error occurred while upserting Micro App!";
+            log:printError(customError, result);
+            return <http:InternalServerError>{body: {message: customError}};
+        }
+        
+        return http:CREATED;
+    }
+
+    # Add a new version to an existing MicroApp.
+    #
+    # + ctx - Request context
+    # + appId - MicroApp ID to which the version belongs
+    # + version - MicroAppVersion payload to create/update
+    # + return - `http:Created` on success or errors on failure
+    resource function post micro\-apps/[string appId]/versions(http:RequestContext ctx, 
+        database:MicroAppVersion version) returns http:Created|http:InternalServerError|http:BadRequest {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {message: ERR_MSG_USER_HEADER_NOT_FOUND}
+            };
+        }
+        
+        database:ExecutionSuccessResult|error result = database:upsertMicroAppVersion(appId, version, userInfo.email);
+        if result is error {
+            string customError = "Error occurred while upserting Micro App version!";
+            log:printError(customError, result);
+            return <http:InternalServerError>{body: {message: customError}};
+        }
+        
+        return http:CREATED;
+    }
+
+    # Add a role mapping to an existing MicroApp.
+    #
+    # + ctx - Request context
+    # + appId - MicroApp ID to which the role mapping belongs
+    # + appRole - MicroAppRole payload containing the role name
+    # + return - `http:Created` on success or errors on failure
+    resource function post micro\-apps/[string appId]/roles(http:RequestContext ctx, database:MicroAppRole appRole) 
+        returns http:Created|http:InternalServerError|http:BadRequest {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {message: ERR_MSG_USER_HEADER_NOT_FOUND}
+            };
+        }
+        
+        database:ExecutionSuccessResult|error result = database:upsertMicroAppRole(appId, appRole, userInfo.email);
+        if result is error {
+            string customError = "Error occurred while upserting role mapping to Micro App!";
+            log:printError(customError, result);
+            return <http:InternalServerError>{body: {message: customError}};
+        }
+        
+        return http:CREATED;
+    }
+
+    # Delete a MicroApp by setting it inactive along with its versions and roles.
+    #
+    # + ctx - Request context
+    # + appId - MicroApp ID to delete
+    # + return - `http:Ok` on success or errors on failure
+    resource function delete micro\-apps/[string appId](http:RequestContext ctx)
+        returns http:Ok|http:InternalServerError {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {message: ERR_MSG_USER_HEADER_NOT_FOUND}
+            };
+        }
+        
+        database:ExecutionSuccessResult|error result = database:deleteMicroApp(appId, userInfo.email);
+        if result is error {
+            string customError = "Error occurred while deleting Micro App!";
+            log:printError(customError, result);
+            return <http:InternalServerError>{body: {message: customError}};
+        }
+        
+        return <http:Ok>{body: {message: result}};
     }
 
     # Fetch the user configurations(downloaded microapps) of the logged in user.
