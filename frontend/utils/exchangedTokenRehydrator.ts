@@ -26,7 +26,7 @@ export async function buildAppsWithTokens(apps: MicroApp[]): Promise<MicroApp[]>
         const token = await loadExchangedToken(app.appId);
         return token ? { ...app, exchangedToken: token } : app;
       } catch (error) {
-        console.warn(`[buildAppsWithTokens] SecureStore lookup failed`,
+        console.warn(`SecureStore lookup failed`,
           { appId: app.appId, error: error instanceof Error ? error.message : String(error) }
         );
         return app;
