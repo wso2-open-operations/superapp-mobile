@@ -238,7 +238,7 @@ async function loadUserData() {
 ### User Interface
 
 #### Alert Dialog
-- **Request**: `window.nativebridge.requestAlert({title, message, buttonText})`
+- **Request**: `await window.nativebridge.requestAlert({"title": title, "message": message,"buttonText": buttonText})`
 - **Purpose**: Display native alert dialog
 
 #### Confirmation Dialog

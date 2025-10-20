@@ -54,6 +54,7 @@ import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
 WebBrowser.maybeCompleteAuthSession();
 
+import { BRIDGE_FUNCTION as QR_REQUEST_BRIDGE_FUNCTION } from "@/utils/bridgeHandlers/qrRequest";
 
 const MicroApp = () => {
   const [isScannerVisible, setScannerVisible] = useState(false);
@@ -151,8 +152,8 @@ const MicroApp = () => {
     sendResponseToWeb("resolveToken", token);
 
     // Resolve any pending token requests
-    while (pendingTokenRequests.length > 0) {
-      const resolve = pendingTokenRequests.shift();
+    while (pendingTokenRequestsRef.current.length > 0) {
+      const resolve = pendingTokenRequestsRef.current.shift();
       resolve?.(token);
     }
   };
@@ -219,7 +220,7 @@ const MicroApp = () => {
       await handler(data, bridgeContext);
 
       // Update the ref with any callback set by the handler
-      if (topic === "qr_request") {
+      if (topic === QR_REQUEST_BRIDGE_FUNCTION.topic) {
         qrScanCallbackRef.current = bridgeContext.qrScanCallback || null;
       }
     } catch (error) {
