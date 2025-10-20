@@ -17,6 +17,7 @@
 import superapp_mobile_service.authorization;
 import superapp_mobile_service.database;
 import superapp_mobile_service.entity;
+import superapp_mobile_service.jwt_service;
 import superapp_mobile_service.scim;
 
 import ballerina/http;
@@ -372,6 +373,37 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
         }
         
         return <http:Ok>{body: {message: result}};
+    }
+
+    # Request a JWT for authorization.
+    #
+    # + ctx - Request context
+    # + request - Token request payload
+    # + return - `TokenResponse` with the generated JWT token on success, or errors on failure
+    resource function post tokens(http:RequestContext ctx, jwt_service:TokenRequest request)
+        returns jwt_service:TokenResponse|http:InternalServerError|http:BadRequest {
+
+        authorization:CustomJwtPayload|error userInfo = ctx.getWithType(authorization:HEADER_USER_INFO);
+        if userInfo is error {
+            return <http:InternalServerError>{
+                body: {message: ERR_MSG_USER_HEADER_NOT_FOUND}
+            };
+        }
+
+        string|error token = jwt_service:issueJWT(userInfo.email, request.clientId);
+        if token is error {
+            string customError = "Error occurred while generating JWT token";
+            log:printError(customError, token);
+            return <http:InternalServerError>{
+                body: {message: customError}
+            };
+        }
+
+        decimal expiresAt = jwt_service:getTokenTTL();
+        return <jwt_service:TokenResponse>{
+            token: token, 
+            expiresAt: expiresAt
+        };
     }
 
     # Fetch the user configurations(downloaded microapps) of the logged in user.
