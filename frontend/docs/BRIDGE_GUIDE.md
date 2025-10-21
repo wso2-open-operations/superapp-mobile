@@ -138,7 +138,7 @@ Some bridge functions need to handle UI interactions that happen outside the nor
 ```typescript
 // Example: QR Scanner Handler
 export const BRIDGE_FUNCTION: BridgeFunction = {
-  topic: 'qr_request',
+  topic: 'QR_code',
   handler: async (params, context) => {
     // Show the scanner UI
     context.setScannerVisible(true);
@@ -248,7 +248,7 @@ async function loadUserData() {
 ### Device Features
 
 #### QR Code Scanner
-- **Request**: `await window.nativebridge.requestQr()` → `Promise<string>`
+- **Request**: `await window.nativebridge.requestQRCode()` → `Promise<string>`
 - **Purpose**: Activate native QR code scanner and get scanned code
 - **Returns**: Promise that resolves with the scanned QR code string
 

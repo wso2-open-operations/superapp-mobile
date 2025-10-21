@@ -25,7 +25,7 @@ import { BridgeFunction } from "../../types/bridge.types";
  * Error modes: if scanner UI or callback not available, no resolution occurs
  */
 export const BRIDGE_FUNCTION: BridgeFunction = {
-  topic: "qr_request",
+  topic: "QR_code",
   handler: async (params, context) => {
     // Set the callback to resolve with the scanned QR code
     context.qrScanCallback = (qrCode: string) => {
