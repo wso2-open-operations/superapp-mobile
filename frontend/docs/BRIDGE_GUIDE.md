@@ -158,7 +158,7 @@ The micro-app.tsx file handles retrieving and storing the callback in a ref, whi
 
 ### Best Practices for SuperApp Developers
 
-- **Use descriptive topic names**: Prefer `get_user_profile` over `get_data`
+- **Use descriptive topic names**: Prefer `user_profile` over `data`
 - **Implement proper error handling**: Always wrap operations in try/catch
 - **Validate parameters**: Check required fields before processing
 - **Use async/await**: For operations that may block the UI thread
@@ -187,7 +187,6 @@ All bridge functions now return promises for cleaner asynchronous handling:
 // Request token with promise-based API
 try {
   const token = await window.nativebridge.requestToken();
-  console.log('Received token:', token);
 } catch (error) {
   console.error('Token request failed:', error);
 }
@@ -195,7 +194,6 @@ try {
 // Request user ID
 try {
   const userId = await window.nativebridge.requestUserId();
-  console.log('User ID:', userId);
 } catch (error) {
   console.error('Failed to get user ID:', error);
 }
@@ -216,9 +214,7 @@ async function loadUserData() {
       window.nativebridge.requestToken(),
       window.nativebridge.requestUserId()
     ]);
-    
-    // Use token and userId
-    console.log('User authenticated:', { token, userId });
+
   } catch (error) {
     console.error('Failed to load user data:', error);
     // Handle error appropriately
@@ -338,6 +334,46 @@ For bridge-related issues:
 - Review console logs for error messages
 - Verify function implementation in registry
 - Test with minimal reproduction case
+
+---
+
+## Appendix: Backward Compatibility
+
+### Event-Based Approach (Legacy)
+
+The bridge system maintains backward compatibility with legacy event-based implementations. While the **promise-based approach is recommended** for new development, the bridge continues to support the older pattern.
+
+**Legacy Pattern (Pre-defined Callbacks):**
+```javascript
+// example usage for `save_local_data` function
+window.ReactNativeWebView.postMessage(
+  JSON.stringify({
+    topic: 'save_local_data',
+    data: { key, value }
+  })
+);
+
+// Pre-define callbacks on the bridge object
+window.nativebridge.resolveSaveLocalData = (data) => {
+  console.log('Success:', data);
+};
+
+window.nativebridge.rejectSaveLocalData = (error) => {
+  console.error('Failed:', error);
+};
+```
+
+
+The bridge auto-generates method names from topics using a `capitalize` function that converts snake_case to PascalCase and appends the relevant verb afterward. For example:
+
+- Topic: `save_local_data` → Methods: `requestSaveLocalData`, `resolveSaveLocalData`, `rejectSaveLocalData`
+- Topic: `google_login` → Methods: `requestGoogleLogin`, `resolveGoogleLogin`, `rejectGoogleLogin`
+
+When handlers call `context.resolve(data)` or `context.reject(error)`, the bridge:
+1. **Resolves/rejects the promise** (modern approach)
+2. **Calls the pre-defined callback** if it exists (legacy compatibility)
+
+**Note:** New MicroApps should use the promise-based approach. The event-based pattern with pre-defined callbacks is maintained only for backward compatibility with existing implementations.
 
 ---
 
