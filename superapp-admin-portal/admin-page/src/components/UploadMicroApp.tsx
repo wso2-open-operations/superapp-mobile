@@ -151,7 +151,9 @@ const UploadMicroApp: React.FC<UploadMicroAppProps> = ({ onUploaded }) => {
       // Notify parent to refresh list / close view
       try {
         onUploaded?.();
-      } catch (_) {
+} catch (err) {
+  console.warn("error message.....:", err);
+}
         /* no-op */
       }
     } catch (err) {
