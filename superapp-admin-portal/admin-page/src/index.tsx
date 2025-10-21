@@ -15,7 +15,7 @@
 // under the License.
 
 /**
- * Main entry point for the Admin Portal React application (TypeScript)
+ * Main entry point for the Admin Portal
  */
 
 import React from 'react';

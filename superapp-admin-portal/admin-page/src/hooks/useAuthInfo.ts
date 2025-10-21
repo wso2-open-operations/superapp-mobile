@@ -41,7 +41,7 @@ function base64UrlDecode(input: string): string {
 
 function decodeJwtPayload(
   token: string,
-  source: "access" | "id" | "unknown" = "unknown",
+  source: "access" | "id" = "access",
 ): JWTPayload | null {
   try {
     const parts = token.split('.');
@@ -84,7 +84,7 @@ export function useAuthInfo(): AuthInfo {
     try {
       const idToken = await auth?.getIDToken?.();
       if (idToken) {
-        const decoded = auth?.getDecodedIDToken?.();
+        const decoded = await Promise.resolve(auth?.getDecodedIDToken?.());
         if (decoded) {
           const fromId = extractGroupsFromClaims(decoded);
           if (fromId.length > 0) return fromId;

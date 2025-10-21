@@ -15,14 +15,14 @@
 // under the License.
 
 /**
- * UploadMicroApp Component (TypeScript)
+ * UploadMicroApp Component
  *
  * Provides a comprehensive interface for uploading micro-application packages
  * to the SuperApp ecosystem. Handles file upload, validation, and form submission
  * with proper authentication and error handling.
  */
 
-import React, { useRef, useState } from "react";
+import React, { JSX, useRef, useState } from "react";
 import { useAuthContext } from "@asgardeo/auth-react";
 import type { AuthContextLike } from "../types/authentication";
 import { getEndpoint } from "../constants/api";
@@ -32,7 +32,7 @@ export type UploadMicroAppProps = {
   onUploaded?: () => void;
 };
 
-const UploadMicroApp: React.FC<UploadMicroAppProps> = ({ onUploaded }) => {
+const UploadMicroApp = ({ onUploaded }: UploadMicroAppProps): JSX.Element => {
   // Authentication context for secure API calls
   const auth = useAuthContext() as AuthContextLike;
 
@@ -122,40 +122,37 @@ const UploadMicroApp: React.FC<UploadMicroAppProps> = ({ onUploaded }) => {
       });
 
       const ct = res.headers.get("Content-Type") || "";
-      let payload: unknown = null;
+      type UploadResponse = { message?: string; error?: string; [k: string]: unknown } | null;
+      let payload: UploadResponse = null;
       if (ct.includes("application/json")) {
-        payload = await res.json().catch(() => null);
+        payload = (await res.json().catch(() => null)) as UploadResponse;
       } else {
         const text = await res.text().catch(() => null);
         if (text) payload = { message: text };
       }
 
       if (!res.ok) {
-        const anyPayload = payload as Record<string, unknown> | null;
         const msg =
-          (anyPayload && (anyPayload["error"] as string)) ||
-          (anyPayload && (anyPayload["message"] as string)) ||
+          (payload && payload.error) ||
+          (payload && payload.message) ||
           `Upload failed (${res.status})`;
         throw new Error(msg);
       }
 
       setIsError(false);
       setIsWarning(false);
-      const anyPayload = payload as Record<string, unknown> | null;
-      setMessage((anyPayload && (anyPayload["message"] as string)) || "Micro-app uploaded successfully");
+      setMessage((payload && payload.message) || "Micro-app uploaded successfully");
       setShowModal(true);
       // Optional: clear form
       setZipFile(null);
       setConfirmFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-      // Notify parent to refresh list / close view
-      try {
-        onUploaded?.();
+// Notify parent to refresh list / close view
+try {
+  onUploaded?.();
 } catch (err) {
   console.warn("error message.....:", err);
 }
-        /* no-op */
-      }
     } catch (err) {
       console.error(err);
       setIsError(true);

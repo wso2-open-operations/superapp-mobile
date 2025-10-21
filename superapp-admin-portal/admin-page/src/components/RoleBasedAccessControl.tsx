@@ -15,7 +15,7 @@
 // under the License.
 
 /**
- * Role-Based Access Control Component (TypeScript)
+ * Role-Based Access Control Component
  */
 import React, { useEffect, useMemo, useState } from "react";
 import { useAuthContext } from '@asgardeo/auth-react';

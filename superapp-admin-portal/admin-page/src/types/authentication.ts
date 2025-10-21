@@ -45,8 +45,13 @@ export type AuthContextLike = {
   };
   getAccessToken?: () => Promise<string | null | undefined>;
   getIDToken?: () => Promise<string | null | undefined>;
-  getDecodedIDToken?: () => unknown;
-  getBasicUserInfo?: () => Promise<unknown>;
+  getDecodedIDToken?: () =>
+    | Promise<JWTPayload | Record<string, any> | null | undefined>
+    | JWTPayload
+    | Record<string, any>
+    | null
+    | undefined;
+  getBasicUserInfo?: () => Promise<Record<string, any> | null | undefined>;
   // Sign-out implementations vary across SDKs; allow a flexible signature.
-  signOut?: (...args: unknown[]) => unknown;
+  signOut?: (...args: any[]) => any;
 };

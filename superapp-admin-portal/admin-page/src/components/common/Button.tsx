@@ -15,7 +15,7 @@
 // under the License.
 
 /**
- * Reusable Button Component (TypeScript)
+ * Reusable Button Component
  *
  * A standardized button component that ensures consistent styling and behavior
  * across the admin portal. Includes accessibility features and theming support.

@@ -15,7 +15,7 @@
 // under the License.
 
 /**
- * Loading Component (TypeScript)
+ * Loading Component
  */
 import React from 'react';
 import { COMMON_STYLES } from '../../constants/styles';
