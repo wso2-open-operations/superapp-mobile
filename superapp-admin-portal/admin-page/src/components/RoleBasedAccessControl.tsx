@@ -19,7 +19,6 @@
  */
 import React, { useEffect, useMemo, useState } from "react";
 import { useAuthContext } from '@asgardeo/auth-react';
-import type { AuthContextLike } from '../types/authentication';
 import useAuthInfo from '../hooks/useAuthInfo';
 import { Card, CardContent, Typography } from '@mui/material';
 import { COMMON_STYLES } from "../constants/styles";
@@ -38,7 +37,8 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
   children,
   requiredGroups = ['superapp_admin'],
 }) => {
-  const auth = useAuthContext() as AuthContextLike;
+  // Use the SDK's context directly; only use signOut here.
+  const { signOut } = useAuthContext();
   const { isAuthenticated, groups: userGroups, loading, error, refresh } = useAuthInfo();
 
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
@@ -84,7 +84,7 @@ const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
         onSignOut={async () => {
           try {
             // Execute signOut if available; ignore any return value for compatibility
-            await auth?.signOut?.();
+            await Promise.resolve(signOut?.());
           } catch {
             console.error("Sign-out failed");
           }
