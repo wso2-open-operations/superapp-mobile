@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { BRIDGE_FUNCTION as alert } from "./alert";
 import { BRIDGE_FUNCTION as authenticateWithGoogle } from "./authenticateWithGoogle";
 import { BRIDGE_FUNCTION as checkGoogleAuthState } from "./checkGoogleAuthState";

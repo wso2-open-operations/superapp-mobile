@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { BridgeFunction } from "../../types/bridge.types";
 import { isAuthenticatedWithGoogle } from "../../services/googleService";
 /**
@@ -36,6 +35,7 @@ export const BRIDGE_FUNCTION: BridgeFunction = {
         context.reject("Not authenticated");
       }
     } catch (err: any) {
+      console.error("Error checking Google auth state:", err);
       context.reject(err.message || "Failed to check auth state");
     }
   }

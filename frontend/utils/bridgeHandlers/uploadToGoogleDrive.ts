@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { BridgeFunction } from "../../types/bridge.types";
 import { uploadToGoogleDrive } from "../../services/googleService";
 /**
@@ -36,6 +35,7 @@ export const BRIDGE_FUNCTION: BridgeFunction = {
         context.reject(res.error || "Upload failed");
       }
     } catch (err: any) {
+      console.error("Error uploading to Google Drive:", err);
       context.reject(err.message || "Upload failed");
     }
   }

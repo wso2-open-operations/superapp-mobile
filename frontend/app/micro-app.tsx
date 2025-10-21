@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import NotFound from "@/components/NotFound";
 import Scanner from "@/components/Scanner";
 import { Colors } from "@/constants/Colors";

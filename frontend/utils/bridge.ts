@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { BRIDGE_REGISTRY, getRequestMethod, getResolveMethod, getRejectMethod, getHelperMethod } from './bridgeRegistry';
 
 /**
@@ -97,7 +96,7 @@ export const generateInjectedJavaScript = () => {
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join('')}`;
 
-    globalHelpers.push(`  window.${globalVarName} = null;`);
+    globalHelpers.push(`window.${globalVarName} = null;`);
 
     // Create the helper getter method
     methods.push(`
@@ -124,9 +123,7 @@ export const generateInjectedJavaScript = () => {
   });
 
   return `
-  // Initialize global variables
-${globalHelpers.join('\n')}
-  
+  ${globalHelpers.join('\n')}
   window.nativebridge = {${methods.join('')}
   };`;
 };

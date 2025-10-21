@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { BridgeFunction } from "../../types/bridge.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 /**
@@ -33,6 +32,7 @@ export const BRIDGE_FUNCTION: BridgeFunction = {
       await AsyncStorage.setItem(key, value);
       context.resolve();
     } catch (error) {
+      console.error("Error saving local data:", error);
       const errMessage = error instanceof Error ? error.message : "Unknown error";
       context.reject(errMessage);
     }

@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { BridgeFunction } from "../../types/bridge.types";
 import { restoreGoogleDriveBackup } from "../../services/googleService";
 /**
@@ -36,6 +35,7 @@ export const BRIDGE_FUNCTION: BridgeFunction = {
         context.reject(res?.error || "Restore failed");
       }
     } catch (err: any) {
+      console.error("Error restoring Google Drive backup:", err);
       context.reject(err.message || "Restore failed");
     }
   }

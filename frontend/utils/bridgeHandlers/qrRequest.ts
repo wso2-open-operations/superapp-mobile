@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { BridgeFunction } from "../../types/bridge.types";
 
 /**
@@ -28,12 +27,10 @@ import { BridgeFunction } from "../../types/bridge.types";
 export const BRIDGE_FUNCTION: BridgeFunction = {
   topic: "qr_request",
   handler: async (params, context) => {
-
     // Set the callback to resolve with the scanned QR code
     context.qrScanCallback = (qrCode: string) => {
       context.resolve(qrCode);
     };
-
     // Open the scanner
     context.setScannerVisible(true);
   }
