@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import { BRIDGE_REGISTRY as MODULAR_BRIDGE_REGISTRY } from "./bridgeHandlers";
 import { BridgeFunction } from "../types/bridge.types";
 
@@ -24,22 +23,30 @@ export const BRIDGE_REGISTRY: BridgeFunction[] = MODULAR_BRIDGE_REGISTRY;
 /**
  * Get all available bridge topics
  */
-export const getBridgeTopics = () => BRIDGE_REGISTRY.map(fn => fn.topic);
+export const getBridgeTopics = (): string[] => BRIDGE_REGISTRY.map(fn => fn.topic);
 
 /**
  * Get handler function for a specific bridge topic
  */
-export const getBridgeHandler = (topic: string) =>
+export const getBridgeHandler = (topic: string): BridgeFunction["handler"] | undefined =>
   BRIDGE_REGISTRY.find(fn => fn.topic === topic)?.handler;
 
 /**
  * Get complete bridge function definition for a topic
  */
-export const getBridgeFunction = (topic: string) =>
+export const getBridgeFunction = (topic: string): BridgeFunction | undefined =>
   BRIDGE_REGISTRY.find(fn => fn.topic === topic);
 
 /**
- * Helper function to capitalize topic names for method generation
+ * Capitalizes the first character of the given string and converts any
+ * subsequent characters following an underscore to uppercase, removing the underscore.
+ *
+ * For example:
+ * - "hello_world" becomes "HelloWorld"
+ * - "example_string_test" becomes "ExampleStringTest"
+ *
+ * @param str - The input string to capitalize.
+ * @returns The capitalized string with underscores removed and following letters capitalized.
  */
 const capitalize = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1).replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
