@@ -32,3 +32,23 @@ public type TokenResponse record {|
     # Token expiration time in seconds
     decimal expiresAt;
 |};
+
+# JSON Web Key (JWK) record type for RSA keys.
+public type JsonWebKey record {|
+    # Key type (e.g., "RSA")
+    string kty;
+    # Public key use (e.g., "sig" for signature)
+    string use;
+    # Key ID to match the kid in JWT header
+    string kid;
+    # Modulus (base64url-encoded)
+    string n;
+    # Exponent (base64url-encoded)
+    string e;
+|};
+
+# JSON Web Key Set (JWKS) record type.
+public type JsonWebKeySet record {|
+    # Array of JSON Web Keys
+    JsonWebKey[] keys;
+|};

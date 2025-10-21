@@ -16,3 +16,4 @@
 
 public const string SUPERAPP_ISSUER = "superapp-backend";
 public const string KEY_ID = "<your-kid-from-jwks>";
+public const string JWKS_FILE_PATH = "modules/jwt_service/jwks.json";

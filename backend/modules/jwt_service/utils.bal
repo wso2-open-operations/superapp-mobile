@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/crypto;
+import ballerina/io;
 
 # Get the hashed client ID.
 #
@@ -31,4 +32,20 @@ public isolated function getHashedClientId(string clientId) returns string {
 # + return - Token time-to-live in seconds
 public isolated function getTokenTTL() returns decimal {
     return tokenTTLSeconds;
+}
+
+# Get the JSON Web Key Set (JWKS) for token verification.
+# Reads from jwks.json file and populates the key store.
+#
+# + return - JsonWebKeySet containing all registered public keys or error
+public isolated function getJWKS() returns JsonWebKeySet|error {
+    JsonWebKey[] jwkStore = [];
+    json jwksJson = check io:fileReadJson(JWKS_FILE_PATH);
+    JsonWebKeySet jwksData = check jwksJson.cloneWithType(JsonWebKeySet);
+
+    foreach JsonWebKey key in jwksData.keys {
+        jwkStore.push(key);
+    }
+
+    return {keys: jwkStore.cloneReadOnly()};
 }
