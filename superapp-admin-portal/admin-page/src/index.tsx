@@ -18,36 +18,42 @@
  * Main entry point for the Admin Portal
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { AuthProvider } from '@asgardeo/auth-react';
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import { createAppTheme } from './theme';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { AuthProvider } from "@asgardeo/auth-react";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { createAppTheme } from "./theme";
 
-const rootEl = document.getElementById('root') as HTMLElement;
+const rootEl = document.getElementById("root") as HTMLElement;
 const root = ReactDOM.createRoot(rootEl);
 
 root.render(
   <React.StrictMode>
-  <ThemeProvider theme={createAppTheme('light')}>
+    <ThemeProvider theme={createAppTheme("light")}>
       <CssBaseline />
-    <AuthProvider
-      config={{
-        // Use environment variables for configuration
-        signInRedirectURL: process.env.REACT_APP_SIGN_IN_REDIRECT_URL || window.location.origin,
-        signOutRedirectURL: process.env.REACT_APP_SIGN_OUT_REDIRECT_URL || window.location.origin,
-        clientID: process.env.REACT_APP_CLIENT_ID || '',
-        baseUrl: process.env.REACT_APP_BASE_URL || '',
-        scope: (process.env.REACT_APP_SCOPE ? process.env.REACT_APP_SCOPE.split(',') : ['openid']),
-      }}
-    >
-      <App />
-    </AuthProvider>
+      <AuthProvider
+        config={{
+          // Use environment variables for configuration
+          signInRedirectURL:
+            process.env.REACT_APP_SIGN_IN_REDIRECT_URL ||
+            window.location.origin,
+          signOutRedirectURL:
+            process.env.REACT_APP_SIGN_OUT_REDIRECT_URL ||
+            window.location.origin,
+          clientID: process.env.REACT_APP_CLIENT_ID || "",
+          baseUrl: process.env.REACT_APP_BASE_URL || "",
+          scope: process.env.REACT_APP_SCOPE
+            ? process.env.REACT_APP_SCOPE.split(",")
+            : ["openid"],
+        }}
+      >
+        <App />
+      </AuthProvider>
     </ThemeProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 // Performance Monitoring Setup

@@ -23,4 +23,4 @@ export const API_KEYS = {
   USERS: "USERS",
 } as const;
 
-export type ApiKey = typeof API_KEYS[keyof typeof API_KEYS];
+export type ApiKey = (typeof API_KEYS)[keyof typeof API_KEYS];

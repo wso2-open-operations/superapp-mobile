@@ -27,7 +27,6 @@ import { COLORS, COMMON_STYLES } from "../constants/styles";
 import { getEndpoint } from "../constants/api";
 import { API_KEYS } from "../constants/apiKeys";
 
-
 type MicroApp = {
   micro_app_id?: string;
   app_id?: string;
@@ -75,7 +74,7 @@ export default function MicroAppManagement(): React.ReactElement {
           try {
             const access = await auth.getAccessToken();
             if (access) {
-              headers["Authorization"] = `Bearer ${access}`
+              headers["Authorization"] = `Bearer ${access}`;
             }
           } catch (e) {
             const err = e instanceof Error ? e : new Error(String(e));
@@ -106,8 +105,10 @@ export default function MicroAppManagement(): React.ReactElement {
       try {
         data = (await res.json()) as MicroApp[] | MicroAppsContainer;
       } catch (err) {
-        console.error('[MicroAppManagement] Non-JSON response from endpoint', { endpoint });
-        throw new Error('Unexpected response format (non-JSON)');
+        console.error("[MicroAppManagement] Non-JSON response from endpoint", {
+          endpoint,
+        });
+        throw new Error("Unexpected response format (non-JSON)");
       }
 
       // Case-insensitive getter for object properties
@@ -121,16 +122,18 @@ export default function MicroAppManagement(): React.ReactElement {
         return found ? obj[found] : undefined;
       };
 
-      const normalize = (d: MicroApp[] | MicroAppsContainer | null): MicroApp[] => {
+      const normalize = (
+        d: MicroApp[] | MicroAppsContainer | null,
+      ): MicroApp[] => {
         if (Array.isArray(d)) return d;
-        if (!d || typeof d !== 'object') return [];
+        if (!d || typeof d !== "object") return [];
 
         const obj = d as Record<string, any>;
         // Check common container keys (case-insensitive) including a single nested level
         for (const key of CONTAINER_KEYS_LOWER) {
           const v = getCaseInsensitive(obj, key);
           if (Array.isArray(v)) return v as MicroApp[];
-          if (v && typeof v === 'object') {
+          if (v && typeof v === "object") {
             const nested = v as Record<string, any>;
             for (const k2 of CONTAINER_KEYS_LOWER) {
               const v2 = getCaseInsensitive(nested, k2);
@@ -144,7 +147,8 @@ export default function MicroAppManagement(): React.ReactElement {
       const normalized = normalize(data);
       setMicroApps(normalized);
     } catch (e) {
-      const errorMessage = e instanceof Error ? e.message : "Error loading apps";
+      const errorMessage =
+        e instanceof Error ? e.message : "Error loading apps";
       setListError(errorMessage);
     } finally {
       setLoadingList(false);
@@ -168,7 +172,9 @@ export default function MicroAppManagement(): React.ReactElement {
             marginBottom: 12,
           }}
         >
-          <h2 style={{ margin: 0, color: COLORS.primary }}>Available Micro Apps</h2>
+          <h2 style={{ margin: 0, color: COLORS.primary }}>
+            Available Micro Apps
+          </h2>
           <div style={{ display: "flex", gap: 0, marginTop: 0 }}>
             <Button onClick={fetchMicroApps} disabled={loadingList}>
               {loadingList ? "Refreshing…" : "Refresh"}
@@ -182,7 +188,13 @@ export default function MicroAppManagement(): React.ReactElement {
       )}
 
       {showUpload && (
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: 12,
+          }}
+        >
           <Button onClick={() => setShowUpload(false)}>Close</Button>
         </div>
       )}
@@ -191,9 +203,9 @@ export default function MicroAppManagement(): React.ReactElement {
         <Card
           style={{
             ...(COMMON_STYLES?.alertError || {
-              background: COLORS.errorSurfaceBackground || '#2d1f1f',
-              border: `1px solid ${COLORS.errorSurfaceBorder || '#5a2f2f'}`,
-              color: COLORS.errorSurfaceText || '#fca5a5',
+              background: COLORS.errorSurfaceBackground || "#2d1f1f",
+              border: `1px solid ${COLORS.errorSurfaceBorder || "#5a2f2f"}`,
+              color: COLORS.errorSurfaceText || "#fca5a5",
               borderRadius: 12,
             }),
             padding: 12,
@@ -204,7 +216,7 @@ export default function MicroAppManagement(): React.ReactElement {
         </Card>
       )}
 
-  {showUpload && (
+      {showUpload && (
         <Card style={{ padding: 16, marginBottom: 20 }}>
           <UploadMicroApp
             onUploaded={() => {
@@ -228,51 +240,57 @@ export default function MicroAppManagement(): React.ReactElement {
           )}
 
           {!loadingList && microApps.length === 0 && !listError && (
-            <Card style={{ padding: 16, background: COLORS.inverted, color: COLORS.invertedText }}>
+            <Card
+              style={{
+                padding: 16,
+                background: COLORS.inverted,
+                color: COLORS.invertedText,
+              }}
+            >
               No micro-apps found.
             </Card>
           )}
 
           {microApps.map((app, index) => (
-        <Card
+            <Card
               key={app.micro_app_id || app.app_id || index}
               style={{
                 padding: 16,
                 background: COLORS.cardBackground,
                 border: `1px solid ${COLORS.borderAlt || COLORS.border}`,
-                cursor: 'default',
-                display: 'flex',
-                flexDirection: 'column',
+                cursor: "default",
+                display: "flex",
+                flexDirection: "column",
                 gap: 8,
                 borderRadius: 14,
-                boxShadow: '0 3px 8px -2px rgba(0,58,103,0.15)'
+                boxShadow: "0 3px 8px -2px rgba(0,58,103,0.15)",
               }}
             >
-              <div style={{ display: 'flex', gap: 12 }}>
+              <div style={{ display: "flex", gap: 12 }}>
                 <div
                   style={{
                     width: 48,
                     height: 48,
                     background: COLORS.borderAlt,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     fontWeight: 600,
                     borderRadius: 8,
                     color: COLORS.accent,
                   }}
                 >
-                  {(app.name ? app.name : '?').slice(0, 2).toUpperCase()}
+                  {(app.name ? app.name : "?").slice(0, 2).toUpperCase()}
                 </div>
 
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, color: COLORS.text }}>
                     {(() => {
-                      if (typeof app.name === 'string' && app.name.length > 1) {
+                      if (typeof app.name === "string" && app.name.length > 1) {
                         return app.name;
                       }
                       if (!app.name) {
-                        return app.micro_app_id || app.app_id || '';
+                        return app.micro_app_id || app.app_id || "";
                       }
                       return app.micro_app_id || app.app_id || app.name;
                     })()}
@@ -285,8 +303,14 @@ export default function MicroAppManagement(): React.ReactElement {
                 </div>
               </div>
 
-              <div style={{ color: COLORS.textSubtle || '#595959', fontSize: 12, flexGrow: 1 }}>
-                {app.description || 'No description'}
+              <div
+                style={{
+                  color: COLORS.textSubtle || "#595959",
+                  fontSize: 12,
+                  flexGrow: 1,
+                }}
+              >
+                {app.description || "No description"}
               </div>
             </Card>
           ))}

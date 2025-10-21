@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import App from './App';
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import App from "./App";
 
 type MockAuth = {
   state: { isAuthenticated: boolean; username?: string; displayName?: string };
@@ -26,12 +26,12 @@ type MockAuth = {
 };
 
 let mockAuth: MockAuth;
-jest.mock('@asgardeo/auth-react', () => ({
+jest.mock("@asgardeo/auth-react", () => ({
   useAuthContext: () => mockAuth,
 }));
 
-jest.mock('./constants/api', () => {
-  const real = jest.requireActual('./constants/api');
+jest.mock("./constants/api", () => {
+  const real = jest.requireActual("./constants/api");
   return {
     ...real,
     getEndpoint: jest.fn((k: string) => {
@@ -42,35 +42,37 @@ jest.mock('./constants/api', () => {
         USERS_BASE: process.env.REACT_APP_USERS_BASE_URL,
         USERS: process.env.REACT_APP_USERS_URL,
       };
-      return (envMap[k] || real.getEndpoint(k)).replace(/\/$/, '');
+      return (envMap[k] || real.getEndpoint(k)).replace(/\/$/, "");
     }),
   };
 });
 
 beforeEach(() => {
   mockAuth = {
-    state: { isAuthenticated: false, username: '', displayName: '' },
+    state: { isAuthenticated: false, username: "", displayName: "" },
     signIn: jest.fn(),
     signOut: jest.fn(),
     getAccessToken: jest.fn(),
   };
   // @ts-ignore
-  global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => [] });
+  global.fetch = jest
+    .fn()
+    .mockResolvedValue({ ok: true, json: async () => [] });
 });
 
 afterEach(() => jest.clearAllMocks());
 
-test('renders sign in screen when not authenticated', () => {
+test("renders sign in screen when not authenticated", () => {
   mockAuth.state.isAuthenticated = false;
   render(<App />);
   expect(screen.getByText(/Please Sign In/)).toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+  fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
   expect(mockAuth.signIn).toHaveBeenCalled();
 });
 
-test('renders menu when authenticated', async () => {
+test("renders menu when authenticated", async () => {
   mockAuth.state.isAuthenticated = true;
-  mockAuth.state.displayName = 'Zoe Zebra';
+  mockAuth.state.displayName = "Zoe Zebra";
   render(<App />);
   expect(await screen.findByText(/Hi Zoe,/)).toBeInTheDocument();
 });

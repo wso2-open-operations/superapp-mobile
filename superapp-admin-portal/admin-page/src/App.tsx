@@ -18,13 +18,13 @@
  * Admin Portal Main Application Component
  */
 
-import React, { useEffect, useState } from 'react';
-import { useAuthContext } from '@asgardeo/auth-react';
-import { Box, Container, Paper, Button as MuiButton } from '@mui/material';
-import UserProfile from './components/UserProfile';
-import MicroAppManagement from './components/MicroAppManagement';
-import MenuBar from './components/MenuBar';
-import { COMMON_STYLES } from './constants/styles';
+import React, { useEffect, useState } from "react";
+import { useAuthContext } from "@asgardeo/auth-react";
+import { Box, Container, Paper, Button as MuiButton } from "@mui/material";
+import UserProfile from "./components/UserProfile";
+import MicroAppManagement from "./components/MicroAppManagement";
+import MenuBar from "./components/MenuBar";
+import { COMMON_STYLES } from "./constants/styles";
 
 // Minimal shape for Asgardeo's state object we use
 interface AuthState {
@@ -45,12 +45,20 @@ export default function App(): React.ReactElement {
   const isAuthenticated = Boolean(state?.isAuthenticated);
 
   // Extract user information from authentication state with fallbacks
-  const username = state?.username || '';
-  const emailLocalPart = username.includes('@') ? username.split('@')[0] : '';
-  const firstName = (state?.displayName || emailLocalPart || state?.given_name || username || '').split(' ')[0];
+  const username = state?.username || "";
+  const emailLocalPart = username.includes("@") ? username.split("@")[0] : "";
+  const firstName = (
+    state?.displayName ||
+    emailLocalPart ||
+    state?.given_name ||
+    username ||
+    ""
+  ).split(" ")[0];
 
   // Navigation state for switching between admin sections
-  const [activeKey, setActiveKey] = useState<'microapp' | 'profile'>('microapp');
+  const [activeKey, setActiveKey] = useState<"microapp" | "profile">(
+    "microapp",
+  );
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -59,39 +67,39 @@ export default function App(): React.ReactElement {
           // Fetch access token (ignored result)
           await ctx?.getAccessToken?.();
         } catch (error) {
-          console.error('Failed to get access token:', error);
+          console.error("Failed to get access token:", error);
         }
       })();
     }
   }, [isAuthenticated, username, ctx]);
 
   // Navigation handler for switching between admin sections
-  const onNavigate = (key: 'microapp' | 'profile') => setActiveKey(key);
+  const onNavigate = (key: "microapp" | "profile") => setActiveKey(key);
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex' }} data-testid="layout">
+    <Box sx={{ minHeight: "100vh", display: "flex" }} data-testid="layout">
       {isAuthenticated ? (
         <>
           <MenuBar
-            onNavigate={(k) => onNavigate(k as 'microapp' | 'profile')}
+            onNavigate={(k) => onNavigate(k as "microapp" | "profile")}
             isAuthed={isAuthenticated}
             onSignOut={() => void signOut?.()}
             activeKey={activeKey}
             placement="left"
           />
-          <Box sx={{ ml: '200px', mt: { xs: 2, md: 4 } }}>
+          <Box sx={{ ml: "200px", mt: { xs: 2, md: 4 } }}>
             <Box component="main" sx={{ flexGrow: 1 }}></Box>
             <Container data-testid="content" sx={{ p: 0 }}>
               <div className="greeting" style={COMMON_STYLES.greeting}>
                 Hi {firstName},
               </div>
               <main style={{ paddingBottom: 24 }}>
-                {activeKey === 'microapp' && (
+                {activeKey === "microapp" && (
                   <section style={{ ...COMMON_STYLES.section, marginTop: 0 }}>
                     <MicroAppManagement />
                   </section>
                 )}
-                {activeKey === 'profile' && (
+                {activeKey === "profile" && (
                   <section className="card">
                     <UserProfile state={state as any} />
                   </section>
@@ -105,33 +113,33 @@ export default function App(): React.ReactElement {
           data-testid="content"
           sx={{
             p: 2,
-            ml: '600px',
-              minHeight: '100vh',
-              display: 'grid',
-            placeItems: 'center',
+            ml: "600px",
+            minHeight: "100vh",
+            display: "grid",
+            placeItems: "center",
           }}
         >
           <Paper
             elevation={8}
             sx={{
-                textAlign: 'center',
-                bgcolor: 'background.paper',
-              color: 'text.primary',
-              border: '1px solid',
-              borderColor: 'divider',
+              textAlign: "center",
+              bgcolor: "background.paper",
+              color: "text.primary",
+              border: "1px solid",
+              borderColor: "divider",
               maxWidth: 440,
-                width: '100%',
-                px: 3,
+              width: "100%",
+              px: 3,
               py: 4,
-              }}
-            >
-              <h2 style={{ marginTop: 0 }}>Please Sign In</h2>
+            }}
+          >
+            <h2 style={{ marginTop: 0 }}>Please Sign In</h2>
             <p style={{ marginTop: 0 }}>
-                You must be logged in to use the admin portal.
-              </p>
-              <MuiButton variant="contained" onClick={() => void signIn?.()}>
-                Sign In
-              </MuiButton>
+              You must be logged in to use the admin portal.
+            </p>
+            <MuiButton variant="contained" onClick={() => void signIn?.()}>
+              Sign In
+            </MuiButton>
           </Paper>
         </Box>
       )}

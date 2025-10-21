@@ -14,10 +14,10 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAuthContext } from '@asgardeo/auth-react';
-import { extractGroupsFromClaims } from '../utils/authorization';
-import type { JWTPayload, AuthContextLike } from "../types/authentication"
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAuthContext } from "@asgardeo/auth-react";
+import { extractGroupsFromClaims } from "../utils/authorization";
+import type { JWTPayload, AuthContextLike } from "../types/authentication";
 
 export type AuthInfo = {
   isAuthenticated: boolean;
@@ -44,7 +44,7 @@ function decodeJwtPayload(
   source: "access" | "id" = "access",
 ): JWTPayload | null {
   try {
-    const parts = token.split('.');
+    const parts = token.split(".");
     if (parts.length !== 3) return null;
     // Use the utility function to decode the payload
     const json = base64UrlDecode(parts[1]);
@@ -52,7 +52,10 @@ function decodeJwtPayload(
     return payload;
   } catch (err) {
     // Keep token details out of logs; just note the failure.
-    console.error(`useAuthInfo.decodeJwtPayload: Failed to decode JWT payload (source=${source})`, err);
+    console.error(
+      `useAuthInfo.decodeJwtPayload: Failed to decode JWT payload (source=${source})`,
+      err,
+    );
     return null;
   }
 }
@@ -77,7 +80,10 @@ export function useAuthInfo(): AuthInfo {
         }
       }
     } catch (err) {
-      console.error("useAuthInfo.extractUserGroups: Access token processing failed", err);
+      console.error(
+        "useAuthInfo.extractUserGroups: Access token processing failed",
+        err,
+      );
     }
 
     // 2) Try ID token (decoded claims)
@@ -91,7 +97,10 @@ export function useAuthInfo(): AuthInfo {
         }
       }
     } catch (err) {
-      console.error("useAuthInfo.extractUserGroups: ID token processing failed", err);
+      console.error(
+        "useAuthInfo.extractUserGroups: ID token processing failed",
+        err,
+      );
     }
 
     // 3) Try basic user info endpoint
@@ -102,7 +111,10 @@ export function useAuthInfo(): AuthInfo {
         if (fromUserInfo.length > 0) return fromUserInfo;
       }
     } catch (err) {
-      console.error("useAuthInfo.extractUserGroups: Basic user info processing failed", err);
+      console.error(
+        "useAuthInfo.extractUserGroups: Basic user info processing failed",
+        err,
+      );
     }
 
     // 4) Try access token payload from state
@@ -134,7 +146,7 @@ export function useAuthInfo(): AuthInfo {
       const g = await extractUserGroups();
       setGroups(g);
     } catch (e) {
-      setError('Failed to load user groups');
+      setError("Failed to load user groups");
       setGroups([]);
     } finally {
       setLoading(false);
@@ -156,7 +168,7 @@ export function useAuthInfo(): AuthInfo {
         const g = await extractUserGroups();
         if (!cancelled) setGroups(g);
       } catch (e) {
-        if (!cancelled) setError('Failed to load user groups');
+        if (!cancelled) setError("Failed to load user groups");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -168,7 +180,7 @@ export function useAuthInfo(): AuthInfo {
 
   return useMemo(
     () => ({ isAuthenticated, groups, loading, error, refresh, auth }),
-    [isAuthenticated, groups, loading, error, refresh, auth]
+    [isAuthenticated, groups, loading, error, refresh, auth],
   );
 }
 

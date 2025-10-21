@@ -14,31 +14,57 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import React from 'react';
-import { Drawer, List, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, Box } from '@mui/material';
-import AppsIcon from '@mui/icons-material/Apps';
-import PersonIcon from '@mui/icons-material/Person';
-import LogoutIcon from '@mui/icons-material/Logout';
+import React from "react";
+import {
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  Box,
+} from "@mui/material";
+import AppsIcon from "@mui/icons-material/Apps";
+import PersonIcon from "@mui/icons-material/Person";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 export type MenuBarProps = {
   onNavigate?: (key: string) => void;
   isAuthed: boolean;
   onSignOut?: () => void;
   activeKey: string;
-  placement?: 'left' | 'right';
+  placement?: "left" | "right";
 };
 
 const DRAWER_WIDTH = 200;
 
-export default function MenuBar({ onNavigate, isAuthed, onSignOut, activeKey, placement = 'left' }: MenuBarProps) {
-  const items: Array<{ key: string; icon: React.ReactNode; label: string; danger?: boolean }> = [
-    { key: 'microapp', icon: <AppsIcon />, label: 'Micro App Management' },
-    { key: 'profile', icon: <PersonIcon />, label: 'User Profile' },
+export default function MenuBar({
+  onNavigate,
+  isAuthed,
+  onSignOut,
+  activeKey,
+  placement = "left",
+}: MenuBarProps) {
+  const items: Array<{
+    key: string;
+    icon: React.ReactNode;
+    label: string;
+    danger?: boolean;
+  }> = [
+    { key: "microapp", icon: <AppsIcon />, label: "Micro App Management" },
+    { key: "profile", icon: <PersonIcon />, label: "User Profile" },
   ];
-  if (isAuthed) items.push({ key: 'logout', icon: <LogoutIcon color="error" />, label: 'Logout', danger: true });
+  if (isAuthed)
+    items.push({
+      key: "logout",
+      icon: <LogoutIcon color="error" />,
+      label: "Logout",
+      danger: true,
+    });
 
   const onClick = (key: string) => {
-    if (key === 'logout') onSignOut?.();
+    if (key === "logout") onSignOut?.();
     else onNavigate?.(key);
   };
 
@@ -50,14 +76,14 @@ export default function MenuBar({ onNavigate, isAuthed, onSignOut, activeKey, pl
       sx={{
         width: DRAWER_WIDTH,
         flexShrink: 0,
-        '& .MuiDrawer-paper': {
+        "& .MuiDrawer-paper": {
           width: DRAWER_WIDTH,
-          boxSizing: 'border-box',
+          boxSizing: "border-box",
         },
       }}
       PaperProps={{
-        sx: { position: 'sticky', height: '100vh' },
-        'data-testid': 'sider' as any,
+        sx: { position: "sticky", height: "100vh" },
+        "data-testid": "sider" as any,
       }}
     >
       <Toolbar />
@@ -70,18 +96,24 @@ export default function MenuBar({ onNavigate, isAuthed, onSignOut, activeKey, pl
         {items.map((item) => {
           const selected = activeKey === item.key;
           return (
-          <ListItemButton
-            key={item.key}
-            selected={selected}
-            className={selected ? 'selected' : ''}
-            onClick={() => onClick(item.key)}
-            role="menuitem"
-            data-testid={`menu-item-${item.key}`}
-          >
-            <ListItemIcon sx={{ minWidth: 36 }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.label} primaryTypographyProps={{ color: item.danger ? 'error' : undefined }} />
-          </ListItemButton>
-        );})}
+            <ListItemButton
+              key={item.key}
+              selected={selected}
+              className={selected ? "selected" : ""}
+              onClick={() => onClick(item.key)}
+              role="menuitem"
+              data-testid={`menu-item-${item.key}`}
+            >
+              <ListItemIcon sx={{ minWidth: 36 }}>{item.icon}</ListItemIcon>
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{
+                  color: item.danger ? "error" : undefined,
+                }}
+              />
+            </ListItemButton>
+          );
+        })}
       </List>
     </Drawer>
   );

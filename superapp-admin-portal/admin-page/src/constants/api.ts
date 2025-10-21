@@ -30,7 +30,11 @@ export const ENDPOINTS: Record<string, string> = {
   USERS: `${API_BASE_URL}/`,
 };
 
-export type EndpointKey = "MICROAPPS_LIST" | "MICROAPPS_UPLOAD" | "USERS_BASE" | "USERS";
+export type EndpointKey =
+  | "MICROAPPS_LIST"
+  | "MICROAPPS_UPLOAD"
+  | "USERS_BASE"
+  | "USERS";
 
 /**
  * Gets the appropriate endpoint URL with environment variable override support.

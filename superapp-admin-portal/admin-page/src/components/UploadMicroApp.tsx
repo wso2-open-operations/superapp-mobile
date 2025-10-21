@@ -61,7 +61,12 @@ const UploadMicroApp = ({ onUploaded }: UploadMicroAppProps): JSX.Element => {
   const hasPending = !!getPendingFile(); // Check if file is selected
 
   const validate = async (): Promise<boolean> => {
-    if (!name.trim() || !version.trim() || !appId.trim() || !description.trim()) {
+    if (
+      !name.trim() ||
+      !version.trim() ||
+      !appId.trim() ||
+      !description.trim()
+    ) {
       setIsError(false);
       setIsWarning(true);
       setMessage("Please provide name, version, App ID, and description.");
@@ -104,7 +109,9 @@ const UploadMicroApp = ({ onUploaded }: UploadMicroAppProps): JSX.Element => {
       const headers: Record<string, string> = {};
       try {
         if (auth?.state?.isAuthenticated) {
-          const accessToken = await auth.getAccessToken?.().catch(() => undefined);
+          const accessToken = await auth
+            .getAccessToken?.()
+            .catch(() => undefined);
           if (accessToken) {
             headers["Authorization"] = `Bearer ${accessToken}`;
           }
@@ -122,7 +129,11 @@ const UploadMicroApp = ({ onUploaded }: UploadMicroAppProps): JSX.Element => {
       });
 
       const ct = res.headers.get("Content-Type") || "";
-      type UploadResponse = { message?: string; error?: string; [k: string]: unknown } | null;
+      type UploadResponse = {
+        message?: string;
+        error?: string;
+        [k: string]: unknown;
+      } | null;
       let payload: UploadResponse = null;
       if (ct.includes("application/json")) {
         payload = (await res.json().catch(() => null)) as UploadResponse;
@@ -141,18 +152,20 @@ const UploadMicroApp = ({ onUploaded }: UploadMicroAppProps): JSX.Element => {
 
       setIsError(false);
       setIsWarning(false);
-      setMessage((payload && payload.message) || "Micro-app uploaded successfully");
+      setMessage(
+        (payload && payload.message) || "Micro-app uploaded successfully",
+      );
       setShowModal(true);
       // Optional: clear form
       setZipFile(null);
       setConfirmFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-// Notify parent to refresh list / close view
-try {
-  onUploaded?.();
-} catch (err) {
-  console.warn("error message.....:", err);
-}
+      // Notify parent to refresh list / close view
+      try {
+        onUploaded?.();
+      } catch (err) {
+        console.warn("error message.....:", err);
+      }
     } catch (err) {
       console.error(err);
       setIsError(true);
@@ -197,13 +210,25 @@ try {
 
   return (
     <div>
-      <h2 style={{ marginTop: 0, marginBottom: 8, color: "#003a67" }}>Upload Micro-App (ZIP)</h2>
+      <h2 style={{ marginTop: 0, marginBottom: 8, color: "#003a67" }}>
+        Upload Micro-App (ZIP)
+      </h2>
       <p style={{ marginTop: 0, color: "var(--muted)", marginBottom: 16 }}>
         Fill details and upload a .zip for the micro-app store.
       </p>
 
-      <div className="card" style={{ marginBottom: 16, background: "#e6f4ff", border: "1px solid #bae0ff", color: "#003a67" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+      <div
+        className="card"
+        style={{
+          marginBottom: 16,
+          background: "#e6f4ff",
+          border: "1px solid #bae0ff",
+          color: "#003a67",
+        }}
+      >
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+        >
           <label style={{ display: "grid", gap: 6 }}>
             <span style={{ color: "var(--muted)", fontSize: 12 }}>Name*</span>
             <input
@@ -211,20 +236,36 @@ try {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Payslip Viewer"
-              style={{ padding: 10, borderRadius: 10, border: "1px solid var(--border)", color: "#000" }}
+              style={{
+                padding: 10,
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                color: "#000",
+              }}
             />
-            {!name.trim() && <small style={{ color: "#dc2626" }}>Required</small>}
+            {!name.trim() && (
+              <small style={{ color: "#dc2626" }}>Required</small>
+            )}
           </label>
           <label style={{ display: "grid", gap: 6 }}>
-            <span style={{ color: "var(--muted)", fontSize: 12 }}>Version*</span>
+            <span style={{ color: "var(--muted)", fontSize: 12 }}>
+              Version*
+            </span>
             <input
               type="text"
               value={version}
               onChange={(e) => setVersion(e.target.value)}
               placeholder="e.g., 1.0.0"
-              style={{ padding: 10, borderRadius: 10, border: "1px solid var(--border)", color: "#000" }}
+              style={{
+                padding: 10,
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                color: "#000",
+              }}
             />
-            {!version.trim() && <small style={{ color: "#dc2626" }}>Required</small>}
+            {!version.trim() && (
+              <small style={{ color: "#dc2626" }}>Required</small>
+            )}
           </label>
           <label style={{ display: "grid", gap: 6 }}>
             <span style={{ color: "var(--muted)", fontSize: 12 }}>App ID*</span>
@@ -233,34 +274,59 @@ try {
               value={appId}
               onChange={(e) => setAppId(e.target.value)}
               placeholder="e.g., payslip-viewer"
-              style={{ padding: 10, borderRadius: 10, border: "1px solid var(--border)", color: "#000" }}
+              style={{
+                padding: 10,
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                color: "#000",
+              }}
             />
-            {!appId.trim() && <small style={{ color: "#dc2626" }}>Required</small>}
+            {!appId.trim() && (
+              <small style={{ color: "#dc2626" }}>Required</small>
+            )}
           </label>
           <label style={{ display: "grid", gap: 6 }}>
-            <span style={{ color: "var(--muted)", fontSize: 12 }}>Icon URL Path</span>
+            <span style={{ color: "var(--muted)", fontSize: 12 }}>
+              Icon URL Path
+            </span>
             <input
               type="text"
               value={iconUrlPath}
               onChange={(e) => setIconUrlPath(e.target.value)}
               placeholder="optional"
-              style={{ padding: 10, borderRadius: 10, border: "1px solid var(--border)", color: "#000" }}
+              style={{
+                padding: 10,
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                color: "#000",
+              }}
             />
           </label>
         </div>
         <div style={{ marginTop: 12 }}>
           <label style={{ display: "grid", gap: 6 }}>
             <span style={{ color: "var(--muted)", fontSize: 12 }}>
-              Description* <span style={{ fontWeight: 400, color: "var(--muted)" }}>(short summary)</span>
+              Description*{" "}
+              <span style={{ fontWeight: 400, color: "var(--muted)" }}>
+                (short summary)
+              </span>
             </span>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Brief description of what the micro-app does"
               rows={3}
-              style={{ padding: 10, borderRadius: 10, border: "1px solid var(--border)", resize: "vertical", color: "#000" }}
+              style={{
+                padding: 10,
+                borderRadius: 10,
+                border: "1px solid var(--border)",
+                resize: "vertical",
+                color: "#000",
+              }}
             />
-            {!description.trim() && <small style={{ color: "#dc2626" }}>Required</small>}
+            {!description.trim() && (
+              <small style={{ color: "#dc2626" }}>Required</small>
+            )}
           </label>
         </div>
       </div>
@@ -272,7 +338,9 @@ try {
         onDragLeave={onDragLeave}
         style={{ marginBottom: 12 }}
       >
-        <p className="dropzone__hint">Drag & drop the .zip file here or Choose from the computer</p>
+        <p className="dropzone__hint">
+          Drag & drop the .zip file here or Choose from the computer
+        </p>
         {hasPending && (
           <div className="dropzone__filename" style={{ color: "#666" }}>
             Selected: {getPendingFile()!.name}
@@ -334,11 +402,19 @@ try {
           <div
             className="modal"
             onClick={(e) => e.stopPropagation()}
-            style={{ background: "#e6f4ff", border: "1px solid #bae0ff", color: "#003a67" }}
+            style={{
+              background: "#e6f4ff",
+              border: "1px solid #bae0ff",
+              color: "#003a67",
+            }}
           >
             <div
               className="modal__header"
-              style={{ background: "transparent", borderBottom: "1px solid #bae0ff", color: "#003a67" }}
+              style={{
+                background: "transparent",
+                borderBottom: "1px solid #bae0ff",
+                color: "#003a67",
+              }}
             >
               Confirm File
             </div>
@@ -347,8 +423,18 @@ try {
                 Use <b>{confirmFile.name}</b> as the ZIP file?
               </p>
             </div>
-            <div className="modal__footer" style={{ borderTop: "1px solid #bae0ff", background: "transparent" }}>
-              <button className="btn btn--primary" style={{ border: "none", outline: "none", boxShadow: "none" }} onClick={confirmSelection}>
+            <div
+              className="modal__footer"
+              style={{
+                borderTop: "1px solid #bae0ff",
+                background: "transparent",
+              }}
+            >
+              <button
+                className="btn btn--primary"
+                style={{ border: "none", outline: "none", boxShadow: "none" }}
+                onClick={confirmSelection}
+              >
                 Yes
               </button>
               <button
@@ -370,7 +456,10 @@ try {
             onClick={(e) => e.stopPropagation()}
             style={{
               background: !isError && !isWarning ? "#e6f4ff" : "var(--surface)",
-              border: !isError && !isWarning ? "1px solid #bae0ff" : "1px solid var(--border)",
+              border:
+                !isError && !isWarning
+                  ? "1px solid #bae0ff"
+                  : "1px solid var(--border)",
               color: !isError && !isWarning ? "#003a67" : "var(--text)",
             }}
           >
@@ -378,22 +467,46 @@ try {
               className="modal__header"
               style={{
                 background: "transparent",
-                borderBottom: !isError && !isWarning ? "1px solid #bae0ff" : "1px solid var(--border)",
+                borderBottom:
+                  !isError && !isWarning
+                    ? "1px solid #bae0ff"
+                    : "1px solid var(--border)",
                 color: !isError && !isWarning ? "#003a67" : "var(--text)",
               }}
             >
-              {isWarning ? "Warning" : isError ? "Upload Failed" : "Upload Successful"}
+              {isWarning
+                ? "Warning"
+                : isError
+                  ? "Upload Failed"
+                  : "Upload Successful"}
             </div>
             <div className="modal__body" style={{ background: "transparent" }}>
-              <p style={{ margin: 0, color: !isError && !isWarning ? "#003a67" : "var(--text)" }}>{message}</p>
+              <p
+                style={{
+                  margin: 0,
+                  color: !isError && !isWarning ? "#003a67" : "var(--text)",
+                }}
+              >
+                {message}
+              </p>
             </div>
             <div
               className="modal__footer"
-              style={{ borderTop: !isError && !isWarning ? "1px solid #bae0ff" : "1px solid var(--border)", background: "transparent" }}
+              style={{
+                borderTop:
+                  !isError && !isWarning
+                    ? "1px solid #bae0ff"
+                    : "1px solid var(--border)",
+                background: "transparent",
+              }}
             >
               <button
                 className={!isError && !isWarning ? "btn btn--primary" : "btn"}
-                style={!isError && !isWarning ? { border: "none", outline: "none", boxShadow: "none" } : undefined}
+                style={
+                  !isError && !isWarning
+                    ? { border: "none", outline: "none", boxShadow: "none" }
+                    : undefined
+                }
                 onClick={() => setShowModal(false)}
               >
                 Close

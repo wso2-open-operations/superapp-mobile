@@ -67,10 +67,10 @@ export default function UserProfile({ state }: UserProfileProps) {
     (async () => {
       try {
         if (ctx?.getBasicUserInfo) {
-            const info = await ctx.getBasicUserInfo();
-            if (mounted) setBasicInfo(info ?? null);
+          const info = await ctx.getBasicUserInfo();
+          if (mounted) setBasicInfo(info ?? null);
         }
-        } catch (e) {
+      } catch (e) {
         const errorMsg = `Failed to fetch basic user info from Asgardeo${e ? `: ${e}` : ""}. Please check your network connection and try again, or contact support if the problem persists.`;
         console.error(errorMsg, e);
         if (mounted) setError(errorMsg);
@@ -86,12 +86,18 @@ export default function UserProfile({ state }: UserProfileProps) {
   // Effect: Fetch Extended Profile from Backend Service
   useEffect(() => {
     // Guarded extraction from possibly-null basicInfo
-  const basicObj = basicInfo && typeof basicInfo === "object" ? (basicInfo as Record<string, any>) : null;
-  const email = basicObj?.email || state?.email || basicObj?.username || state?.username;
-  const emailStr = typeof email === "string" ? email : String(email || "");
-  if (!emailStr) return;
+    const basicObj =
+      basicInfo && typeof basicInfo === "object"
+        ? (basicInfo as Record<string, any>)
+        : null;
+    const email =
+      basicObj?.email || state?.email || basicObj?.username || state?.username;
+    const emailStr = typeof email === "string" ? email : String(email || "");
+    if (!emailStr) return;
 
-    const base = getEndpoint("USERS_BASE") || getEndpoint("MICROAPPS_LIST").replace("/micro-apps", "");
+    const base =
+      getEndpoint("USERS_BASE") ||
+      getEndpoint("MICROAPPS_LIST").replace("/micro-apps", "");
     if (!base || base.trim() === "") {
       setProfileError("User service base URL not configured");
       return;
@@ -127,7 +133,9 @@ export default function UserProfile({ state }: UserProfileProps) {
 
         if (!res.ok) {
           const snippet = bodyText.slice(0, 180).replace(/\s+/g, " ").trim();
-          throw new Error(`Profile fetch failed (${res.status}) ${snippet ? "- " + snippet : ""}`);
+          throw new Error(
+            `Profile fetch failed (${res.status}) ${snippet ? "- " + snippet : ""}`,
+          );
         }
 
         let data: ProfileData;
@@ -135,7 +143,10 @@ export default function UserProfile({ state }: UserProfileProps) {
           try {
             data = JSON.parse(bodyText || "null");
           } catch (e) {
-            console.warn("[UserProfile] JSON parse error; body starts with:", bodyText.slice(0, 120));
+            console.warn(
+              "[UserProfile] JSON parse error; body starts with:",
+              bodyText.slice(0, 120),
+            );
             throw new Error("Invalid JSON in profile response");
           }
         } else {
@@ -144,13 +155,16 @@ export default function UserProfile({ state }: UserProfileProps) {
             contentType,
             preview: bodyText.slice(0, 200),
           });
-          throw new Error("Unexpected HTML response – check REACT_APP_USERS_BASE_URL");
+          throw new Error(
+            "Unexpected HTML response – check REACT_APP_USERS_BASE_URL",
+          );
         }
 
         if (!abort) setProfile(data);
       } catch (e) {
         if (!abort) {
-          const errorMessage = e instanceof Error ? e.message : "Failed to load profile";
+          const errorMessage =
+            e instanceof Error ? e.message : "Failed to load profile";
           setProfileError(errorMessage);
           console.error("Profile fetch error:", e);
         }
@@ -164,18 +178,34 @@ export default function UserProfile({ state }: UserProfileProps) {
     };
   }, [basicInfo, state, ctx]);
 
-  const basic = (basicInfo && typeof basicInfo === "object") ? (basicInfo as Record<string, any>) : null;
-  const givenName = (typeof basic?.given_name === "string" && basic?.given_name) || state?.given_name || "";
-  const familyName = (typeof basic?.family_name === "string" && basic?.family_name) || state?.family_name || "";
+  const basic =
+    basicInfo && typeof basicInfo === "object"
+      ? (basicInfo as Record<string, any>)
+      : null;
+  const givenName =
+    (typeof basic?.given_name === "string" && basic?.given_name) ||
+    state?.given_name ||
+    "";
+  const familyName =
+    (typeof basic?.family_name === "string" && basic?.family_name) ||
+    state?.family_name ||
+    "";
   const locale = (typeof basic?.locale === "string" && basic?.locale) || "";
-  const updatedAt = (typeof basic?.updated_at === "string" && basic?.updated_at) || "";
+  const updatedAt =
+    (typeof basic?.updated_at === "string" && basic?.updated_at) || "";
   const picture = (typeof basic?.picture === "string" && basic?.picture) || "";
 
-  const prof = profile && typeof profile === "object" ? (profile as Record<string, any>) : null;
-  const firstName = typeof prof?.first_name === "string" ? prof.first_name : null;
+  const prof =
+    profile && typeof profile === "object"
+      ? (profile as Record<string, any>)
+      : null;
+  const firstName =
+    typeof prof?.first_name === "string" ? prof.first_name : null;
   const lastName = typeof prof?.last_name === "string" ? prof.last_name : null;
-  const employeeId = prof?.employee_id != null ? String(prof.employee_id) : null;
-  const department = typeof prof?.department === "string" ? prof.department : null;
+  const employeeId =
+    prof?.employee_id != null ? String(prof.employee_id) : null;
+  const department =
+    typeof prof?.department === "string" ? prof.department : null;
 
   return (
     <Card
@@ -196,7 +226,9 @@ export default function UserProfile({ state }: UserProfileProps) {
           color: COLORS.primary,
         }}
       >
-        <h2 style={{ marginTop: 0, marginBottom: 12, color: COLORS.primary }}>User Profile</h2>
+        <h2 style={{ marginTop: 0, marginBottom: 12, color: COLORS.primary }}>
+          User Profile
+        </h2>
 
         {loading && <Loading message="Loading user details…" />}
         {error && (
@@ -229,7 +261,8 @@ export default function UserProfile({ state }: UserProfileProps) {
           )}
           {updatedAt && (
             <div>
-              <b style={{ color: COLORS.primary }}>Updated:</b> {String(updatedAt)}
+              <b style={{ color: COLORS.primary }}>Updated:</b>{" "}
+              {String(updatedAt)}
             </div>
           )}
 
