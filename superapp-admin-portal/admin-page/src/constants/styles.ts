@@ -91,15 +91,16 @@ export interface CommonStyles {
   errorText: CSSProperties;
   /** inline error card style */
   alertError: CSSProperties;
+  pageCentered: CSSProperties;
 }
 
 export const COMMON_STYLES: CommonStyles = {
   greeting: {
-  textAlign: 'left',
-  margin: '8px 0 12px',
-  fontSize: '20px',
-  fontWeight: '500',
-  color: COLORS.primary,
+    textAlign: 'left',
+    margin: '8px 0 12px',
+    fontSize: '20px',
+    fontWeight: '500',
+    color: COLORS.primary,
   },
 
   card: {
@@ -126,11 +127,11 @@ export const COMMON_STYLES: CommonStyles = {
   },
 
   section: {
-  marginTop: '0',
-  background: '#ffffff',
-  border: '1px solid rgb(208, 236, 255)',
-  borderRadius: '16px',
-  padding: '16px',
+    marginTop: '0',
+    background: '#ffffff',
+    border: '1px solid rgb(208, 236, 255)',
+    borderRadius: '16px',
+    padding: '16px',
   },
 
   loadingText: {
@@ -148,5 +149,12 @@ export const COMMON_STYLES: CommonStyles = {
     border: `1px solid ${COLORS.errorSurfaceBorder}`,
     color: COLORS.errorSurfaceText,
     borderRadius: '12px',
+  },
+  pageCentered: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '100vh',
+    width: '100%',
   },
 };
