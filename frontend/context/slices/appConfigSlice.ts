@@ -16,13 +16,19 @@
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppConfigState, AppConfigResponse } from "@/types/appConfig.types";
-import { BASE_URL } from "@/constants/Constants";
+import {
+  BASE_URL,
+  TOKEN_EXCHANGE_TYPE_STORAGE_KEY,
+} from "@/constants/Constants";
 import { apiRequest } from "@/utils/requestHandler";
+import { fetchAndStoreTokenExchangeConfig } from "@/services/tokenExchangeService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const initialState: AppConfigState = {
   configs: [],
   defaultMicroAppIds: [],
   appScopes: [],
+  tokenExchangeType: "",
   loading: false,
   error: null,
 };
@@ -39,8 +45,34 @@ export const getAppConfigurations = createAsyncThunk(
         onLogout
       );
 
-      if (response?.data) return response.data;
-      else rejectWithValue("App configs not found");
+      if (response?.data) {
+        const appConfigResponse: AppConfigResponse = response.data;
+
+        if (appConfigResponse.tokenExchangeType) {
+          const storedTokenExchangeType = await AsyncStorage.getItem(
+            TOKEN_EXCHANGE_TYPE_STORAGE_KEY
+          );
+
+          // If undefined in storage or different from API response, fetch new config
+          if (
+            !storedTokenExchangeType ||
+            storedTokenExchangeType !== appConfigResponse.tokenExchangeType
+          ) {
+            // Store the new tokenExchangeType
+            await AsyncStorage.setItem(
+              TOKEN_EXCHANGE_TYPE_STORAGE_KEY,
+              appConfigResponse.tokenExchangeType
+            );
+
+            // Fetch and store the token exchange config
+            await fetchAndStoreTokenExchangeConfig(onLogout);
+          }
+        }
+
+        return appConfigResponse;
+      } else {
+        return rejectWithValue("App configs not found");
+      }
     } catch (error) {
       return rejectWithValue(error);
     }
@@ -64,6 +96,7 @@ const appConfigSlice = createSlice({
         state.configs = action.payload.appConfigs;
         state.defaultMicroAppIds = action.payload.defaultMicroAppIds;
         state.appScopes = action.payload.appScopes;
+        state.tokenExchangeType = action.payload.tokenExchangeType;
       })
       .addCase(getAppConfigurations.rejected, (state, action) => {
         state.loading = false;
