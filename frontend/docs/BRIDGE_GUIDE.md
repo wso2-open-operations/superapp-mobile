@@ -364,7 +364,7 @@ window.nativebridge.rejectSaveLocalData = (error) => {
 ```
 
 
-The bridge auto-generates method names from topics using a `capitalize` function that converts snake_case to PascalCase and appends the relevant verb afterward. For example:
+The bridge auto-generates method names from topics using a `capitalize` function that converts snake_case to PascalCase and appends the relevant prefix afterwards. For example:
 
 - Topic: `save_local_data` → Methods: `requestSaveLocalData`, `resolveSaveLocalData`, `rejectSaveLocalData`
 - Topic: `google_login` → Methods: `requestGoogleLogin`, `resolveGoogleLogin`, `rejectGoogleLogin`
