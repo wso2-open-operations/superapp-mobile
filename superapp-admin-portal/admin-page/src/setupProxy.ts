@@ -66,7 +66,6 @@ export default function setupProxy(app: AppLike): void {
   if (target && !/^https?:\/\//.test(target)) {
     target = "http://" + target; // fallback assumption
   }
-
   // Final full URL = {target}/gov-superapp/microappbackendprodbranch/v1.0/admin-portal/upload
   const upstreamUploadPath = process.env.UPSTREAM_UPLOAD_PATH || "";
 
