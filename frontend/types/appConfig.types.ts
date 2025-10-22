@@ -24,16 +24,28 @@ export interface AppScope {
   scopes: string;
 }
 
+export interface TokenExchangeConfig {
+  tokenUrl: string;
+  requestFormat: string;
+  optionalParams: {
+    grantType: string;
+    requestedTokenType: string;
+    subjectTokenType: string;
+  };
+}
+
 export interface AppConfigResponse {
   appConfigs: AppConfig[];
   defaultMicroAppIds: string[];
   appScopes: AppScope[];
+  tokenExchangeType?: string;
 }
 
 export interface AppConfigState {
   configs: AppConfig[];
   defaultMicroAppIds: string[];
   appScopes: AppScope[];
+  tokenExchangeType?: string;
   loading: boolean;
   error: string | null;
 }
