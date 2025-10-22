@@ -18,16 +18,15 @@ You may also see any lint errors in the console.
 
 If you see "Your application's callback URL does not match with the registered redirect URLs" when logging in, ensure the following:
 
-1) Configure environment variables. Copy `.env.example` to `.env.local` and fill in values:
-
+1. Configure environment variables. Copy `.env.example` to `.env.local` and fill in values:
    - `REACT_APP_ASGARDEO_CLIENT_ID`
    - `REACT_APP_ASGARDEO_BASE_URL` (e.g., `https://api.asgardeo.io/t/<org_name>`)
    - `REACT_APP_SIGN_IN_REDIRECT_URL` (e.g., `http://localhost:3000/`)
    - `REACT_APP_SIGN_OUT_REDIRECT_URL` (e.g., `http://localhost:3000/`)
 
    Restart `npm start` after changes.
-2) In Asgardeo Console for your application, add EXACTLY these URLs:
 
+2. In Asgardeo Console for your application, add EXACTLY these URLs:
    - Allowed redirect URLs: `http://localhost:3000/`
    - Authorized post-logout redirect URLs: `http://localhost:3000/`
 
@@ -143,8 +142,8 @@ Production builds:
 If you introduce an environment-based base URL for production, add something like:
 
 ```js
-const PAYSLIP_BASE = process.env.REACT_APP_PAYSLIP_API_BASE || '/api/payslips';
-fetch(`${PAYSLIP_BASE}/upload`, { method: 'POST', body: formData });
+const PAYSLIP_BASE = process.env.REACT_APP_PAYSLIP_API_BASE || "/api/payslips";
+fetch(`${PAYSLIP_BASE}/upload`, { method: "POST", body: formData });
 ```
 
 and set `REACT_APP_PAYSLIP_API_BASE` during CI/CD.
