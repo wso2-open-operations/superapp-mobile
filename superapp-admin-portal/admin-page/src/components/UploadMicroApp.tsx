@@ -34,7 +34,7 @@ export type UploadMicroAppProps = {
 
 const UploadMicroApp = ({ onUploaded }: UploadMicroAppProps): JSX.Element => {
   // Authentication context for secure API calls
-  const auth = useAuthContext() as AuthContextLike;
+  const auth = useAuthContext();
 
   // Form field state management
   const [name, setName] = useState("");

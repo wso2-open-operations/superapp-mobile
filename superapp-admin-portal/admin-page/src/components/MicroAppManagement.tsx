@@ -113,31 +113,33 @@ export default function MicroAppManagement(): React.ReactElement {
 
       // Case-insensitive getter for object properties
       const getCaseInsensitive = (
-        obj: Record<string, any>,
-        key: string,
+
+        object: Record<string, any>,
+        targetKey: string,
       ): any => {
-        const found = Object.keys(obj).find(
-          (k) => k.toLowerCase() === key.toLowerCase(),
+        const foundKey = Object.keys(object).find(
+          (currentKey) => currentKey.toLowerCase() === targetKey.toLowerCase(),
         );
-        return found ? obj[found] : undefined;
+        return foundKey ? object[foundKey] : undefined;
       };
 
-      const normalize = (
-        d: MicroApp[] | MicroAppsContainer | null,
-      ): MicroApp[] => {
-        if (Array.isArray(d)) return d;
-        if (!d || typeof d !== "object") return [];
 
-        const obj = d as Record<string, any>;
+      const normalize = (
+        data: MicroApp[] | MicroAppsContainer | null,
+      ): MicroApp[] => {
+        if (Array.isArray(data)) return data as MicroApp[];
+        if (!data || typeof data !== "object") return [];
+
+        const dataObject = data as Record<string, any>;
         // Check common container keys (case-insensitive) including a single nested level
-        for (const key of CONTAINER_KEYS_LOWER) {
-          const v = getCaseInsensitive(obj, key);
-          if (Array.isArray(v)) return v as MicroApp[];
-          if (v && typeof v === "object") {
-            const nested = v as Record<string, any>;
-            for (const k2 of CONTAINER_KEYS_LOWER) {
-              const v2 = getCaseInsensitive(nested, k2);
-              if (Array.isArray(v2)) return v2 as MicroApp[];
+        for (const containerKey of CONTAINER_KEYS_LOWER) {
+          const containerValue = getCaseInsensitive(dataObject, containerKey);
+          if (Array.isArray(containerValue)) return containerValue as MicroApp[];
+          if (containerValue && typeof containerValue === "object") {
+            const nestedObject = containerValue as Record<string, any>;
+            for (const nestedKey of CONTAINER_KEYS_LOWER) {
+              const nestedValue = getCaseInsensitive(nestedObject, nestedKey);
+              if (Array.isArray(nestedValue)) return nestedValue as MicroApp[];
             }
           }
         }
