@@ -67,7 +67,6 @@ export const generateInjectedJavaScript = () => {
      */
     methods.push(`
     ${resolveMethod}: (data, requestId) => {
-      console.log("${topic} resolved:", data);
       if (window.nativebridge._pendingPromises && window.nativebridge._pendingPromises[requestId]) {
         window.nativebridge._pendingPromises[requestId].resolve(data);
         delete window.nativebridge._pendingPromises[requestId];
@@ -79,7 +78,6 @@ export const generateInjectedJavaScript = () => {
      */
     methods.push(`
     ${rejectMethod}: (error, requestId) => {
-      console.error("${topic} failed:", error);
       if (window.nativebridge._pendingPromises && window.nativebridge._pendingPromises[requestId]) {
         window.nativebridge._pendingPromises[requestId].reject(error);
         delete window.nativebridge._pendingPromises[requestId];
@@ -113,7 +111,6 @@ export const generateInjectedJavaScript = () => {
       methods[resolveIndex] = `
     ${resolveMethod}: (data, requestId) => {
       window.${globalVarName} = data;
-      console.log("${topic} resolved:", data);
       if (window.nativebridge._pendingPromises && window.nativebridge._pendingPromises[requestId]) {
         window.nativebridge._pendingPromises[requestId].resolve(data);
         delete window.nativebridge._pendingPromises[requestId];

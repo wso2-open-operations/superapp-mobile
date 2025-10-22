@@ -339,7 +339,7 @@ const MicroApp = () => {
                       [
                         {
                           text: "Cancel",
-                          onPress: () => console.log("Cancel Pressed"),
+                          onPress: () => {},
                           style: "cancel",
                         },
                         {
