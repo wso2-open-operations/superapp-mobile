@@ -33,8 +33,6 @@ export const fetchAndStoreTokenExchangeConfig = async (
       onLogout
     );
 
-    console.log("Token exchange response", response);
-
     if (response?.data) {
       const tokenExchangeConfig: TokenExchangeConfig = response.data;
       await AsyncStorage.setItem(
