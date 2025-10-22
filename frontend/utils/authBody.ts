@@ -63,6 +63,7 @@ export const createAuthRequestBody = (
 
     case "text/plain":
       return Object.entries(baseBody)
+        .filter(([_, value]) => value !== undefined)
         .map(([key, value]) => `${key}=${value}`)
         .join("\n");
 
