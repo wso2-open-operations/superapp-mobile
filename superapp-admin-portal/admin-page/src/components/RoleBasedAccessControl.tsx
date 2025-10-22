@@ -22,6 +22,7 @@ import { useAuthContext } from "@asgardeo/auth-react";
 import useAuthInfo from "../hooks/useAuthInfo";
 import { Card, CardContent, Typography } from "@mui/material";
 import { COMMON_STYLES } from "../constants/styles";
+import { DEFAULT_REQUIRED_GROUPS } from "../constants/accessControl";
 import AccessDenied from "./common/AccessDenied";
 
 type RoleBasedAccessControlProps = {
@@ -40,7 +41,7 @@ const Paragraph: React.FC<React.ComponentProps<typeof Typography>> = ({
 
 const RoleBasedAccessControl: React.FC<RoleBasedAccessControlProps> = ({
   children,
-  requiredGroups = ["superapp_admin"],
+  requiredGroups = [...DEFAULT_REQUIRED_GROUPS],
 }) => {
   // Use the SDK's context directly; only use signOut here.
   const { signOut } = useAuthContext();
