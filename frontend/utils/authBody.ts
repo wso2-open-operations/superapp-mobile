@@ -13,33 +13,35 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-const createAuthRequestBody = ({
-  grantType,
-  code,
-  redirectUri,
-  clientId,
-  codeVerifier,
-  refreshToken,
-  subjectToken,
-  subjectTokenType,
-  requestedTokenType,
-  scope,
-}: {
-  grantType:
-    | "authorization_code"
-    | "refresh_token"
-    | "urn:ietf:params:oauth:grant-type:token-exchange";
+interface AuthRequestBodyProps {
+  grantType: string;
   code?: string;
   redirectUri?: string;
   clientId?: string;
   codeVerifier?: string;
   refreshToken?: string;
   subjectToken?: string;
-  subjectTokenType?: "urn:ietf:params:oauth:token-type:jwt";
-  requestedTokenType?: "urn:ietf:params:oauth:token-type:access_token";
+  subjectTokenType?: string;
+  requestedTokenType?: string;
   scope?: string;
-}): string => {
-  return new URLSearchParams({
+}
+
+export const createAuthRequestBody = (
+  {
+    grantType,
+    code,
+    redirectUri,
+    clientId,
+    codeVerifier,
+    refreshToken,
+    subjectToken,
+    subjectTokenType,
+    requestedTokenType,
+    scope,
+  }: AuthRequestBodyProps,
+  requestFormat: string
+): string | Record<string, any> => {
+  const baseBody = {
     grant_type: grantType,
     ...(code && { code }),
     ...(redirectUri && { redirect_uri: redirectUri }),
@@ -50,7 +52,21 @@ const createAuthRequestBody = ({
     ...(subjectTokenType && { subject_token_type: subjectTokenType }),
     ...(requestedTokenType && { requested_token_type: requestedTokenType }),
     ...(scope && { scope }),
-  }).toString();
-};
+  };
 
-export default createAuthRequestBody;
+  switch (requestFormat) {
+    case "application/json":
+      return baseBody;
+
+    case "application/x-www-form-urlencoded":
+      return new URLSearchParams(baseBody as Record<string, string>).toString();
+
+    case "text/plain":
+      return Object.entries(baseBody)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("\n");
+
+    default:
+      throw new Error(`Unsupported request format: ${requestFormat}`);
+  }
+};
