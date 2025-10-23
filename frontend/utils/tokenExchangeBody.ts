@@ -36,7 +36,7 @@ export const prepareTokenExchangePayload = (
 ): TokenExchangeConfig => {
   switch (type) {
     case TokenExchangeType.IDP:
-      const idpData: IdpRequestData = data as IdpRequestData;
+      const idpData: IdpRequestData = data;
       return {
         body: {
           client_id: idpData.clientId,
