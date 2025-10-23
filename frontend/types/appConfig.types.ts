@@ -1,3 +1,4 @@
+import { tokenExchange } from "./../services/authService";
 // Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
@@ -24,28 +25,11 @@ export interface AppScope {
   scopes: string;
 }
 
-export interface TokenExchangeConfig {
-  tokenUrl: string;
-  requestFormat: string;
-  optionalParams: {
-    grantType: string;
-    requestedTokenType: string;
-    subjectTokenType: string;
-  };
-}
-
 export interface AppConfigResponse {
-  appConfigs: AppConfig[];
-  defaultMicroAppIds: string[];
-  appScopes: AppScope[];
-  tokenExchangeType?: string;
-}
-
-export interface AppConfigState {
   configs: AppConfig[];
   defaultMicroAppIds: string[];
+  tokenExchangeType: string;
   appScopes: AppScope[];
-  tokenExchangeType?: string;
   loading: boolean;
   error: string | null;
 }

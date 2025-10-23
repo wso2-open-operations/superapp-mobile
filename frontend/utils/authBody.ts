@@ -13,35 +13,33 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-interface AuthRequestBodyProps {
-  grantType: string;
+const createAuthRequestBody = ({
+  grantType,
+  code,
+  redirectUri,
+  clientId,
+  codeVerifier,
+  refreshToken,
+  subjectToken,
+  subjectTokenType,
+  requestedTokenType,
+  scope,
+}: {
+  grantType:
+    | "authorization_code"
+    | "refresh_token"
+    | "urn:ietf:params:oauth:grant-type:token-exchange";
   code?: string;
   redirectUri?: string;
   clientId?: string;
   codeVerifier?: string;
   refreshToken?: string;
   subjectToken?: string;
-  subjectTokenType?: string;
-  requestedTokenType?: string;
+  subjectTokenType?: "urn:ietf:params:oauth:token-type:jwt";
+  requestedTokenType?: "urn:ietf:params:oauth:token-type:access_token";
   scope?: string;
-}
-
-export const createAuthRequestBody = (
-  {
-    grantType,
-    code,
-    redirectUri,
-    clientId,
-    codeVerifier,
-    refreshToken,
-    subjectToken,
-    subjectTokenType,
-    requestedTokenType,
-    scope,
-  }: AuthRequestBodyProps,
-  requestFormat: string
-): string | Record<string, any> => {
-  const baseBody = {
+}): string => {
+  return new URLSearchParams({
     grant_type: grantType,
     ...(code && { code }),
     ...(redirectUri && { redirect_uri: redirectUri }),
@@ -52,22 +50,7 @@ export const createAuthRequestBody = (
     ...(subjectTokenType && { subject_token_type: subjectTokenType }),
     ...(requestedTokenType && { requested_token_type: requestedTokenType }),
     ...(scope && { scope }),
-  };
-
-  switch (requestFormat) {
-    case "application/json":
-      return baseBody;
-
-    case "application/x-www-form-urlencoded":
-      return new URLSearchParams(baseBody as Record<string, string>).toString();
-
-    case "text/plain":
-      return Object.entries(baseBody)
-        .filter(([_, value]) => value !== undefined)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("\n");
-
-    default:
-      throw new Error(`Unsupported request format: ${requestFormat}`);
-  }
+  }).toString();
 };
+
+export default createAuthRequestBody;

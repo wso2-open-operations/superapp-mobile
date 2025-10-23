@@ -87,15 +87,13 @@ export const isIos = Platform.OS === "ios";
 export const FULL_SCREEN_VIEWING_MODE = "fullscreen";
 export const DEFAULT_VIEWING_MODE = "default";
 
-// Keys for storage
+// Keys for Secure Store
 export const LAST_SENT_FCM_TOKEN = "last_sent_fcm_token";
 export const ACCESS_TOKEN = "secure_access_token";
 export const REFRESH_TOKEN = "secure_refresh_token";
 export const ID_TOKEN = "secure_id_token";
 export const EXPIRES_AT_KEY = "secure_expires_at";
 export const AUTH_EMAIL_KEY = "secure_auth_email";
-export const TOKEN_EXCHANGE_TYPE_STORAGE_KEY = "token_exchange_type";
-export const TOKEN_EXCHANGE_CONFIG_STORAGE_KEY = "token_exchange_config";
 
 // Notifee Channel ID and Name
 export const NOTIFICATION_CHANNEL_ID =

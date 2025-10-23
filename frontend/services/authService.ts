@@ -26,7 +26,7 @@ import {
 import { updateExchangedToken } from "@/context/slices/appSlice";
 import { AppDispatch } from "@/context/store";
 import { AppScope } from "@/types/appConfig.types";
-import { createAuthRequestBody } from "@/utils/authBody";
+import createAuthRequestBody from "@/utils/authBody";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -40,10 +40,13 @@ import {
   clearAuthDataFromSecureStore,
   SecureAuthData,
 } from "@/utils/authTokenStore";
-import { getStoredTokenExchangeConfig } from "@/services/tokenExchangeService";
 
 const GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
 const GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
+const GRANT_TYPE_TOKEN_EXCHANGE =
+  "urn:ietf:params:oauth:grant-type:token-exchange";
+const SUBJECT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt";
+const REQUESTED_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token";
 const MILLISECONDS_IN_A_SECOND = 1000;
 const SCOPE = "openid email groups profile";
 let refreshPromise: Promise<AuthData | null> | null = null;
@@ -73,21 +76,18 @@ export const getAccessToken = async (
         );
       }
 
-      const requestBody = createAuthRequestBody(
-        {
-          grantType: GRANT_TYPE_AUTHORIZATION_CODE,
-          code: result.params.code,
-          redirectUri,
-          clientId: CLIENT_ID,
-          codeVerifier: request?.codeVerifier,
-        },
-        "application/x-www-form-urlencoded"
-      );
+      const requestBody = createAuthRequestBody({
+        grantType: GRANT_TYPE_AUTHORIZATION_CODE,
+        code: result.params.code,
+        redirectUri,
+        clientId: CLIENT_ID,
+        codeVerifier: request?.codeVerifier,
+      });
 
       const response = await fetch(TOKEN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: requestBody as string,
+        body: requestBody,
       });
 
       const data = await response.json();
@@ -144,19 +144,16 @@ export const refreshAccessToken = async (
         return null;
       }
 
-      const requestBody = createAuthRequestBody(
-        {
-          grantType: GRANT_TYPE_REFRESH_TOKEN,
-          clientId: CLIENT_ID,
-          refreshToken: authData.refreshToken,
-        },
-        "application/x-www-form-urlencoded"
-      );
+      const requestBody = createAuthRequestBody({
+        grantType: GRANT_TYPE_REFRESH_TOKEN,
+        clientId: CLIENT_ID,
+        refreshToken: authData.refreshToken,
+      });
 
       const response = await fetch(TOKEN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: requestBody as string,
+        body: requestBody,
       });
 
       if (!response.ok) {
@@ -316,44 +313,25 @@ export const tokenExchange = async (
       accessToken = newAuthData.accessToken;
     }
 
-    // Get stored token exchange config from local storage
-    const tokenExchangeConfig = await getStoredTokenExchangeConfig();
-
-    if (!tokenExchangeConfig) {
-      console.error("Token exchange config not found in storage.");
-      return null;
-    }
-
     // Function to attempt token exchange, with retry on 401 error
     const attemptTokenExchange = async (token: string) => {
       try {
-        const {
-          tokenUrl,
-          requestFormat,
-          optionalParams: { grantType, subjectTokenType, requestedTokenType },
-        } = tokenExchangeConfig;
-
-        const requestBody = createAuthRequestBody(
-          {
+        const response = await axios.post(
+          TOKEN_URL,
+          createAuthRequestBody({
             clientId,
-            grantType,
+            grantType: GRANT_TYPE_TOKEN_EXCHANGE,
             subjectToken: token,
-            subjectTokenType,
-            requestedTokenType,
+            subjectTokenType: SUBJECT_TOKEN_TYPE,
+            requestedTokenType: REQUESTED_TOKEN_TYPE,
             scope: selectedScopes,
-          },
-          requestFormat
+          }),
+          {
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          }
         );
 
-        const headers = {
-          "Content-Type": requestFormat,
-        };
-
-        const response = await axios.post(tokenUrl, requestBody, { headers });
-
-        if (response.status === 200) {
-          return response.data;
-        }
+        if (response.status === 200) return response.data;
 
         if (response.status === 401) {
           console.warn(
@@ -366,12 +344,12 @@ export const tokenExchange = async (
           }
 
           return attemptTokenExchange(newAuthData.accessToken);
+        } else {
+          console.error(
+            `Token exchange failed: ${response.status} - ${response.data}`
+          );
+          return null;
         }
-
-        console.error(
-          `Token exchange failed: ${response.status} - ${response.data}`
-        );
-        return null;
       } catch (error: any) {
         console.error("Fetch error:", error);
 
