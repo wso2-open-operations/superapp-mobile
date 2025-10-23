@@ -41,6 +41,8 @@ export const LIBRARY_ARTICLE_FALLBACK_IMAGE =
   process.env.EXPO_PUBLIC_LIBRARY_ARTICLE_FALLBACK_IMAGE ?? "";
 export const DEVELOPER_APP_DEFAULT_URL =
   process.env.EXPO_PUBLIC_DEVELOPER_APP_DEFAULT_URL ?? "";
+export const ENABLE_FIREBASE =
+  process.env.EXPO_PUBLIC_ENABLE_FIREBASE === "true";
 export const GOOGLE_SCOPES = [
   "openid",
   "profile",
