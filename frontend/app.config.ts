@@ -23,6 +23,7 @@ import { withFirebase } from "./integrations/firebase/withFirebase";
 const PRODUCTION = "production";
 const DEVELOPMENT = "development";
 const TRUE = "true";
+const FALSE = "false";
 
 const profile =
   process.env.EAS_BUILD_PROFILE ??
