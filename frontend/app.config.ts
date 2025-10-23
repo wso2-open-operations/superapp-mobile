@@ -15,13 +15,14 @@
 // under the License.
 import "dotenv/config";
 import type { ExpoConfig } from "expo/config";
+import "tsx/cjs";
 
 /* Comment the lines below if you want to use Firebase for iOS or Android */
-import fs from "fs";
-import path from "path";
+import { withFirebase } from "./integrations/firebase/withFirebase";
 
 const PRODUCTION = "production";
 const DEVELOPMENT = "development";
+const TRUE = "true";
 
 const profile =
   process.env.EAS_BUILD_PROFILE ??
@@ -36,6 +37,7 @@ const APP_VERSION = process.env.APP_VERSION ?? "1.0.0";
 const BUNDLE_ID = process.env.BUNDLE_IDENTIFIER ?? "com.example";
 const ANDROID_PACKAGE = process.env.ANDROID_PACKAGE ?? "com.example";
 const IOS_URL_SCHEME = process.env.IOS_URL_SCHEME ?? "example.scheme";
+const ENABLE_FIREBASE = process.env.EXPO_PUBLIC_ENABLE_FIREBASE ?? FALSE;
 // const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? ""; // Uncomment this if you use EAS
 
 /* =============== Firebase Configuration ===============
@@ -58,12 +60,7 @@ const IOS_URL_SCHEME = process.env.IOS_URL_SCHEME ?? "example.scheme";
  *
  * ======================================================= */
 
-const here = (...p: string[]) => path.resolve(__dirname, ...p);
-const fileIfExists = (p: string) => (fs.existsSync(p) ? p : undefined);
-const iosPlist = fileIfExists(here("google-services/GoogleService-Info.plist"));
-const androidJson = fileIfExists(here("google-services/google-services.json"));
-
-const config: ExpoConfig = {
+let config: ExpoConfig = {
   name: APP_NAME,
   slug: APP_SLUG,
   scheme: APP_SCHEME,
@@ -75,7 +72,6 @@ const config: ExpoConfig = {
     supportsTablet: true,
     requireFullScreen: true,
     bundleIdentifier: BUNDLE_ID,
-    googleServicesFile: iosPlist, // Comment this if you use Firebase for iOS
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
       UIBackgroundModes: ["remote-notification"],
@@ -91,7 +87,6 @@ const config: ExpoConfig = {
   },
   android: {
     package: ANDROID_PACKAGE,
-    googleServicesFile: androidJson, // Comment this if you use Firebase for Android
     permissions: [
       "android.permission.CAMERA",
       "android.permission.RECORD_AUDIO",
@@ -107,8 +102,6 @@ const config: ExpoConfig = {
     favicon: "./assets/images/favicon.png",
   },
   plugins: [
-    "@react-native-firebase/app", // Comment this if you are not using Firebase
-    "@react-native-firebase/messaging", // Comment this if you are not using Firebase
     [
       "@wavemaker/react-native-app-auth-expo-plugin",
       {
@@ -127,10 +120,6 @@ const config: ExpoConfig = {
             // https://github.com/invertase/notifee/issues/799#issuecomment-2569217836
             "../../node_modules/@notifee/react-native/android/libs",
           ],
-        },
-        // Comment this if you are not using Firebase for iOS
-        ios: {
-          useFrameworks: "static",
         },
       },
     ],
@@ -186,5 +175,13 @@ const config: ExpoConfig = {
   },
   assetBundlePatterns: ["**/*"],
 };
+
+/**
+ * Configures the Expo config to use Firebase for iOS and Android.
+ * Only if the ENABLE_FIREBASE environment variable is set to true.
+ */
+if (ENABLE_FIREBASE === TRUE) {
+  config = withFirebase(config);
+}
 
 export default config;
