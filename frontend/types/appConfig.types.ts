@@ -1,4 +1,3 @@
-import { tokenExchange } from "./../services/authService";
 // Copyright (c) 2025 WSO2 LLC. (https://www.wso2.com).
 //
 // WSO2 LLC. licenses this file to you under the Apache License,
@@ -14,6 +13,7 @@ import { tokenExchange } from "./../services/authService";
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import { TokenExchangeType } from "./tokenExchange.types";
 
 export interface AppConfig {
   configKey: string;
@@ -28,7 +28,7 @@ export interface AppScope {
 export interface AppConfigResponse {
   configs: AppConfig[];
   defaultMicroAppIds: string[];
-  tokenExchangeType: string;
+  tokenExchangeType: TokenExchangeType;
   appScopes: AppScope[];
   loading: boolean;
   error: string | null;

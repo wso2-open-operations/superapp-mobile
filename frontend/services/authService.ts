@@ -40,13 +40,11 @@ import {
   clearAuthDataFromSecureStore,
   SecureAuthData,
 } from "@/utils/authTokenStore";
+import { prepareTokenExchangePayload } from "@/utils/tokenExchangeBody";
+import { TokenExchangeType } from "@/types/tokenExchange.types";
 
 const GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
 const GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
-const GRANT_TYPE_TOKEN_EXCHANGE =
-  "urn:ietf:params:oauth:grant-type:token-exchange";
-const SUBJECT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt";
-const REQUESTED_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token";
 const MILLISECONDS_IN_A_SECOND = 1000;
 const SCOPE = "openid email groups profile";
 let refreshPromise: Promise<AuthData | null> | null = null;
@@ -76,13 +74,16 @@ export const getAccessToken = async (
         );
       }
 
-      const requestBody = createAuthRequestBody({
-        grantType: GRANT_TYPE_AUTHORIZATION_CODE,
-        code: result.params.code,
-        redirectUri,
-        clientId: CLIENT_ID,
-        codeVerifier: request?.codeVerifier,
-      });
+      const requestBody = createAuthRequestBody(
+        {
+          grant_type: GRANT_TYPE_AUTHORIZATION_CODE,
+          code: result.params.code,
+          redirect_uri: redirectUri,
+          client_id: CLIENT_ID,
+          code_verifier: request?.codeVerifier,
+        },
+        "application/x-www-form-urlencoded"
+      );
 
       const response = await fetch(TOKEN_URL, {
         method: "POST",
@@ -144,11 +145,14 @@ export const refreshAccessToken = async (
         return null;
       }
 
-      const requestBody = createAuthRequestBody({
-        grantType: GRANT_TYPE_REFRESH_TOKEN,
-        clientId: CLIENT_ID,
-        refreshToken: authData.refreshToken,
-      });
+      const requestBody = createAuthRequestBody(
+        {
+          grant_type: GRANT_TYPE_REFRESH_TOKEN,
+          client_id: CLIENT_ID,
+          refresh_token: authData.refreshToken,
+        },
+        "application/x-www-form-urlencoded"
+      );
 
       const response = await fetch(TOKEN_URL, {
         method: "POST",
@@ -271,6 +275,7 @@ export const tokenExchange = async (
   exchangedToken: string,
   appId: string,
   onLogout: () => Promise<void>,
+  tokenExchangeType: TokenExchangeType,
   appScopes?: AppScope[]
 ) => {
   try {
@@ -316,19 +321,28 @@ export const tokenExchange = async (
     // Function to attempt token exchange, with retry on 401 error
     const attemptTokenExchange = async (token: string) => {
       try {
-        const response = await axios.post(
-          TOKEN_URL,
-          createAuthRequestBody({
-            clientId,
-            grantType: GRANT_TYPE_TOKEN_EXCHANGE,
-            subjectToken: token,
-            subjectTokenType: SUBJECT_TOKEN_TYPE,
-            requestedTokenType: REQUESTED_TOKEN_TYPE,
-            scope: selectedScopes,
-          }),
+        const { body: requestBody, tokenUrl } = prepareTokenExchangePayload(
+          tokenExchangeType,
           {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            clientId,
+            token,
+            selectedScopes,
           }
+        );
+
+        if (!tokenUrl) {
+          throw new Error(
+            "Token URL is not defined for the selected token exchange type."
+          );
+        }
+
+        const response = await axios.post(
+          tokenUrl,
+          createAuthRequestBody(
+            requestBody,
+            "application/x-www-form-urlencoded"
+          ),
+          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         );
 
         if (response.status === 200) return response.data;

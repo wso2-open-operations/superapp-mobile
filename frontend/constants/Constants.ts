@@ -102,3 +102,10 @@ export const NOTIFICATION_CHANNEL_ID =
 export const NOTIFICATION_CHANNEL_NAME =
   process.env.EXPO_PUBLIC_NOTIFICATION_CHANNEL_NAME ??
   "Default SuperApp Notification Channel";
+
+// Token Exchange constants
+export const GRANT_TYPE_TOKEN_EXCHANGE =
+  "urn:ietf:params:oauth:grant-type:token-exchange";
+export const SUBJECT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt";
+export const REQUESTED_TOKEN_TYPE =
+  "urn:ietf:params:oauth:token-type:access_token";

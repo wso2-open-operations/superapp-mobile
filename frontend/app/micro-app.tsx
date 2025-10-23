@@ -79,6 +79,9 @@ const MicroApp = () => {
   const appScopes = useSelector(
     (state: RootState) => state.appConfig.appScopes
   );
+  const tokenExchangeType = useSelector(
+    (state: RootState) => state.appConfig.tokenExchangeType
+  );
   const isDeveloper: boolean = appId.includes("developer");
   const isTotp: boolean = appId.includes("totp");
   const insets = useSafeAreaInsets();
@@ -136,6 +139,7 @@ const MicroApp = () => {
           exchangedToken,
           appId,
           logout,
+          tokenExchangeType,
           appScopes
         );
         if (!token) throw new Error("Token exchange failed");
