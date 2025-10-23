@@ -18,12 +18,13 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AppConfigResponse } from "@/types/appConfig.types";
 import { BASE_URL } from "@/constants/Constants";
 import { apiRequest } from "@/utils/requestHandler";
+import { TokenExchangeType } from "@/types/tokenExchange.types";
 
 const initialState: AppConfigResponse = {
   configs: [],
   defaultMicroAppIds: [],
   appScopes: [],
-  tokenExchangeType: "",
+  tokenExchangeType: TokenExchangeType.IDP,
   loading: false,
   error: null,
 };
