@@ -217,6 +217,18 @@ const MicroApp = () => {
     }
   };
 
+  //Function to delete data in device
+  const handleDeleteLocalData = async (key: string) => {
+    try {
+      await AsyncStorage.removeItem(key);
+      sendResponseToWeb("resolveDeleteLocalData");
+    } catch (error) {
+      const errMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      sendResponseToWeb("rejectDeleteLocalData", errMessage);
+    }
+  };
+
   // Function to get data from device
   const handleGetLocalData = async (key: string) => {
     try {
@@ -321,6 +333,9 @@ const MicroApp = () => {
           break;
         case TOPIC.SAVE_LOCAL_DATA:
           await handleSaveLocalData(data.key, data.value);
+          break;
+        case TOPIC.DELETE_LOCAL_DATA:
+          await handleDeleteLocalData(data.key);
           break;
         case TOPIC.GET_LOCAL_DATA:
           await handleGetLocalData(data.key);

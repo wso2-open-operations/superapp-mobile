@@ -31,6 +31,7 @@ export const TOPIC = {
   CLOSE_WEBVIEW_FROM_MICROAPP: "close_webview",
   NATIVE_LOG: "native_log",
   DEVICE_SAFE_AREA_INSETS: "device_safe_area_insets",
+  DELETE_LOCAL_DATA: "delete_local_data",
 };
 
 // JavaScript code injected into the WebView to enable communication between
@@ -64,6 +65,9 @@ export const injectedJavaScript = `window.nativebridge = {
     requestGetLocalData: (key) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "get_local_data", data: { key } })),
     resolveGetLocalData: (data) => console.log("Local data received:", data),
     rejectGetLocalData: (err) => console.error("Get Local Data failed:", err),
+    requestDeleteLocalData: (key) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "delete_local_data", data: { key } })),
+    resolveDeleteLocalData: () => console.log("Local data deleted successfully"),
+    rejectDeleteLocalData: (err) => console.error("Delete Local Data failed:", err),
     requestTotpQrMigrationData: () => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "totp" })),
     resolveTotpQrMigrationData: (data) => console.log("TOTP QR Migration Data:", data),
     rejectTotpQrMigrationData: (err) => console.error("TOTP Data retrieval failed:", err),
