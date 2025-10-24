@@ -24,12 +24,6 @@ export interface AppScope {
   scopes: string;
 }
 
-export interface AppConfigResponse {
-  appConfigs: AppConfig[];
-  defaultMicroAppIds: string[];
-  appScopes: AppScope[];
-}
-
 export interface AppConfigState {
   configs: AppConfig[];
   defaultMicroAppIds: string[];

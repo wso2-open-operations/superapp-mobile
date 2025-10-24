@@ -48,7 +48,7 @@ const GRANT_TYPE_TOKEN_EXCHANGE =
 const SUBJECT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt";
 const REQUESTED_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token";
 const MILLISECONDS_IN_A_SECOND = 1000;
-const SCOPE = "openid email groups";
+const SCOPE = "openid email groups profile";
 let refreshPromise: Promise<AuthData | null> | null = null;
 
 export interface DecodedIdToken {
