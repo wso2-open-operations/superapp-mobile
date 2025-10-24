@@ -42,6 +42,7 @@ import {
 } from "@/utils/authTokenStore";
 import { prepareTokenExchangePayload } from "@/utils/tokenExchangeBody";
 import { TokenExchangeType } from "@/types/tokenExchange.types";
+import { ContentType } from "@/types/contentType.types";
 
 const GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
 const GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
@@ -82,12 +83,12 @@ export const getAccessToken = async (
           client_id: CLIENT_ID,
           code_verifier: request?.codeVerifier,
         },
-        "application/x-www-form-urlencoded"
+        ContentType.ApplicationXWwwFormUrlencoded
       );
 
       const response = await fetch(TOKEN_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: { "Content-Type": ContentType.ApplicationXWwwFormUrlencoded },
         body: requestBody,
       });
 
@@ -151,12 +152,12 @@ export const refreshAccessToken = async (
           client_id: CLIENT_ID,
           refresh_token: authData.refreshToken,
         },
-        "application/x-www-form-urlencoded"
+        ContentType.ApplicationXWwwFormUrlencoded
       );
 
       const response = await fetch(TOKEN_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: { "Content-Type": ContentType.ApplicationXWwwFormUrlencoded },
         body: requestBody,
       });
 
@@ -327,6 +328,9 @@ export const tokenExchange = async (
             clientId,
             token,
             selectedScopes,
+            grantType: "urn:ietf:params:oauth:grant-type:token-exchange",
+            subjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
+            requestedTokenType: "urn:ietf:params:oauth:token-type:access_token",
           }
         );
 
@@ -340,9 +344,13 @@ export const tokenExchange = async (
           tokenUrl,
           createAuthRequestBody(
             requestBody,
-            "application/x-www-form-urlencoded"
+            ContentType.ApplicationXWwwFormUrlencoded
           ),
-          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+          {
+            headers: {
+              "Content-Type": ContentType.ApplicationXWwwFormUrlencoded,
+            },
+          }
         );
 
         if (response.status === 200) return response.data;
