@@ -15,14 +15,16 @@
 // under the License.
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AppConfigState, AppConfigResponse } from "@/types/appConfig.types";
+import { AppConfigResponse } from "@/types/appConfig.types";
 import { BASE_URL } from "@/constants/Constants";
 import { apiRequest } from "@/utils/requestHandler";
+import { TokenExchangeType } from "@/types/tokenExchange.types";
 
-const initialState: AppConfigState = {
+const initialState: AppConfigResponse = {
   configs: [],
   defaultMicroAppIds: [],
   appScopes: [],
+  tokenExchangeType: TokenExchangeType.IDP,
   loading: false,
   error: null,
 };
@@ -64,6 +66,7 @@ const appConfigSlice = createSlice({
         state.configs = action.payload.appConfigs;
         state.defaultMicroAppIds = action.payload.defaultMicroAppIds;
         state.appScopes = action.payload.appScopes;
+        state.tokenExchangeType = action.payload.tokenExchangeType;
       })
       .addCase(getAppConfigurations.rejected, (state, action) => {
         state.loading = false;
