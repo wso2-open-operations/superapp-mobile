@@ -15,7 +15,7 @@
 // under the License.
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AppConfigState, AppConfigResponse } from "@/types/appConfig.types";
+import { AppConfigState } from "@/types/appConfig.types";
 import { BASE_URL } from "@/constants/Constants";
 import { apiRequest } from "@/utils/requestHandler";
 
