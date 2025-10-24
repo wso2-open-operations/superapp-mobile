@@ -249,11 +249,23 @@ cp .env.example .env
 - This will create a `.env` file. Make sure to update the values according to your project requirements.
 - Please note that the authenticator app–related URL in `.env` is required only for the WSO2 Super App. If your app does not need it, you can safely remove those variables.
 
-#### 1.1. (Optional) If you are using `Firebase Services`, generate Base64 for Firebase Configuration
+#### 1.1. (Optional) How to add/remove Firebase plugins if you are using Firebase.
+
+To add or remove Firebase plugins from your app, open the `frontend/integrations/firebase/withFirebase.ts` file. In this file, you will find a constant named `FIREBASE_PLUGINS`, which contains an array of strings corresponding to each Firebase plugin. Modifying this array by adding or removing a plugin's corresponding string will add or remove the plugin from the app.
+
+#### 1.2. (Optional) If you are using `Firebase Services`, enable the feature flag in the `.env` file:
+
+```bash
+EXPO_PUBLIC_ENABLE_FIREBASE=true
+```
+
+> Note: An `npx expo prebuild` should be executed each time this value is updated to apply the config changes.
+
+#### 1.3. (Optional) If you are using `Firebase Services`, generate Base64 for Firebase Configuration
 
 To use Firebase services, you need to convert your `GoogleService-Info.plist` (iOS) and `google-services.json` (Android) files into Base64 strings.
 
-##### 1.1.1 On MacOS
+##### 1.3.1 On MacOS
 
 ```bash
 # For iOS: Encodes the file and copies the string to your clipboard
@@ -263,7 +275,7 @@ base64 -i path/to/your/GoogleService-Info.plist | tr -d '\n' | pbcopy
 base64 -i path/to/your/google-services.json | tr -d '\n' | pbcopy
 ```
 
-##### 1.1.2 On Linux
+##### 1.3.2 On Linux
 
 ```bash
 # For iOS: Encodes the file and prints the string to the terminal
@@ -273,7 +285,7 @@ base64 -w 0 path/to/your/GoogleService-Info.plist
 base64 -w 0 path/to/your/google-services.json
 ```
 
-##### 1.1.3 On Windows (using PowerShell):
+##### 1.3.3 On Windows (using PowerShell):
 
 ```powershell
 # For iOS:
@@ -293,15 +305,13 @@ See an example of how to add the Firebase plugins to the Plugins array:
 
 ```json
 "plugins": [
-   "@react-native-firebase/app",
-   "@react-native-firebase/{package_1}",
-   "@react-native-firebase/{package_1}",
+   "plugin-1",
+   "plugin-2",
+   "plugin-3",
    [
-      "expo-build-properties",
+      "plugin-4-with-configs",
       {
-         "ios": {
-            "useFrameworks": "static"
-         }
+         {"some_configuration": true}
       }
    ]
 ]
@@ -343,9 +353,9 @@ You can start development by editing the files inside the **app** directory. Thi
 
 ## Deployment
 
-1. Update `app.json`.
+1. Update `app.config.ts`.
 
-   - Modify values such as app name, version, slug, package name, etc., according to your project.
+   - Modify values such as app name, version, slug, package name, etc., according to your project through the `.env` file.
 
 2. Follow the official Expo documentation for the next steps.
 
