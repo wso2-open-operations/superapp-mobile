@@ -59,5 +59,3 @@ export interface TokenExchangeConfig {
   body: Record<string, any>;
   tokenUrl?: string;
 }
-
-
