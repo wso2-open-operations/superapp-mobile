@@ -13,7 +13,6 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
 import NotFound from "@/components/NotFound";
 import Scanner from "@/components/Scanner";
 import { Colors } from "@/constants/Colors";
@@ -29,15 +28,11 @@ import {
 } from "@/constants/Constants";
 import { RootState } from "@/context/store";
 import { logout, tokenExchange } from "@/services/authService";
-import googleAuthenticationService, {
-  getGoogleUserInfo,
-  isAuthenticatedWithGoogle,
-  restoreGoogleDriveBackup,
-  uploadToGoogleDrive,
-} from "@/services/googleService";
+import googleAuthenticationService from "@/services/googleService";
 import { MicroAppParams } from "@/types/navigation";
-import { injectedJavaScript, TOPIC } from "@/utils/bridge";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { injectedJavaScript } from "@/utils/bridge";
+import { getBridgeHandler, getResolveMethod, getRejectMethod } from "@/utils/bridgeRegistry";
+import { BridgeContext } from "@/types/bridge.types";
 import * as Google from "expo-auth-session/providers/google";
 import { documentDirectory } from "expo-file-system";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -56,10 +51,9 @@ import prompt from "react-native-prompt-android";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { useDispatch, useSelector } from "react-redux";
-
 WebBrowser.maybeCompleteAuthSession();
 
-type NativeLogLevel = "info" | "warn" | "error";
+import { BRIDGE_FUNCTION as QR_REQUEST_BRIDGE_FUNCTION } from "@/utils/bridgeHandlers/qrRequest";
 
 const MicroApp = () => {
   const [isScannerVisible, setScannerVisible] = useState(false);
@@ -73,8 +67,9 @@ const MicroApp = () => {
   const [token, setToken] = useState<string | null>();
   const dispatch = useDispatch();
   const router = useRouter();
-  const pendingTokenRequests: ((token: string) => void)[] = [];
+  const pendingTokenRequestsRef = useRef<((token: string) => void)[]>([]);
   const [webUri, setWebUri] = useState<string>(DEVELOPER_APP_DEFAULT_URL);
+  const qrScanCallbackRef = useRef<((qrCode: string) => void) | null>(null);
   const colorScheme = useColorScheme();
   const appScopes = useSelector(
     (state: RootState) => state.appConfig.appScopes
@@ -153,259 +148,89 @@ const MicroApp = () => {
     fetchToken();
   }, [clientId]);
 
+  // KEPT FOR BACKWARD COMPATIBILITY
   // Function to send token to WebView
   const sendTokenToWebView = (token: string) => {
     if (!token) return;
     sendResponseToWeb("resolveToken", token);
 
     // Resolve any pending token requests
-    while (pendingTokenRequests.length > 0) {
-      const resolve = pendingTokenRequests.shift();
+    while (pendingTokenRequestsRef.current.length > 0) {
+      const resolve = pendingTokenRequestsRef.current.shift();
       resolve?.(token);
     }
   };
 
-  // Function to send QR string to WebView
-  const sendQrToWebView = (qrString: string) => {
-    sendResponseToWeb("resolveQrCode", qrString);
-  };
 
-  // Function to send safe area insets to WebView
-  const sendSafeAreaInsetsToWebView = () => {
-    sendResponseToWeb("resolveDeviceSafeAreaInsets", { insets });
-  };
 
-  // Function to view alert from parent app
-  const handleAlert = async (
-    title: string,
-    message: string,
-    buttonText: string
-  ) => {
-    Alert.alert(title, message, [{ text: buttonText }], { cancelable: false });
-  };
-
-  // Function to get confirmation from parent app
-  const handleConfirmAlert = async (
-    title: string,
-    message: string,
-    cancelButtonText: string,
-    confirmButtonText: string
-  ) => {
-    Alert.alert(
-      title,
-      message,
-      [
-        {
-          text: cancelButtonText,
-          style: "cancel",
-          onPress: () => sendResponseToWeb("resolveConfirmAlert", "cancel"),
-        },
-        {
-          text: confirmButtonText,
-          onPress: () => sendResponseToWeb("resolveConfirmAlert", "confirm"),
-        },
-      ],
-      { cancelable: false }
-    );
-  };
-
-  // Function to save data in device
-  const handleSaveLocalData = async (key: string, value: string) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-      sendResponseToWeb("resolveSaveLocalData");
-    } catch (error) {
-      const errMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      sendResponseToWeb("rejectSaveLocalData", errMessage);
-    }
-  };
-
-  // Function to get data from device
-  const handleGetLocalData = async (key: string) => {
-    try {
-      const value = await AsyncStorage.getItem(key);
-      sendResponseToWeb("resolveGetLocalData", { value });
-    } catch (error) {
-      const errMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      sendResponseToWeb("rejectSaveLocalData", errMessage);
-    }
-  };
-
-  // Function to migrate TOTP data
-  const handleTotpQrMigrationData = () => {
-    const mockData = "sample-data-1,sample-data-2";
-    sendResponseToWeb("resolveTotpQrMigrationData", { data: mockData });
-  };
-
-  // Fucntion to authenticate using google
-  const authenticateWithGoogle = async () => {
-    promptAsync();
-  };
-
-  // Function to upload data to the Google Drive
-  const handledUploadToGoogleDrive = async (data: any = {}) => {
-    uploadToGoogleDrive(data)
-      .then((res) => {
-        if (res.id) {
-          sendResponseToWeb("resolveUploadToGoogleDrive", res);
-        } else {
-          sendResponseToWeb("rejectUploadToGoogleDrive", res.error);
-        }
-      })
-      .catch((err) => {
-        sendResponseToWeb("rejectUploadToGoogleDrive", err.message);
-      });
-  };
-
-  // Function to check Google authentication state
-  const handleCheckGoogleAuthState = async () => {
-    isAuthenticatedWithGoogle()
-      .then((res) => {
-        if (res) {
-          sendResponseToWeb("resolveGoogleAuthState", res);
-        } else {
-          sendResponseToWeb("rejectGoogleAuthState", "Not authenticated");
-        }
-      })
-      .catch((err) => {
-        sendResponseToWeb("rejectGoogleAuthState", err.message);
-      });
-  };
-
-  // Function to restore the latest backup from Google Drive
-  const RestoreLatestFromGoogleDrive = async () => {
-    restoreGoogleDriveBackup()
-      .then((res) => {
-        if (res) {
-          sendResponseToWeb("resolveRestoreGoogleDriveBackup", res.data);
-        } else {
-          sendResponseToWeb("rejectRestoreGoogleDriveBackup", res.error);
-        }
-      })
-      .catch((err) => {
-        sendResponseToWeb("rejectRestoreGoogleDriveBackup", err.message);
-      });
-  };
-
-  // Function to get Google user info
-  const handleGetGoogleUserInfo = async () => {
-    try {
-      getGoogleUserInfo()
-        .then((res) => {
-          if (res) {
-            sendResponseToWeb("resolveGoogleUserInfo", res);
-          } else {
-            sendResponseToWeb("rejectGoogleUserInfo", "No user info found");
-          }
-        })
-        .catch((err) => {
-          sendResponseToWeb("rejectGoogleUserInfo", err.message);
-        });
-    } catch (error) {
-      console.error("Error getting Google user info:", error);
-      sendResponseToWeb("rejectGoogleUserInfo", "Failed to get user info");
-    }
-  };
 
   // Handle messages from WebView
   const onMessage = async (event: WebViewMessageEvent) => {
     try {
-      const { topic, data } = JSON.parse(event.nativeEvent.data);
+      const { topic, data, requestId } = JSON.parse(event.nativeEvent.data);
       if (!topic) throw new Error("Invalid message format: Missing topic");
-      switch (topic) {
-        case TOPIC.TOKEN:
-          token
-            ? sendTokenToWebView(token)
-            : pendingTokenRequests.push(sendTokenToWebView);
-          break;
-        case TOPIC.QR_REQUEST:
-          setScannerVisible(true);
-          break;
-        case TOPIC.SAVE_LOCAL_DATA:
-          await handleSaveLocalData(data.key, data.value);
-          break;
-        case TOPIC.GET_LOCAL_DATA:
-          await handleGetLocalData(data.key);
-          break;
-        case TOPIC.TOTP:
-          handleTotpQrMigrationData();
-          break;
-        case TOPIC.ALERT:
-          handleAlert(data.title, data.message, data.buttonText);
-          break;
-        case TOPIC.CONFIRM_ALERT:
-          handleConfirmAlert(
-            data.title,
-            data.message,
-            data.cancelButtonText,
-            data.confirmButtonText
+
+      // Get handler from registry
+      const handler = getBridgeHandler(topic);
+      if (!handler) {
+        console.error("Unknown topic:", topic);
+        return;
+      }
+
+      // Create bridge context for passing data
+      const bridgeContext: BridgeContext = {
+        topic,
+        appID: appId as string,
+        token: token || null, // exchanged token
+        setScannerVisible,
+
+        sendResponseToWeb: (method: string, data?: any, reqId?: string) => {
+          const idToUse = reqId || requestId;
+          webviewRef.current?.injectJavaScript(
+            `window.nativebridge.${method}(${JSON.stringify(data)}, "${idToUse}");`
           );
-          break;
-        case TOPIC.GOOGLE_LOGIN:
-          authenticateWithGoogle();
-          break;
-        case TOPIC.UPLOAD_TO_GOOGLE_DRIVE:
-          handledUploadToGoogleDrive(data);
-          break;
-        case TOPIC.RESTORE_GOOGLE_DRIVE_BACKUP:
-          RestoreLatestFromGoogleDrive();
-          break;
-        case TOPIC.CHECK_GOOGLE_AUTH_STATE:
-          handleCheckGoogleAuthState();
-          break;
-        case TOPIC.GOOGLE_USER_INFO:
-          handleGetGoogleUserInfo();
-          break;
-        case TOPIC.CLOSE_WEBVIEW_FROM_MICROAPP:
-          router.back();
-          break;
-        case TOPIC.NATIVE_LOG:
-          handleNativeLog(data);
-          break;
-        case TOPIC.DEVICE_SAFE_AREA_INSETS:
-          sendSafeAreaInsetsToWebView();
-          break;
-        default:
-          console.error("Unknown topic:", topic);
+        },
+        pendingTokenRequests: pendingTokenRequestsRef.current,
+
+        resolve: (data?: any, reqId?: string) => {
+          const methodName = getResolveMethod(topic);
+          const idToUse = reqId || requestId;
+          webviewRef.current?.injectJavaScript(
+            `window.nativebridge.${methodName}(${JSON.stringify(data)}, "${idToUse}");`
+          );
+        },
+        reject: (error: string, reqId?: string) => {
+          const methodName = getRejectMethod(topic);
+          const idToUse = reqId || requestId;
+          webviewRef.current?.injectJavaScript(
+            `window.nativebridge.${methodName}("${error}", "${idToUse}");`
+          );
+        },
+        // Google authentication
+        promptAsync,
+        // Navigation
+        router,
+        // Device info
+        insets: {
+          top: insets.top,
+          bottom: insets.bottom,
+          left: insets.left,
+          right: insets.right,
+        },
+        // QR scanner callback
+        qrScanCallback: qrScanCallbackRef.current || undefined,
+      };
+      await handler(data, bridgeContext);
+
+      // Update the ref with any callback set by the handler
+      if (topic === QR_REQUEST_BRIDGE_FUNCTION.topic) {
+        qrScanCallbackRef.current = bridgeContext.qrScanCallback || null;
       }
     } catch (error) {
       console.error("Error handling WebView message:", error);
     }
   };
 
-  /**
-   * Display microapp logs in the console
-   * @param data - The data to display
-   */
-  const handleNativeLog = (data: any) => {
-    if (!__DEV__) return;
-    const level = data.level as NativeLogLevel;
-    const message = data.message;
-    const injectedData = data.data;
-
-    switch (level) {
-      case "info":
-        console.info(
-          `[Micro App] ${message}.`,
-          injectedData !== undefined ? injectedData : ""
-        );
-        break;
-      case "warn":
-        console.warn(
-          `[Micro App] ${message}.`,
-          injectedData !== undefined ? injectedData : ""
-        );
-        break;
-      case "error":
-        console.error(
-          `[Micro App] ${message}.`,
-          injectedData !== undefined ? injectedData : ""
-        );
-        break;
-    }
-  };
 
   const handleError = (syntheticEvent: any) => {
     setHasError(true);
@@ -493,50 +318,50 @@ const MicroApp = () => {
                 onPressIn={() => {
                   isIos
                     ? Alert.prompt(
-                        "App URL",
-                        "Enter App URL",
-                        [
-                          {
-                            text: "Cancel",
-                            style: "cancel",
-                          },
-                          {
-                            text: "OK",
-                            onPress: (value) => {
-                              if (value) {
-                                setWebUri(value);
-                              }
-                            },
-                          },
-                        ],
-                        "plain-text",
-                        webUri
-                      )
-                    : prompt(
-                        "App URL",
-                        "Enter App URL",
-                        [
-                          {
-                            text: "Cancel",
-                            onPress: () => console.log("Cancel Pressed"),
-                            style: "cancel",
-                          },
-                          {
-                            text: "OK",
-                            onPress: (value) => {
-                              if (value) {
-                                setWebUri(value);
-                              }
-                            },
-                            style: "default",
-                          },
-                        ],
+                      "App URL",
+                      "Enter App URL",
+                      [
                         {
-                          type: "plain-text",
-                          cancelable: false,
-                          defaultValue: webUri,
-                        }
-                      );
+                          text: "Cancel",
+                          style: "cancel",
+                        },
+                        {
+                          text: "OK",
+                          onPress: (value) => {
+                            if (value) {
+                              setWebUri(value);
+                            }
+                          },
+                        },
+                      ],
+                      "plain-text",
+                      webUri
+                    )
+                    : prompt(
+                      "App URL",
+                      "Enter App URL",
+                      [
+                        {
+                          text: "Cancel",
+                          onPress: () => {},
+                          style: "cancel",
+                        },
+                        {
+                          text: "OK",
+                          onPress: (value) => {
+                            if (value) {
+                              setWebUri(value);
+                            }
+                          },
+                          style: "default",
+                        },
+                      ],
+                      {
+                        type: "plain-text",
+                        cancelable: false,
+                        defaultValue: webUri,
+                      }
+                    );
                 }}
                 hitSlop={20}
               >
@@ -550,7 +375,10 @@ const MicroApp = () => {
           <View style={styles.scannerOverlay}>
             <Scanner
               onScan={(qrCode) => {
-                sendQrToWebView(qrCode);
+                // Call the stored callback from the bridge handler
+                if (qrScanCallbackRef.current) {
+                  qrScanCallbackRef.current(qrCode);
+                }
                 setScannerVisible(false);
               }}
               message={
