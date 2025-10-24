@@ -19,25 +19,37 @@
  * you can extend this enum for other types if needed.
  */
 export enum TokenExchangeType {
-  IDP = "idp",
+  Idp = "idp",
   // Add other token exchange types here if needed
   // EXAMPLE = "example"
 }
 
 /**
  * Request data for IDP token exchange.
- * This is currently the only type implemented, but you can extend with their own types.
+ * This is currently the only type implemented, but you can extend with their own types (Refer Example Interface[1] Below).
  */
 export interface IdpRequestData {
   clientId: string;
   token: string;
   selectedScopes: string;
+  grantType: string;
+  subjectTokenType: string;
+  requestedTokenType: string;
 }
+
+// Example Interface[1]
+// export interface ExampleTokenExchangeTypeRequestData {
+//   exampleValue : string;
+//   ...
+// }
 
 /**
  * Union type for token exchange request data.
  */
-export type TokenExchangeData = IdpRequestData; //  | You can add other types if needed;
+export type TokenExchangeData = IdpRequestData; //  | You can add other types if needed (Refer Example[2] below);
+
+// Example[2]
+// export export type TokenExchangeData = IdpRequestData | ExampleTokenExchangeTypeRequestData;
 
 /**
  * Configuration returned by token exchange payload generators.
@@ -47,3 +59,5 @@ export interface TokenExchangeConfig {
   body: Record<string, any>;
   tokenUrl?: string;
 }
+
+

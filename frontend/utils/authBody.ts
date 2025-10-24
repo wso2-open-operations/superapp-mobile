@@ -14,15 +14,14 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import { ContentType } from "@/types/contentType.types";
+
 /**
  * Generates a request body string for different content types.
  */
 const createAuthRequestBody = (
   params: Record<string, any>,
-  contentType:
-    | "application/x-www-form-urlencoded"
-    | "application/json"
-    | "text/plain"
+  contentType: ContentType
 ): string => {
   // Remove undefined or null values from the request parameters
   const filteredParams = Object.entries(params).reduce(
@@ -35,17 +34,17 @@ const createAuthRequestBody = (
 
   switch (contentType) {
     // JSON content type: stringify the filtered parameters
-    case "application/json":
+    case ContentType.ApplicationJson:
       return JSON.stringify(filteredParams);
 
     // Text/plain: convert params to plain format
-    case "text/plain":
+    case ContentType.TextPlain:
       return Object.entries(filteredParams)
         .map(([key, value]) => `${key}=${value}`)
         .join("&");
 
     // x-www-form-urlencoded: URL-encode each value
-    case "application/x-www-form-urlencoded":
+    case ContentType.ApplicationXWwwFormUrlencoded:
       const encodedParams = Object.entries(filteredParams).reduce(
         (encodedResult, [key, value]) => {
           encodedResult[key] = String(value);

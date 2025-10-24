@@ -13,12 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import {
-  GRANT_TYPE_TOKEN_EXCHANGE,
-  REQUESTED_TOKEN_TYPE,
-  SUBJECT_TOKEN_TYPE,
-  TOKEN_URL,
-} from "@/constants/Constants";
+import { TOKEN_URL } from "@/constants/Constants";
 import {
   IdpRequestData,
   TokenExchangeConfig,
@@ -35,15 +30,15 @@ export const prepareTokenExchangePayload = (
   data: TokenExchangeData
 ): TokenExchangeConfig => {
   switch (type) {
-    case TokenExchangeType.IDP:
+    case TokenExchangeType.Idp:
       const idpData: IdpRequestData = data;
       return {
         body: {
           client_id: idpData.clientId,
-          grant_type: GRANT_TYPE_TOKEN_EXCHANGE,
+          grant_type: idpData.grantType,
           subject_token: idpData.token,
-          subject_token_type: SUBJECT_TOKEN_TYPE,
-          requested_token_type: REQUESTED_TOKEN_TYPE,
+          subject_token_type: idpData.subjectTokenType,
+          requested_token_type: idpData.requestedTokenType,
           scope: idpData.selectedScopes,
         },
         tokenUrl: TOKEN_URL || "",
@@ -52,7 +47,7 @@ export const prepareTokenExchangePayload = (
     /**
      *  Placeholder for other token exchange types
      */
-    // case TokenExchangeType.Example: data as ExampleType;
+    // case TokenExchangeType.ExampleTokenExchangeTypeRequestData: data;
     // return {
     //     body:{
     //         ...values
