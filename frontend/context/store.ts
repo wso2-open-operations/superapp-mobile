@@ -60,7 +60,11 @@ const userInfoPersistConfig = {
 const appConfigPersistConfig = {
   key: "app-config",
   storage: AsyncStorage,
-  whitelist: ["appConfig"],
+  whitelist: [
+    "configs",
+    "defaultMicroAppIds",
+    "appScopes",
+  ],
 };
 
 const appReducerCombined = combineReducers({
