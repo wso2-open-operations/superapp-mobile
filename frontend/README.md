@@ -259,7 +259,7 @@ To add or remove Firebase plugins from your app, open the `frontend/integrations
 EXPO_PUBLIC_ENABLE_FIREBASE=true
 ```
 
-> Note: An `npx expo prebuild` should be executed each time this value is update to apply the config changes.
+> Note: An `npx expo prebuild` should be executed each time this value is updated to apply the config changes.
 
 #### 1.3. (Optional) If you are using `Firebase Services`, generate Base64 for Firebase Configuration
 
