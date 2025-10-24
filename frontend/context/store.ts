@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { createTransform, persistReducer, persistStore } from "redux-persist";
 import appReducer from "./slices/appSlice";
+import appConfigReducer from "./slices/appConfigSlice";
 import authReducer from "./slices/authSlice";
 import deviceReducer from "./slices/deviceSlice";
 import userConfigReducer from "./slices/userConfigSlice";
@@ -30,7 +31,7 @@ const stripExchangedTokens = createTransform(
     if (!inbound?.apps) return inbound;
     return {
       ...inbound,
-      apps: inbound.apps.map(a => ({ ...a, exchangedToken: "" })),
+      apps: inbound.apps.map((a) => ({ ...a, exchangedToken: "" })),
     };
   },
   (outbound: { apps?: MicroApp[] }) => outbound,
@@ -56,6 +57,17 @@ const userInfoPersistConfig = {
   whitelist: ["user-info"],
 };
 
+const appConfigPersistConfig = {
+  key: "app-config",
+  storage: AsyncStorage,
+  whitelist: [
+    "configs",
+    "defaultMicroAppIds",
+    "appScopes",
+    "tokenExchangeType",
+  ],
+};
+
 const appReducerCombined = combineReducers({
   auth: authReducer,
   apps: persistReducer(appsPersistConfig, appReducer),
@@ -63,6 +75,7 @@ const appReducerCombined = combineReducers({
   version: versionReducer,
   userInfo: persistReducer(userInfoPersistConfig, userInfoReducer),
   device: deviceReducer,
+  appConfig: persistReducer(appConfigPersistConfig, appConfigReducer),
 });
 
 const rootReducer = (
