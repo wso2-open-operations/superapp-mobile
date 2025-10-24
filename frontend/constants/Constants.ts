@@ -102,7 +102,3 @@ export const NOTIFICATION_CHANNEL_ID =
 export const NOTIFICATION_CHANNEL_NAME =
   process.env.EXPO_PUBLIC_NOTIFICATION_CHANNEL_NAME ??
   "Default SuperApp Notification Channel";
-
-// Token Exchange content types
-export const ApplicationXWwwFormUrlencoded =
-  "application/x-www-form-urlencoded";
