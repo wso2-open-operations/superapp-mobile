@@ -40,15 +40,14 @@ import {
   clearAuthDataFromSecureStore,
   SecureAuthData,
 } from "@/utils/authTokenStore";
+import { prepareTokenExchangePayload } from "@/utils/tokenExchangeBody";
+import { TokenExchangeType } from "@/types/tokenExchange.types";
+import { ContentType } from "@/types/contentType.types";
 
 const GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
 const GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
-const GRANT_TYPE_TOKEN_EXCHANGE =
-  "urn:ietf:params:oauth:grant-type:token-exchange";
-const SUBJECT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt";
-const REQUESTED_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token";
 const MILLISECONDS_IN_A_SECOND = 1000;
-const SCOPE = "openid email groups";
+const SCOPE = "openid email groups profile";
 let refreshPromise: Promise<AuthData | null> | null = null;
 
 export interface DecodedIdToken {
@@ -76,17 +75,20 @@ export const getAccessToken = async (
         );
       }
 
-      const requestBody = createAuthRequestBody({
-        grantType: GRANT_TYPE_AUTHORIZATION_CODE,
-        code: result.params.code,
-        redirectUri,
-        clientId: CLIENT_ID,
-        codeVerifier: request?.codeVerifier,
-      });
+      const requestBody = createAuthRequestBody(
+        {
+          grant_type: GRANT_TYPE_AUTHORIZATION_CODE,
+          code: result.params.code,
+          redirect_uri: redirectUri,
+          client_id: CLIENT_ID,
+          code_verifier: request?.codeVerifier,
+        },
+        ContentType.ApplicationXWwwFormUrlencoded
+      );
 
       const response = await fetch(TOKEN_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: { "Content-Type": ContentType.ApplicationXWwwFormUrlencoded },
         body: requestBody,
       });
 
@@ -144,15 +146,18 @@ export const refreshAccessToken = async (
         return null;
       }
 
-      const requestBody = createAuthRequestBody({
-        grantType: GRANT_TYPE_REFRESH_TOKEN,
-        clientId: CLIENT_ID,
-        refreshToken: authData.refreshToken,
-      });
+      const requestBody = createAuthRequestBody(
+        {
+          grant_type: GRANT_TYPE_REFRESH_TOKEN,
+          client_id: CLIENT_ID,
+          refresh_token: authData.refreshToken,
+        },
+        ContentType.ApplicationXWwwFormUrlencoded
+      );
 
       const response = await fetch(TOKEN_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: { "Content-Type": ContentType.ApplicationXWwwFormUrlencoded },
         body: requestBody,
       });
 
@@ -219,7 +224,9 @@ export const logout = async () => {
     }
     const idToken = secureData?.idToken;
     const appsJson = await AsyncStorage.getItem(APPS); // capture appIds BEFORE clearing APPS
-    const appIds = appsJson ? (JSON.parse(appsJson) as { appId: string }[]).map(a => a.appId) : [];
+    const appIds = appsJson
+      ? (JSON.parse(appsJson) as { appId: string }[]).map((a) => a.appId)
+      : [];
 
     if (!LOGOUT_URL) {
       throw new Error(
@@ -269,6 +276,7 @@ export const tokenExchange = async (
   exchangedToken: string,
   appId: string,
   onLogout: () => Promise<void>,
+  tokenExchangeType: TokenExchangeType,
   appScopes?: AppScope[]
 ) => {
   try {
@@ -314,18 +322,34 @@ export const tokenExchange = async (
     // Function to attempt token exchange, with retry on 401 error
     const attemptTokenExchange = async (token: string) => {
       try {
-        const response = await axios.post(
-          TOKEN_URL,
-          createAuthRequestBody({
-            clientId,
-            grantType: GRANT_TYPE_TOKEN_EXCHANGE,
-            subjectToken: token,
-            subjectTokenType: SUBJECT_TOKEN_TYPE,
-            requestedTokenType: REQUESTED_TOKEN_TYPE,
-            scope: selectedScopes,
-          }),
+        const { body: requestBody, tokenUrl } = prepareTokenExchangePayload(
+          tokenExchangeType,
           {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            clientId,
+            token,
+            selectedScopes,
+            grantType: "urn:ietf:params:oauth:grant-type:token-exchange",
+            subjectTokenType: "urn:ietf:params:oauth:token-type:jwt",
+            requestedTokenType: "urn:ietf:params:oauth:token-type:access_token",
+          }
+        );
+
+        if (!tokenUrl) {
+          throw new Error(
+            "Token URL is not defined for the selected token exchange type."
+          );
+        }
+
+        const response = await axios.post(
+          tokenUrl,
+          createAuthRequestBody(
+            requestBody,
+            ContentType.ApplicationXWwwFormUrlencoded
+          ),
+          {
+            headers: {
+              "Content-Type": ContentType.ApplicationXWwwFormUrlencoded,
+            },
           }
         );
 

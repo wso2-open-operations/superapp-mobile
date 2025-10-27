@@ -31,4 +31,16 @@ public type AppConfig record {|
     string[] defaultMicroAppIds;
     # Micro App Scopes
     AppScope[] appScopes;
+    # Token exchange type
+    string tokenExchangeType;
+|};
+
+# Token exchange configuration record type.
+public type TokenExchangeConfig record {|
+    # Token exchange endpoint
+    string tokenUrl;
+    # Request format
+    RequestFormat requestFormat;
+    # Optional parameters
+    map<string> optionalParams?;
 |};

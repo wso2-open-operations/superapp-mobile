@@ -13,44 +13,49 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-const createAuthRequestBody = ({
-  grantType,
-  code,
-  redirectUri,
-  clientId,
-  codeVerifier,
-  refreshToken,
-  subjectToken,
-  subjectTokenType,
-  requestedTokenType,
-  scope,
-}: {
-  grantType:
-    | "authorization_code"
-    | "refresh_token"
-    | "urn:ietf:params:oauth:grant-type:token-exchange";
-  code?: string;
-  redirectUri?: string;
-  clientId?: string;
-  codeVerifier?: string;
-  refreshToken?: string;
-  subjectToken?: string;
-  subjectTokenType?: "urn:ietf:params:oauth:token-type:jwt";
-  requestedTokenType?: "urn:ietf:params:oauth:token-type:access_token";
-  scope?: string;
-}): string => {
-  return new URLSearchParams({
-    grant_type: grantType,
-    ...(code && { code }),
-    ...(redirectUri && { redirect_uri: redirectUri }),
-    ...(clientId && { client_id: clientId }),
-    ...(codeVerifier && { code_verifier: codeVerifier }),
-    ...(refreshToken && { refresh_token: refreshToken }),
-    ...(subjectToken && { subject_token: subjectToken }),
-    ...(subjectTokenType && { subject_token_type: subjectTokenType }),
-    ...(requestedTokenType && { requested_token_type: requestedTokenType }),
-    ...(scope && { scope }),
-  }).toString();
+import { ContentType } from "@/types/contentType.types";
+
+/**
+ * Generates a request body string for different content types.
+ */
+const createAuthRequestBody = (
+  params: Record<string, any>,
+  contentType: ContentType
+): string => {
+  // Remove undefined or null values from the request parameters
+  const filteredParams = Object.entries(params).reduce(
+    (result, [key, value]) => {
+      if (value !== undefined && value !== null) result[key] = value;
+      return result;
+    },
+    {} as Record<string, any>
+  );
+
+  switch (contentType) {
+    // JSON content type: stringify the filtered parameters
+    case ContentType.ApplicationJson:
+      return JSON.stringify(filteredParams);
+
+    // Text/plain: convert params to plain format
+    case ContentType.TextPlain:
+      return Object.entries(filteredParams)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("&");
+
+    // x-www-form-urlencoded: URL-encode each value
+    case ContentType.ApplicationXWwwFormUrlencoded:
+      const encodedParams = Object.entries(filteredParams).reduce(
+        (encodedResult, [key, value]) => {
+          encodedResult[key] = String(value);
+          return encodedResult;
+        },
+        {} as Record<string, string>
+      );
+      return new URLSearchParams(encodedParams).toString();
+
+    default:
+      throw new Error(`Invalid content type: ${contentType}`);
+  }
 };
 
 export default createAuthRequestBody;

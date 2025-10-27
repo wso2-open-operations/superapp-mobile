@@ -31,7 +31,7 @@ const stripExchangedTokens = createTransform(
     if (!inbound?.apps) return inbound;
     return {
       ...inbound,
-      apps: inbound.apps.map(a => ({ ...a, exchangedToken: "" })),
+      apps: inbound.apps.map((a) => ({ ...a, exchangedToken: "" })),
     };
   },
   (outbound: { apps?: MicroApp[] }) => outbound,
@@ -60,7 +60,12 @@ const userInfoPersistConfig = {
 const appConfigPersistConfig = {
   key: "app-config",
   storage: AsyncStorage,
-  whitelist: ["appConfig"],
+  whitelist: [
+    "configs",
+    "defaultMicroAppIds",
+    "appScopes",
+    "tokenExchangeType",
+  ],
 };
 
 const appReducerCombined = combineReducers({

@@ -13,23 +13,8 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { TokenExchangeType } from "./tokenExchange.types";
-
-export interface AppConfig {
-  configKey: string;
-  value: boolean | string | number;
-}
-
-export interface AppScope {
-  appId: string;
-  scopes: string;
-}
-
-export interface AppConfigResponse {
-  configs: AppConfig[];
-  defaultMicroAppIds: string[];
-  tokenExchangeType: TokenExchangeType;
-  appScopes: AppScope[];
-  loading: boolean;
-  error: string | null;
+public enum RequestFormat {
+    FORM = "application/x-www-form-urlencoded",
+    JSON = "application/json",
+    TEXT = "text/plain"
 }
