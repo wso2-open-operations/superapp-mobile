@@ -251,7 +251,7 @@ cp .env.example .env
 
 #### 1.1. (Optional) How to add/remove Firebase plugins if you are using Firebase.
 
-To add or remove Firebase plugins from your app, open the `frontend/integrations/firebase/withFirebase`.ts file. In this file, you will find a constant named `FIREBASE_PLUGINS`, which contains an array of strings corresponding to each Firebase plugin. Modifying this array by adding or removing a plugin's corresponding string will add or remove the plugin from the app.
+To add or remove Firebase plugins from your app, open the `frontend/integrations/firebase/withFirebase.ts` file. In this file, you will find a constant named `FIREBASE_PLUGINS`, which contains an array of strings corresponding to each Firebase plugin. Modifying this array by adding or removing a plugin's corresponding string will add or remove the plugin from the app.
 
 #### 1.2. (Optional) If you are using `Firebase Services`, enable the feature flag in the `.env` file:
 
@@ -259,7 +259,7 @@ To add or remove Firebase plugins from your app, open the `frontend/integrations
 EXPO_PUBLIC_ENABLE_FIREBASE=true
 ```
 
-> Note: An `npx expo prebuild` should be executed each time this value is update to apply the config changes.
+> Note: An `npx expo prebuild` should be executed each time this value is updated to apply the config changes.
 
 #### 1.3. (Optional) If you are using `Firebase Services`, generate Base64 for Firebase Configuration
 

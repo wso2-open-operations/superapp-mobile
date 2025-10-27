@@ -72,6 +72,7 @@ export const withFirebase = (config: ExpoConfig) => {
       };
     }
   }
+  
   // Add the Android google services file to the config.
   if (config.android) {
     config.android.googleServicesFile = androidJson;
