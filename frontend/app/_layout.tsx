@@ -23,7 +23,10 @@ import { getVersions } from "@/context/slices/versionSlice";
 import { AppDispatch, persistor, store } from "@/context/store";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { usePushNotificationHandler } from "@/hooks/usePushNotificationHandler";
+import { useMigrator } from "@/migrations/migrator";
 import { scheduleSessionNotifications } from "@/services/scheduledNotifications";
+import { buildAppsWithTokens } from "@/utils/exchangedTokenRehydrator";
+import { handleFreshInstall } from "@/utils/freshInstall";
 import { performLogout } from "@/utils/performLogout";
 import {
   initializeNotifications,
@@ -38,14 +41,12 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { lockAsync, OrientationLock } from "expo-screen-orientation";
+import { getItemAsync } from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { buildAppsWithTokens } from "@/utils/exchangedTokenRehydrator";
-import { handleFreshInstall } from "@/utils/freshInstall";
-import { getItemAsync } from "expo-secure-store";
 
 // Component to handle app initialization
 function AppInitializer({ onReady }: { onReady: () => void }) {
@@ -59,6 +60,9 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
    */
   usePushNotificationHandler({ onLogout: handleLogout });
 
+  // Runs the migrations.
+  useMigrator();
+
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -68,7 +72,8 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
           getItemAsync(USER_INFO),
         ]);
 
-        if (savedApps) dispatch(setApps(await buildAppsWithTokens(JSON.parse(savedApps))));
+        if (savedApps)
+          dispatch(setApps(await buildAppsWithTokens(JSON.parse(savedApps))));
 
         if (savedUserInfo) dispatch(setUserInfo(JSON.parse(savedUserInfo)));
 
