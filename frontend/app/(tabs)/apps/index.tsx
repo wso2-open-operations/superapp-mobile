@@ -126,7 +126,7 @@ export default function HomeScreen() {
           const lastCheckTimestamp = await AsyncStorage.getItem(
             APP_UPDATE_CHECK_TIMESTAMP_KEY
           );
-          // Get current Time
+          // Get current time
           const now = Date.now();
           // Check if enough time has passed since the last update check
           if (
