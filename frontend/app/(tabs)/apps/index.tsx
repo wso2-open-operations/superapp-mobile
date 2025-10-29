@@ -22,6 +22,8 @@ import {
   APP_LIST_CONFIG_KEY,
   DOWNLOADED,
   APP_UPDATE_CHECK_TIMESTAMP_KEY,
+  IS_FORCE_UPDATE,
+  MICRO_APPS_UPDATE_CHECK_INTERVAL,
 } from "@/constants/Constants";
 import { ScreenPaths } from "@/constants/ScreenPaths";
 import { MicroApp } from "@/context/slices/appSlice";
@@ -63,7 +65,7 @@ export default function HomeScreen() {
   const isForceUpdate = useSelector(
     (state: RootState) =>
       state.appConfig.configs.find(
-        (config) => config.configKey === "isForceUpdate"
+        (config) => config.configKey === IS_FORCE_UPDATE
       )?.value ?? false
   );
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -91,7 +93,7 @@ export default function HomeScreen() {
   const updateCheckInterval = useSelector(
     (state: RootState) =>
       state.appConfig.configs.find(
-        (config) => config.configKey === "microappsUpdateCheckInterval"
+        (config) => config.configKey === MICRO_APPS_UPDATE_CHECK_INTERVAL
       )?.value ?? 0
   );
   // Convert seconds to milliseconds (value from database is in seconds)
@@ -125,7 +127,6 @@ export default function HomeScreen() {
           const lastCheckTimestamp = await AsyncStorage.getItem(
             APP_UPDATE_CHECK_TIMESTAMP_KEY
           );
-          // Get current time
           const now = Date.now();
           // Check if enough time has passed since the last update check
           if (
