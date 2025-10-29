@@ -19,7 +19,6 @@ import {
   GOOGLE_ACCESS_TOKEN_KEY,
   GOOGLE_REFRESH_TOKEN_KEY,
   GOOGLE_USER_INFO_KEY,
-  LAST_SENT_FCM_TOKEN,
   USER_INFO,
 } from "@/constants/Constants";
 import { MicroApp } from "@/context/slices/appSlice";
@@ -36,7 +35,6 @@ import * as SecureStore from "expo-secure-store";
 
 // Existing keys to be moved from AsyncStorage to SecureStore
 const EXISTING_KEYS = [
-  LAST_SENT_FCM_TOKEN,
   USER_INFO,
   GOOGLE_ACCESS_TOKEN_KEY,
   GOOGLE_REFRESH_TOKEN_KEY,
@@ -69,10 +67,12 @@ export const migrateToSecureStore = async () => {
  */
 export const migrateAuthDataToSecureStore = async () => {
   const authData = await AsyncStorage.getItem(AUTH_DATA);
-  const parsedAuthData = JSON.parse(authData as string) as SecureAuthData;
-  if (authData && parsedAuthData) {
-    await saveAuthDataToSecureStore(parsedAuthData);
-    await AsyncStorage.removeItem(AUTH_DATA);
+  if (authData) {
+    const parsedAuthData = JSON.parse(authData as string) as SecureAuthData;
+    if (parsedAuthData) {
+      await saveAuthDataToSecureStore(parsedAuthData);
+      await AsyncStorage.removeItem(AUTH_DATA);
+    }
   }
 };
 
@@ -81,13 +81,15 @@ export const migrateAuthDataToSecureStore = async () => {
  */
 export const migrateAppExchangesToSecureStore = async () => {
   const apps = await AsyncStorage.getItem(APPS);
-  const parsedApps = JSON.parse(apps as string) as MicroApp[];
-  if (apps && parsedApps) {
-    for (const app of parsedApps) {
-      if (app.exchangedToken) {
-        await saveExchangedToken(app.appId, app.exchangedToken);
+  if (apps) {
+    const parsedApps = JSON.parse(apps as string) as MicroApp[];
+    if (parsedApps) {
+      for (const app of parsedApps) {
+        if (app.exchangedToken) {
+          await saveExchangedToken(app.appId, app.exchangedToken);
+        }
       }
+      void persistAppsWithoutTokens(parsedApps);
     }
-    void persistAppsWithoutTokens(parsedApps);
   }
 };

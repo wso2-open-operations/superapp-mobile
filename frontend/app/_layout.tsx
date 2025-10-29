@@ -23,7 +23,7 @@ import { getVersions } from "@/context/slices/versionSlice";
 import { AppDispatch, persistor, store } from "@/context/store";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { usePushNotificationHandler } from "@/hooks/usePushNotificationHandler";
-import { useMigrator } from "@/migrations/migrator";
+import { runMigrations } from "@/migrations/migrator";
 import { scheduleSessionNotifications } from "@/services/scheduledNotifications";
 import { buildAppsWithTokens } from "@/utils/exchangedTokenRehydrator";
 import { handleFreshInstall } from "@/utils/freshInstall";
@@ -60,24 +60,24 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
    */
   usePushNotificationHandler({ onLogout: handleLogout });
 
-  // Runs the migrations.
-  useMigrator();
-
   useEffect(() => {
     const initialize = async () => {
       try {
         await handleFreshInstall();
+        await runMigrations(); // Runs any migrations.
         const [savedApps, savedUserInfo] = await Promise.all([
           AsyncStorage.getItem(APPS),
           getItemAsync(USER_INFO),
         ]);
 
-        if (savedApps)
+        if (savedApps) {
           dispatch(setApps(await buildAppsWithTokens(JSON.parse(savedApps))));
+        }
 
-        if (savedUserInfo) dispatch(setUserInfo(JSON.parse(savedUserInfo)));
+        if (savedUserInfo) {
+          dispatch(setUserInfo(JSON.parse(savedUserInfo)));
+        }
 
-        // Initialize notifications
         await scheduleSessionNotifications();
 
         dispatch(getVersions(handleLogout));
@@ -91,9 +91,10 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
     };
 
     initialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  return null; // No UI rendering needed
+  return null;
 }
 
 // Main Root Layout

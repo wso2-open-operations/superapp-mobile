@@ -13,10 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { RootState } from "@/context/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { migrations } from ".";
 
 const DATA_VERSION_KEY = "data_version";
@@ -39,15 +36,10 @@ const setDataVersion = async (version: number) => {
 };
 
 // Runs the migrations.
-const runMigrations = async () => {
+export const runMigrations = async () => {
   const currentVersion = await getDataVersion();
   const latestVersion = Object.keys(migrations).length;
-  console.log("currentVersion", currentVersion);
-  console.log("latestVersion", latestVersion);
-  console.log(
-    "currentVersion >= latestVersion",
-    currentVersion >= latestVersion
-  );
+
   if (currentVersion >= latestVersion) {
     return;
   }
@@ -62,21 +54,4 @@ const runMigrations = async () => {
       throw error;
     }
   }
-};
-
-/**
- * A custom hook to run migrations when the access token is available.
- */
-export const useMigrator = () => {
-  const { accessToken } = useSelector((state: RootState) => state.auth);
-
-  useEffect(() => {
-    console.log("awaiting migrations");
-    if (accessToken) {
-      console.log("running migrations");
-      void runMigrations();
-    }
-  }, [accessToken, runMigrations]);
-
-  return null;
 };
