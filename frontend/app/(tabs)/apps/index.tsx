@@ -92,11 +92,11 @@ export default function HomeScreen() {
   const updateCheckInterval = useSelector(
     (state: RootState) =>
       state.appConfig.configs.find(
-        (config) => config.configKey === "updateCheckInterval"
+        (config) => config.configKey === "microappsUpdateCheckInterval"
       )?.value ?? 0
   );
-  // Convert minutes to milliseconds
-  const updateCheckIntervalMs = Number(updateCheckInterval) * 60000;
+  // Convert seconds to milliseconds (value from database is in seconds)
+  const updateCheckIntervalMs = Number(updateCheckInterval) * 1000;
 
   // Main App Force Update Screen
   useEffect(() => {
