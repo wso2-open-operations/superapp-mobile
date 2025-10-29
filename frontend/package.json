@@ -13,7 +13,8 @@
     "lint:fix": "eslint frontend --ext .js,.jsx,.ts,.tsx --fix",
     "lint:ci": "eslint frontend --ext .js,.jsx,.ts,.tsx --max-warnings=0",
     "write-firebase-files": "npx dotenv -e .env -- node ./scripts/writeFirebaseFiles.ts",
-    "postinstall": "npm run write-firebase-files || true && npm install --prefix .."
+    "postinstall": "npm run write-firebase-files || true && npm install --prefix ..",
+    "build:android:local": "dotenv -- eas build --platform android --local"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --fix --max-warnings=0"
@@ -102,6 +103,7 @@
     "lint-staged": "^16.1.5",
     "react-native-safe-area-context": "^5.3.0",
     "react-test-renderer": "18.3.1",
+    "tsx": "^4.20.6",
     "typescript": "^5.3.3"
   },
   "private": true

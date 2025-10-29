@@ -98,6 +98,21 @@ export default function HomeScreen() {
   // Convert minutes to milliseconds
   const updateCheckIntervalMs = Number(updateCheckInterval) * 60000;
 
+  // Main App Force Update Screen
+  useEffect(() => {
+    const checkVersion = () => {
+      if (version && Array.isArray(versions) && versions.length > 0) {
+        if (versions[0]?.version > version) {
+          setTimeout(() => {
+            router.replace(ScreenPaths.UPDATE);
+          }, 100); // 100ms delay
+        }
+      }
+    };
+
+    checkVersion();
+  }, [versions, version]);
+
   // Handle app updates when screen is focused with time based checking
   useFocusEffect(
     useCallback(() => {

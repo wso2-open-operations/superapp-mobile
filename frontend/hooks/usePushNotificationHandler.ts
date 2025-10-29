@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+import { ENABLE_FIREBASE } from "@/constants/Constants";
 import {
   loadLastSentFCMToken,
   pushFcmToken,
@@ -46,6 +47,7 @@ export const usePushNotificationHandler = ({
   onLogoutRef.current = onLogout;
 
   useEffect(() => {
+    if (!ENABLE_FIREBASE) return;
     dispatch(loadLastSentFCMToken());
 
     if (accessToken) {
