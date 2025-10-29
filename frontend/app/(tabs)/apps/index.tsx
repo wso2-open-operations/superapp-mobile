@@ -14,44 +14,43 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import React, { useCallback } from "react";
-import {
-  Text,
-  SafeAreaView,
-  View,
-  FlatList,
-  useColorScheme,
-  Alert,
-  StyleSheet,
-  useWindowDimensions,
-  Keyboard,
-} from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/context/store";
-import { useEffect, useRef, useState } from "react";
-import { useFocusEffect } from "@react-navigation/native";
+import SearchBar from "@/components/SearchBar";
+import SyncingModal from "@/components/SyncingModal";
 import Widget from "@/components/Widget";
-import { router } from "expo-router";
+import { Colors } from "@/constants/Colors";
 import {
   APP_LIST_CONFIG_KEY,
   DOWNLOADED,
   APP_UPDATE_CHECK_TIMESTAMP_KEY,
 } from "@/constants/Constants";
+import { ScreenPaths } from "@/constants/ScreenPaths";
 import { MicroApp } from "@/context/slices/appSlice";
+import { getUserConfigurations } from "@/context/slices/userConfigSlice";
+import { AppDispatch, RootState } from "@/context/store";
+import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
 import {
   downloadMicroApp,
   loadMicroAppDetails,
   removeMicroApp,
 } from "@/services/appStoreService";
 import { logout } from "@/services/authService";
-import SyncingModal from "@/components/SyncingModal";
-import { Colors } from "@/constants/Colors";
-import { getUserConfigurations } from "@/context/slices/userConfigSlice";
-import Constants from "expo-constants";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import SearchBar from "@/components/SearchBar";
-import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
-import { ScreenPaths } from "@/constants/ScreenPaths";
+import { useFocusEffect } from "@react-navigation/native";
+import Constants from "expo-constants";
+import { router } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  FlatList,
+  Keyboard,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
@@ -99,19 +98,19 @@ export default function HomeScreen() {
   const updateCheckIntervalMs = Number(updateCheckInterval) * 1000;
 
   // Main App Force Update Screen
-  // useEffect(() => {
-  //   const checkVersion = () => {
-  //     if (version && Array.isArray(versions) && versions.length > 0) {
-  //       if (versions[0]?.version > version) {
-  //         setTimeout(() => {
-  //           router.replace(ScreenPaths.UPDATE);
-  //         }, 100); // 100ms delay
-  //       }
-  //     }
-  //   };
+  useEffect(() => {
+    const checkVersion = () => {
+      if (version && Array.isArray(versions) && versions.length > 0) {
+        if (versions[0]?.version > version) {
+          setTimeout(() => {
+            router.replace(ScreenPaths.UPDATE);
+          }, 100); // 100ms delay
+        }
+      }
+    };
 
-  //   checkVersion();
-  // }, [versions, version]);
+    checkVersion();
+  }, [versions, version]);
 
   // Handle app updates when screen is focused with time based checking
   useFocusEffect(
