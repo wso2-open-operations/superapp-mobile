@@ -35,6 +35,7 @@ import { router } from "expo-router";
 import {
   APP_LIST_CONFIG_KEY,
   DOWNLOADED,
+  APP_UPDATE_CHECK_TIMESTAMP_KEY,
 } from "@/constants/Constants";
 import { MicroApp } from "@/context/slices/appSlice";
 import {
@@ -51,6 +52,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import SearchBar from "@/components/SearchBar";
 import { useTrackActiveScreen } from "@/hooks/useTrackActiveScreen";
 import { ScreenPaths } from "@/constants/ScreenPaths";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
   const dispatch = useDispatch<AppDispatch>();
@@ -86,10 +88,17 @@ export default function HomeScreen() {
   });
   const [updatingApps, setUpdatingApps] = useState<string[]>([]);
   const isCheckingUpdates = useRef(false);
-
   useTrackActiveScreen(ScreenPaths.MY_APPS);
-  
-  // Handle app updates when screen is focused
+  const updateCheckInterval = useSelector(
+    (state: RootState) =>
+      state.appConfig.configs.find(
+        (config) => config.configKey === "updateCheckInterval"
+      )?.value ?? 0
+  );
+  // Convert minutes to milliseconds
+  const updateCheckIntervalMs = Number(updateCheckInterval) * 60000;
+
+  // Handle app updates when screen is focused with time based checking
   useFocusEffect(
     useCallback(() => {
       const checkForUpdates = async () => {
@@ -98,6 +107,19 @@ export default function HomeScreen() {
         }
 
         try {
+          // Get the last update check timestamp
+          const lastCheckTimestamp = await AsyncStorage.getItem(
+            APP_UPDATE_CHECK_TIMESTAMP_KEY
+          );
+          // Get current Time
+          const now = Date.now();
+          // Check if enough time has passed since the last update check
+          if (
+            lastCheckTimestamp &&
+            now - parseInt(lastCheckTimestamp, 10) < updateCheckIntervalMs
+          ) {
+            return;
+          }
           isCheckingUpdates.current = true;
           await loadMicroAppDetails(
             dispatch,
@@ -109,6 +131,11 @@ export default function HomeScreen() {
               setUpdatingApps((prev) => prev.filter((id) => id !== appId));
             }
           );
+          // Store the current timestamp after successful check
+          await AsyncStorage.setItem(
+            APP_UPDATE_CHECK_TIMESTAMP_KEY,
+            now.toString()
+          );
         } catch (error) {
           console.error("Error checking for app updates:", error);
         } finally {
@@ -119,7 +146,7 @@ export default function HomeScreen() {
       return () => {
         isCheckingUpdates.current = false;
       };
-    }, [dispatch, email, isForceUpdate])
+    }, [dispatch, email, isForceUpdate, updateCheckIntervalMs])
   );
 
   // Load micro apps and user configurations if they haven't been initialized yet
