@@ -37,7 +37,6 @@ export const TOPIC = {
   DEVICE_SAFE_AREA_INSETS: "device_safe_area_insets",
 };
 
-const dict = {};
 
 // JavaScript code injected into the WebView to enable communication between
 // the micro app and the React Native app via the native bridge.
