@@ -250,7 +250,7 @@ const MicroApp = () => {
     } catch (error) {
       const errMessage =
         error instanceof Error ? error.message : "Unknown error";
-      console.error("Error deleting from secure store:", error);
+      console.error("Error deleting from secure store:", errMessage);
       sendResponseToWeb("rejectSecureStoreDeletion", errMessage);
     }
   };
