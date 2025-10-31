@@ -20,6 +20,10 @@ export const TOPIC = {
   QR_REQUEST: "qr_request",
   SAVE_LOCAL_DATA: "save_local_data",
   GET_LOCAL_DATA: "get_local_data",
+  DELETE_LOCAL_DATA: "delete_local_data",
+  SAVE_TO_SECURE_STORE: "secure_store_persistence",
+  GET_FROM_SECURE_STORE: "secure_store_retrieval",
+  DELETE_FROM_SECURE_STORE: "secure_store_deletion",
   ALERT: "alert",
   CONFIRM_ALERT: "confirm_alert",
   TOTP: "totp",
@@ -31,8 +35,9 @@ export const TOPIC = {
   CLOSE_WEBVIEW_FROM_MICROAPP: "close_webview",
   NATIVE_LOG: "native_log",
   DEVICE_SAFE_AREA_INSETS: "device_safe_area_insets",
-  DELETE_LOCAL_DATA: "delete_local_data",
 };
+
+const dict = {};
 
 // JavaScript code injected into the WebView to enable communication between
 // the micro app and the React Native app via the native bridge.
@@ -68,6 +73,15 @@ export const injectedJavaScript = `window.nativebridge = {
     requestDeleteLocalData: (key) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "delete_local_data", data: { key } })),
     resolveDeleteLocalData: () => console.log("Local data deleted successfully"),
     rejectDeleteLocalData: (err) => console.error("Delete Local Data failed:", err),
+    requestSecureStorePersistence: (key, value) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "secure_store_persistence", data: { key, value } })),
+    resolveSecureStorePersistence: () => console.log("Data saved to Secure Store successfully"),
+    rejectSecureStorePersistence: (err) => console.error("Saving to Secure Store failed:", err),
+    requestSecureStoreRetrieval: (key) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "secure_store_retrieval", data: { key } })),
+    resolveSecureStoreRetrieval: (data) => console.log("Data retrieved from Secure Store:", data),
+    rejectSecureStoreRetrieval: (err) => console.error("Retrieval from Secure Store failed:", err),
+    requestSecureStoreDeletion: (key) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "secure_store_deletion", data: { key } })),
+    resolveSecureStoreDeletion: () => console.log("Data deleted from Secure Store successfully"),
+    rejectSecureStoreDeletion: (err) => console.error("Deletion from Secure Store failed:", err),
     requestTotpQrMigrationData: () => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "totp" })),
     resolveTotpQrMigrationData: (data) => console.log("TOTP QR Migration Data:", data),
     rejectTotpQrMigrationData: (err) => console.error("TOTP Data retrieval failed:", err),

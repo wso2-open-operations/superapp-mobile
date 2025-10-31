@@ -14,7 +14,8 @@
     "lint:ci": "eslint frontend --ext .js,.jsx,.ts,.tsx --max-warnings=0",
     "write-firebase-files": "npx dotenv -e .env -- node ./scripts/writeFirebaseFiles.ts",
     "postinstall": "npm run write-firebase-files || true && npm install --prefix ..",
-    "build:android:local": "dotenv -- eas build --platform android --local"
+    "build:android:local": "dotenv -- eas build --platform android --local",
+    "build:android:development:apk": "dotenv -- eas build -p android --profile development --local"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --fix --max-warnings=0"

@@ -41,6 +41,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Google from "expo-auth-session/providers/google";
 import { documentDirectory } from "expo-file-system";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect, useRef, useState } from "react";
@@ -203,6 +204,55 @@ const MicroApp = () => {
       ],
       { cancelable: false }
     );
+  };
+
+  /**
+   * Function to save data to secure store
+   * @param key - The key to save the data to
+   * @param value - The value to save to the secure store
+   */
+  const handleSaveToSecureStore = async (key: string, value: string) => {
+    try {
+      await SecureStore.setItemAsync(key, value);
+      sendResponseToWeb("resolveSecureStorePersistence");
+    } catch (error) {
+      const errMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      console.error("Error saving to secure store:", errMessage);
+      sendResponseToWeb("rejectSecureStorePersistence", errMessage);
+    }
+  };
+
+  /**
+   * Function to get data from secure store
+   * @param key - The key to get the data from
+   */
+  const handleGetFromSecureStore = async (key: string) => {
+    try {
+      const value = await SecureStore.getItemAsync(key);
+      sendResponseToWeb("resolveSecureStoreRetrieval", { value });
+    } catch (error) {
+      const errMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      console.error("Error getting from secure store:", errMessage);
+      sendResponseToWeb("rejectSecureStoreRetrieval", errMessage);
+    }
+  };
+
+  /**
+   * Function to delete data from secure store
+   * @param key - The key to delete the data from
+   */
+  const handleDeleteFromSecureStore = async (key: string) => {
+    try {
+      await SecureStore.deleteItemAsync(key);
+      sendResponseToWeb("resolveSecureStoreDeletion");
+    } catch (error) {
+      const errMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      console.error("Error deleting from secure store:", error);
+      sendResponseToWeb("rejectSecureStoreDeletion", errMessage);
+    }
   };
 
   // Function to save data in device
@@ -377,6 +427,15 @@ const MicroApp = () => {
           break;
         case TOPIC.DEVICE_SAFE_AREA_INSETS:
           sendSafeAreaInsetsToWebView();
+          break;
+        case TOPIC.SAVE_TO_SECURE_STORE:
+          await handleSaveToSecureStore(data.key, data.value);
+          break;
+        case TOPIC.GET_FROM_SECURE_STORE:
+          await handleGetFromSecureStore(data.key);
+          break;
+        case TOPIC.DELETE_FROM_SECURE_STORE:
+          await handleDeleteFromSecureStore(data.key);
           break;
         default:
           console.error("Unknown topic:", topic);
