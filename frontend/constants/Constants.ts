@@ -16,6 +16,10 @@
 
 import { Platform } from "react-native";
 
+// Environment flags
+export const TRUE = "true";
+export const FALSE = "false";
+
 export const CLIENT_ID = process.env.EXPO_PUBLIC_CLIENT_ID ?? "";
 export const REDIRECT_URI = process.env.EXPO_PUBLIC_REDIRECT_URI ?? "";
 export const TOKEN_URL = process.env.EXPO_PUBLIC_TOKEN_URL ?? "";
@@ -41,6 +45,7 @@ export const LIBRARY_ARTICLE_FALLBACK_IMAGE =
   process.env.EXPO_PUBLIC_LIBRARY_ARTICLE_FALLBACK_IMAGE ?? "";
 export const DEVELOPER_APP_DEFAULT_URL =
   process.env.EXPO_PUBLIC_DEVELOPER_APP_DEFAULT_URL ?? "";
+export const ENABLE_FIREBASE = process.env.EXPO_PUBLIC_ENABLE_FIREBASE === TRUE;
 export const GOOGLE_SCOPES = [
   "openid",
   "profile",
@@ -109,3 +114,7 @@ export const NOTIFICATION_CHANNEL_ID =
 export const NOTIFICATION_CHANNEL_NAME =
   process.env.EXPO_PUBLIC_NOTIFICATION_CHANNEL_NAME ??
   "Default SuperApp Notification Channel";
+
+// Platform
+export const isAndroid = Platform.OS === "android";
+export const isIos = Platform.OS === "ios";
