@@ -34,11 +34,17 @@ const configureAndroidNotificationIcon: ConfigPlugin = (config) => {
         fs.mkdirSync(drawableDir, { recursive: true });
 
       // Copy notification icon to drawable folder
+      const sourceIconPath = path.join(
+        config.modRequest.projectRoot,
+        "assets/images/notification-icon.png"
+      );
+      if (!fs.existsSync(sourceIconPath)) {
+        throw new Error(
+          `Notification icon not found at "${sourceIconPath}". Please ensure the file exists before running this configuration.`
+        );
+      }
       fs.copyFileSync(
-        path.join(
-          config.modRequest.projectRoot,
-          "assets/images/notification-icon.png"
-        ),
+        sourceIconPath,
         path.join(drawableDir, "ic_notification.png")
       );
 
