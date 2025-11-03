@@ -35,6 +35,11 @@ import googleAuthenticationService, {
   restoreGoogleDriveBackup,
   uploadToGoogleDrive,
 } from "@/services/googleService";
+import {
+  cancelLocalNotification,
+  clearNotifications,
+  scheduleSessionNotifications,
+} from "@/services/scheduledNotifications";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript, TOPIC } from "@/utils/bridge";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -367,6 +372,21 @@ const MicroApp = () => {
     }
   };
 
+  // Function to schedule a local notification
+  const handleScheduleLocalNotification = async (data: any) => {
+    scheduleSessionNotifications(data);
+  };
+
+  // Function to cancel a local notification
+  const handleCancelLocalNotification = async (data: any) => {
+    cancelLocalNotification(data);
+  };
+
+  // Function to clear all local notifications
+  const handleClearAllLocalNotifications = async () => {
+    clearNotifications();
+  };
+
   // Handle messages from WebView
   const onMessage = async (event: WebViewMessageEvent) => {
     try {
@@ -436,6 +456,15 @@ const MicroApp = () => {
           break;
         case TOPIC.DELETE_FROM_SECURE_STORE:
           await handleDeleteFromSecureStore(data.key);
+          break;
+        case TOPIC.SCHEDULE_LOCAL_NOTIFICATION:
+          await handleScheduleLocalNotification(data);
+          break;
+        case TOPIC.CANCEL_LOCAL_NOTIFICATION:
+          await handleCancelLocalNotification(data);
+          break;
+        case TOPIC.CLEAR_ALL_LOCAL_NOTIFICATIONS:
+          await handleClearAllLocalNotifications();
           break;
         default:
           console.error("Unknown topic:", topic);

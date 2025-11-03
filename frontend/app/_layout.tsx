@@ -24,7 +24,6 @@ import { AppDispatch, persistor, store } from "@/context/store";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { usePushNotificationHandler } from "@/hooks/usePushNotificationHandler";
 import { runMigrations } from "@/migrations/migrator";
-import { scheduleSessionNotifications } from "@/services/scheduledNotifications";
 import { buildAppsWithTokens } from "@/utils/exchangedTokenRehydrator";
 import { handleFreshInstall } from "@/utils/freshInstall";
 import { performLogout } from "@/utils/performLogout";
@@ -77,8 +76,6 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
         if (savedUserInfo) {
           dispatch(setUserInfo(JSON.parse(savedUserInfo)));
         }
-
-        await scheduleSessionNotifications();
 
         dispatch(getVersions(handleLogout));
         dispatch(getUserConfigurations(handleLogout));
