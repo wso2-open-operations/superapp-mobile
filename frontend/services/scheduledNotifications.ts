@@ -27,11 +27,11 @@ import notifee, {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface SessionData {
-  data: {
+  data: Array<{
     id: string;
     title: string;
     startTime: string;
-  }[];
+  }>;
   superapp_notification_title: string;
 }
 
