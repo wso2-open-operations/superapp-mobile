@@ -42,7 +42,7 @@ const BUNDLE_ID = process.env.BUNDLE_IDENTIFIER ?? "com.example";
 const ANDROID_PACKAGE = process.env.ANDROID_PACKAGE ?? "com.example";
 const IOS_URL_SCHEME = process.env.IOS_URL_SCHEME ?? "example.scheme";
 const ENABLE_FIREBASE = process.env.EXPO_PUBLIC_ENABLE_FIREBASE ?? FALSE;
-const GENERATE_ANDROID_NOTIFICATION_ICON =
+const ADD_ANDROID_NOTIFICATION_ICON =
   process.env.EXPO_PUBLIC_GENERATE_ANDROID_NOTIFICATION_ICON ?? FALSE;
 // const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? ""; // Uncomment this if you use EAS
 
@@ -194,7 +194,7 @@ if (ENABLE_FIREBASE === TRUE) {
 /**
  * Configure Android notification small icon
  */
-if (GENERATE_ANDROID_NOTIFICATION_ICON === TRUE) {
+if (ADD_ANDROID_NOTIFICATION_ICON === TRUE) {
   config = configureAndroidNotificationIcon(config);
 }
 

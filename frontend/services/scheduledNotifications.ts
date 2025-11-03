@@ -20,6 +20,7 @@ import {
   NOTIFICATION_LEAD_TIME_MINUTES,
 } from "@/constants/Constants";
 import notifee, {
+  AndroidCategory,
   AndroidImportance,
   TimestampTrigger,
   TriggerType,
@@ -76,6 +77,7 @@ export const scheduleSessionNotifications = async () => {
               color: ANDROID_NOTIFICATION_SMALL_ICON_ACCENT_COLOR,
               importance: AndroidImportance.HIGH,
               sound: "default",
+              category: AndroidCategory.ALARM,
               pressAction: {
                 id: "default",
               },
