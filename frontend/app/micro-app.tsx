@@ -376,7 +376,16 @@ const MicroApp = () => {
 
   // Function to schedule a local notification
   const handleScheduleLocalNotification = async (data: any) => {
-    scheduleSessionNotifications(data);
+    try {
+      await scheduleSessionNotifications(data);
+      sendResponseToWeb("resolveSchedulingLocalNotification");
+    } catch (error) {
+      console.error("Error scheduling local notification:", error);
+      sendResponseToWeb(
+        "rejectSchedulingLocalNotification",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    }
   };
 
   // Function to cancel a local notification
