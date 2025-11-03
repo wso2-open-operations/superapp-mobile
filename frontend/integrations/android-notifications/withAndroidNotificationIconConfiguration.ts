@@ -21,8 +21,15 @@ const withAndroidNotificationIconConfiguration: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     "android",
     async (config) => {
+      const platformProjectRoot = config.modRequest.platformProjectRoot;
+      if (!platformProjectRoot) {
+        throw new Error(
+          "The platform project root is not defined. This indicates a problem with the prebuild process."
+        );
+      }
+
       const drawableDir = path.join(
-        config.modRequest.platformProjectRoot!,
+        platformProjectRoot,
         "app",
         "src",
         "main",

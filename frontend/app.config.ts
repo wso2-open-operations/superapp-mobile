@@ -43,7 +43,7 @@ const ANDROID_PACKAGE = process.env.ANDROID_PACKAGE ?? "com.example";
 const IOS_URL_SCHEME = process.env.IOS_URL_SCHEME ?? "example.scheme";
 const ENABLE_FIREBASE = process.env.EXPO_PUBLIC_ENABLE_FIREBASE ?? FALSE;
 const ADD_ANDROID_NOTIFICATION_ICON =
-  process.env.EXPO_PUBLIC_GENERATE_ANDROID_NOTIFICATION_ICON ?? FALSE;
+  process.env.EXPO_PUBLIC_ADD_ANDROID_NOTIFICATION_ICON ?? FALSE;
 // const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? ""; // Uncomment this if you use EAS
 
 /* =============== Firebase Configuration ===============
