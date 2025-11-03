@@ -20,6 +20,9 @@ import "tsx/cjs";
 /* Comment the lines below if you want to use Firebase for iOS or Android */
 import { withFirebase } from "./integrations/firebase/withFirebase";
 
+/* Custom plugin to configure Android notification small icon */
+import withAndroidNotificationIconConfiguration from "./integrations/android-notifications/withAndroidNotificationIconConfiguration";
+
 const PRODUCTION = "production";
 const DEVELOPMENT = "development";
 const TRUE = "true";
@@ -39,6 +42,8 @@ const BUNDLE_ID = process.env.BUNDLE_IDENTIFIER ?? "com.example";
 const ANDROID_PACKAGE = process.env.ANDROID_PACKAGE ?? "com.example";
 const IOS_URL_SCHEME = process.env.IOS_URL_SCHEME ?? "example.scheme";
 const ENABLE_FIREBASE = process.env.EXPO_PUBLIC_ENABLE_FIREBASE ?? FALSE;
+const ADD_ANDROID_NOTIFICATION_ICON =
+  process.env.EXPO_PUBLIC_ADD_ANDROID_NOTIFICATION_ICON ?? FALSE;
 // const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? ""; // Uncomment this if you use EAS
 
 /* =============== Firebase Configuration ===============
@@ -91,6 +96,7 @@ let config: ExpoConfig = {
     permissions: [
       "android.permission.CAMERA",
       "android.permission.RECORD_AUDIO",
+      "android.permission.POST_NOTIFICATIONS",
     ],
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",
@@ -183,6 +189,13 @@ let config: ExpoConfig = {
  */
 if (ENABLE_FIREBASE === TRUE) {
   config = withFirebase(config);
+}
+
+/**
+ * Configure Android notification small icon
+ */
+if (ADD_ANDROID_NOTIFICATION_ICON === TRUE) {
+  config = withAndroidNotificationIconConfiguration(config);
 }
 
 export default config;

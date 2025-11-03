@@ -14,11 +14,17 @@
 // specific language governing permissions and limitations
 // under the License.
 import {
+  ANDROID_NOTIFICATION_SMALL_ICON_ACCENT_COLOR,
   LOCAL_NOTIFICATIONS_KEY,
   NOTIFICATION_CHANNEL_ID,
   NOTIFICATION_LEAD_TIME_MINUTES,
 } from "@/constants/Constants";
-import notifee, { TimestampTrigger, TriggerType } from "@notifee/react-native";
+import notifee, {
+  AndroidCategory,
+  AndroidImportance,
+  TimestampTrigger,
+  TriggerType,
+} from "@notifee/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface SessionData {
@@ -67,6 +73,11 @@ export const scheduleSessionNotifications = async () => {
             body: `${session.title} starts in ${NOTIFICATION_LEAD_TIME_MINUTES} minutes`,
             android: {
               channelId: NOTIFICATION_CHANNEL_ID,
+              smallIcon: "ic_notification",
+              color: ANDROID_NOTIFICATION_SMALL_ICON_ACCENT_COLOR,
+              importance: AndroidImportance.HIGH,
+              sound: "default",
+              category: AndroidCategory.ALARM,
               pressAction: {
                 id: "default",
               },

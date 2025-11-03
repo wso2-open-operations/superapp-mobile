@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 import {
+  ANDROID_NOTIFICATION_SMALL_ICON_ACCENT_COLOR,
   isAndroid,
   isIos,
   NOTIFICATION_CHANNEL_ID,
@@ -136,6 +137,9 @@ const showNotification = async (
       body,
       android: {
         channelId: NOTIFICATION_CHANNEL_ID,
+        smallIcon: "ic_notification",
+        color: ANDROID_NOTIFICATION_SMALL_ICON_ACCENT_COLOR,
+        sound: "default",
       },
     });
   } else {
