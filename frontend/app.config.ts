@@ -21,7 +21,7 @@ import "tsx/cjs";
 import { withFirebase } from "./integrations/firebase/withFirebase";
 
 /* Custom plugin to configure Android notification small icon */
-import configureAndroidNotificationIcon from "./integrations/android-notifications/configureAndroidNotificationIcon";
+import withAndroidNotificationIconConfiguration from "./integrations/android-notifications/withAndroidNotificationIconConfiguration";
 
 const PRODUCTION = "production";
 const DEVELOPMENT = "development";
@@ -195,7 +195,7 @@ if (ENABLE_FIREBASE === TRUE) {
  * Configure Android notification small icon
  */
 if (ADD_ANDROID_NOTIFICATION_ICON === TRUE) {
-  config = configureAndroidNotificationIcon(config);
+  config = withAndroidNotificationIconConfiguration(config);
 }
 
 export default config;

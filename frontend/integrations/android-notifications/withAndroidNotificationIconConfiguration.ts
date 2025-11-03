@@ -17,7 +17,7 @@ import { ConfigPlugin, withDangerousMod } from "@expo/config-plugins";
 import fs from "fs";
 import path from "path";
 
-const configureAndroidNotificationIcon: ConfigPlugin = (config) => {
+const withAndroidNotificationIconConfiguration: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     "android",
     async (config) => {
@@ -54,4 +54,4 @@ const configureAndroidNotificationIcon: ConfigPlugin = (config) => {
   ]);
 };
 
-export default configureAndroidNotificationIcon;
+export default withAndroidNotificationIconConfiguration;
