@@ -24,8 +24,21 @@ import notifee, {
   TriggerType,
 } from "@notifee/react-native";
 
+export interface ScheduledNotificationIdentifiable {
+  id: string;
+}
+
+export interface ScheduledNotificationData
+  extends ScheduledNotificationIdentifiable {
+  title: string;
+  body: string;
+  time: Date;
+}
+
 // Schedule notifications for sessions
-export const scheduleSessionNotifications = async (data: any) => {
+export const scheduleSessionNotifications = async (
+  data: ScheduledNotificationData
+) => {
   try {
     const now = new Date();
     const triggerTime = new Date(data.time);
@@ -69,11 +82,11 @@ export const clearNotifications = async () => {
   }
 };
 
-export const cancelLocalNotification = async (data: any) => {
-  const notificationId = data.id;
-  if (!notificationId) return;
+export const cancelLocalNotification = async (
+  data: ScheduledNotificationIdentifiable
+) => {
   try {
-    await notifee.cancelTriggerNotification(notificationId);
+    await notifee.cancelTriggerNotification(data.id);
   } catch (error) {
     console.error("Error cancelling notification:", error);
   }

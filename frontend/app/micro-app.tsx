@@ -56,6 +56,7 @@ import {
   Text,
   TouchableOpacity,
   useColorScheme,
+  useWindowDimensions,
   View,
 } from "react-native";
 import prompt from "react-native-prompt-android";
@@ -89,6 +90,7 @@ const MicroApp = () => {
   const isTotp: boolean = appId.includes("totp");
   const insets = useSafeAreaInsets();
   const shouldShowHeader: boolean = displayMode !== FULL_SCREEN_VIEWING_MODE;
+  const { width, height } = useWindowDimensions();
 
   /**
    * Create styles for the micro app.
@@ -387,6 +389,12 @@ const MicroApp = () => {
     clearNotifications();
   };
 
+  // Function to get device screen size
+  const handleDeviceScreenSize = async () => {
+    const screenSize = { width: width, height: height };
+    sendResponseToWeb("resolveDeviceScreenSize", screenSize);
+  };
+
   // Handle messages from WebView
   const onMessage = async (event: WebViewMessageEvent) => {
     try {
@@ -465,6 +473,9 @@ const MicroApp = () => {
           break;
         case TOPIC.CLEAR_ALL_LOCAL_NOTIFICATIONS:
           await handleClearAllLocalNotifications();
+          break;
+        case TOPIC.DEVICE_SCREEN_SIZE:
+          handleDeviceScreenSize();
           break;
         default:
           console.error("Unknown topic:", topic);

@@ -38,6 +38,7 @@ export const TOPIC = {
   CLOSE_WEBVIEW_FROM_MICROAPP: "close_webview",
   NATIVE_LOG: "native_log",
   DEVICE_SAFE_AREA_INSETS: "device_safe_area_insets",
+  DEVICE_SCREEN_SIZE: "device_screen_size",
 };
 
 // JavaScript code injected into the WebView to enable communication between
