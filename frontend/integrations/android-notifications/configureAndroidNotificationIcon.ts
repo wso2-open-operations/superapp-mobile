@@ -30,8 +30,10 @@ const configureAndroidNotificationIcon: ConfigPlugin = (config) => {
         "res",
         "drawable"
       );
-      if (!fs.existsSync(drawableDir))
+
+      if (!fs.existsSync(drawableDir)) {
         fs.mkdirSync(drawableDir, { recursive: true });
+      }
 
       // Copy notification icon to drawable folder
       const sourceIconPath = path.join(
