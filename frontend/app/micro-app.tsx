@@ -35,6 +35,11 @@ import googleAuthenticationService, {
   restoreGoogleDriveBackup,
   uploadToGoogleDrive,
 } from "@/services/googleService";
+import {
+  cancelLocalNotification,
+  clearNotifications,
+  scheduleSessionNotifications,
+} from "@/services/scheduledNotifications";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript, TOPIC } from "@/utils/bridge";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -51,6 +56,7 @@ import {
   Text,
   TouchableOpacity,
   useColorScheme,
+  useWindowDimensions,
   View,
 } from "react-native";
 import prompt from "react-native-prompt-android";
@@ -84,6 +90,7 @@ const MicroApp = () => {
   const isTotp: boolean = appId.includes("totp");
   const insets = useSafeAreaInsets();
   const shouldShowHeader: boolean = displayMode !== FULL_SCREEN_VIEWING_MODE;
+  const { width, height } = useWindowDimensions();
 
   /**
    * Create styles for the micro app.
@@ -367,6 +374,54 @@ const MicroApp = () => {
     }
   };
 
+  // Function to schedule a local notification
+  const handleScheduleLocalNotification = async (data: any) => {
+    try {
+      await scheduleSessionNotifications(data);
+      sendResponseToWeb("resolveSchedulingLocalNotification");
+    } catch (error) {
+      console.error("Error scheduling local notification:", error);
+      sendResponseToWeb(
+        "rejectSchedulingLocalNotification",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    }
+  };
+
+  // Function to cancel a local notification
+  const handleCancelLocalNotification = async (data: any) => {
+    try {
+      cancelLocalNotification(data);
+      sendResponseToWeb("resolveCancellingLocalNotification");
+    } catch (error) {
+      console.error("Error canceling local notification:", error);
+      sendResponseToWeb(
+        "rejectCancellingLocalNotification",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    }
+  };
+
+  // Function to clear all local notifications
+  const handleClearAllLocalNotifications = async () => {
+    try {
+      clearNotifications();
+      sendResponseToWeb("resolveClearingAllLocalNotifications");
+    } catch (error) {
+      console.error("Error clearing all local notifications:", error);
+      sendResponseToWeb(
+        "rejectClearingAllLocalNotifications",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    }
+  };
+
+  // Function to get device screen size
+  const handleDeviceScreenSize = async () => {
+    const screenSize = { width: width, height: height };
+    sendResponseToWeb("resolveDeviceScreenSize", screenSize);
+  };
+
   // Handle messages from WebView
   const onMessage = async (event: WebViewMessageEvent) => {
     try {
@@ -436,6 +491,18 @@ const MicroApp = () => {
           break;
         case TOPIC.DELETE_FROM_SECURE_STORE:
           await handleDeleteFromSecureStore(data.key);
+          break;
+        case TOPIC.SCHEDULE_LOCAL_NOTIFICATION:
+          await handleScheduleLocalNotification(data);
+          break;
+        case TOPIC.CANCEL_LOCAL_NOTIFICATION:
+          await handleCancelLocalNotification(data);
+          break;
+        case TOPIC.CLEAR_ALL_LOCAL_NOTIFICATIONS:
+          await handleClearAllLocalNotifications();
+          break;
+        case TOPIC.DEVICE_SCREEN_SIZE:
+          handleDeviceScreenSize();
           break;
         default:
           console.error("Unknown topic:", topic);

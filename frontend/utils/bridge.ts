@@ -24,6 +24,9 @@ export const TOPIC = {
   SAVE_TO_SECURE_STORE: "secure_store_persistence",
   GET_FROM_SECURE_STORE: "secure_store_retrieval",
   DELETE_FROM_SECURE_STORE: "secure_store_deletion",
+  SCHEDULE_LOCAL_NOTIFICATION: "scheduling_local_notification",
+  CANCEL_LOCAL_NOTIFICATION: "cancelling_local_notification",
+  CLEAR_ALL_LOCAL_NOTIFICATIONS: "clearing_all_local_notifications",
   ALERT: "alert",
   CONFIRM_ALERT: "confirm_alert",
   TOTP: "totp",
@@ -35,8 +38,8 @@ export const TOPIC = {
   CLOSE_WEBVIEW_FROM_MICROAPP: "close_webview",
   NATIVE_LOG: "native_log",
   DEVICE_SAFE_AREA_INSETS: "device_safe_area_insets",
+  DEVICE_SCREEN_SIZE: "device_screen_size",
 };
-
 
 // JavaScript code injected into the WebView to enable communication between
 // the micro app and the React Native app via the native bridge.
@@ -81,6 +84,15 @@ export const injectedJavaScript = `window.nativebridge = {
     requestSecureStoreDeletion: (key) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "secure_store_deletion", data: { key } })),
     resolveSecureStoreDeletion: () => console.log("Data deleted from Secure Store successfully"),
     rejectSecureStoreDeletion: (err) => console.error("Deletion from Secure Store failed:", err),
+    requestSchedulingLocalNotification: (data) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "scheduling_local_notification", data })),
+    resolveSchedulingLocalNotification: () => console.log("Local notification scheduled successfully"),
+    rejectSchedulingLocalNotification: (err) => console.error("Scheduling local notification failed:", err),
+    requestCancellingLocalNotification: (data) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "cancelling_local_notification", data })),
+    resolveCancellingLocalNotification: () => console.log("Local notification cancelled successfully"),
+    rejectCancellingLocalNotification: (err) => console.error("Cancelling local notification failed:", err),
+    requestClearingAllLocalNotifications: () => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "clearing_all_local_notifications" })),
+    resolveClearingAllLocalNotifications: () => console.log("All local notifications cleared successfully"),
+    rejectClearingAllLocalNotifications: (err) => console.error("Clearing all local notifications failed:", err),
     requestTotpQrMigrationData: () => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "totp" })),
     resolveTotpQrMigrationData: (data) => console.log("TOTP QR Migration Data:", data),
     rejectTotpQrMigrationData: (err) => console.error("TOTP Data retrieval failed:", err),
