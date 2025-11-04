@@ -38,7 +38,6 @@ export const TOPIC = {
   CLOSE_WEBVIEW_FROM_MICROAPP: "close_webview",
   NATIVE_LOG: "native_log",
   DEVICE_SAFE_AREA_INSETS: "device_safe_area_insets",
-  DELETE_LOCAL_DATA: "delete_local_data",
   DEVICE_SCREEN_SIZE: "device_screen_size",
   OPEN_URL: "open_url",
 };
