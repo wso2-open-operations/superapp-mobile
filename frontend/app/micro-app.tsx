@@ -389,6 +389,9 @@ const MicroApp = () => {
         case TOPIC.GOOGLE_USER_INFO:
           handleGetGoogleUserInfo();
           break;
+        case TOPIC.OPEN_URL:
+          await handleOpenUrlFromBrowser(data.url);
+          break;
         case TOPIC.CLOSE_WEBVIEW_FROM_MICROAPP:
           router.back();
           break;
