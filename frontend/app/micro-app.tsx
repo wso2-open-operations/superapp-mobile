@@ -322,7 +322,8 @@ const MicroApp = () => {
     try {
       const result = await WebBrowser.openBrowserAsync(url, {
         presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
-        controlsColor: Colors.companyOrange,
+        enableBarCollapsing: false,
+        dismissButtonStyle: "close",
       });
 
       if (result.type === "opened" || result.type === "cancel") {
