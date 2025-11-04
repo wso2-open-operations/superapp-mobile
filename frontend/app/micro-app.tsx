@@ -390,12 +390,30 @@ const MicroApp = () => {
 
   // Function to cancel a local notification
   const handleCancelLocalNotification = async (data: any) => {
-    cancelLocalNotification(data);
+    try {
+      cancelLocalNotification(data);
+      sendResponseToWeb("resolveCancellingLocalNotification");
+    } catch (error) {
+      console.error("Error canceling local notification:", error);
+      sendResponseToWeb(
+        "rejectCancellingLocalNotification",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    }
   };
 
   // Function to clear all local notifications
   const handleClearAllLocalNotifications = async () => {
-    clearNotifications();
+    try {
+      clearNotifications();
+      sendResponseToWeb("resolveClearingAllLocalNotifications");
+    } catch (error) {
+      console.error("Error clearing all local notifications:", error);
+      sendResponseToWeb(
+        "rejectClearingAllLocalNotifications",
+        error instanceof Error ? error.message : "Unknown error"
+      );
+    }
   };
 
   // Function to get device screen size
