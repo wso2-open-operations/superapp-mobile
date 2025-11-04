@@ -317,6 +317,26 @@ const MicroApp = () => {
     }
   };
 
+  // Function to open URL using browser
+  const handleOpenUrlFromBrowser = async (url: string) => {
+    try {
+      const result = await WebBrowser.openBrowserAsync(url, {
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+        controlsColor: Colors.companyOrange,
+      });
+
+      if (result.type === "opened" || result.type === "cancel") {
+        sendResponseToWeb("resolveOpenUrl");
+      } else {
+        sendResponseToWeb("rejectOpenUrl", "Failed to open URL");
+      }
+    } catch (error) {
+      const errMessage =
+        error instanceof Error ? error.message : "Failed to open URL";
+      sendResponseToWeb("rejectOpenUrl", errMessage);
+    }
+  };
+
   // Handle messages from WebView
   const onMessage = async (event: WebViewMessageEvent) => {
     try {
