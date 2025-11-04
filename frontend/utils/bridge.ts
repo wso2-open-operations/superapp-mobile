@@ -41,6 +41,7 @@ export const TOPIC = {
   DELETE_LOCAL_DATA: "delete_local_data",
   OPEN_URL: "open_url",
   DEVICE_SCREEN_SIZE: "device_screen_size",
+  OPEN_URL: "open_url",
 };
 
 // JavaScript code injected into the WebView to enable communication between
@@ -112,8 +113,8 @@ export const injectedJavaScript = `window.nativebridge = {
     rejectGoogleAuthState: (err) => console.error("Google Auth State check failed:", err),
     requestGoogleUserInfo: () => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "google_user_info" })),
     resolveGoogleUserInfo: (data) => console.log("Google User Info:", data),
-    rejectGoogleUserInfo: (err) => console.error("Google User Info retrieval failed:", err)
-    requestOpenUrl: (url) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "open_url", data: { url } })),
+    rejectGoogleUserInfo: (err) => console.error("Google User Info retrieval failed:", err),
+    requestOpenUrl: (config) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "open_url", data: { config } })),
     resolveOpenUrl: () => console.log("URL opened successfully"),
     rejectOpenUrl: (err) => console.error("Failed to open URL:", err)
   };`;
