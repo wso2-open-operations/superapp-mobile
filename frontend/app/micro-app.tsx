@@ -40,6 +40,7 @@ import {
   clearNotifications,
   scheduleSessionNotifications,
 } from "@/services/scheduledNotifications";
+import { BrowserConfig, mapToPresentationStyle } from "@/types/microApp.types";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript, TOPIC } from "@/utils/bridge";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -374,13 +375,26 @@ const MicroApp = () => {
     }
   };
 
-  // Function to open URL using browser
-  const handleOpenUrlFromBrowser = async (url: string) => {
+  // Function to open a URL using the browser
+  const handleOpenUrlInBrowser = async (config: BrowserConfig) => {
     try {
-      const result = await WebBrowser.openBrowserAsync(url, {
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
-        enableBarCollapsing: false,
-        dismissButtonStyle: "close",
+      if (!config) {
+        console.error("Missing configs.");
+        sendResponseToWeb("rejectOpenUrl", "Browser configuration is missing.");
+        return;
+      }
+
+      const webPresentationStyle = mapToPresentationStyle(
+        config.presentationStyle
+      );
+
+      const result = await WebBrowser.openBrowserAsync(config.url, {
+        presentationStyle: webPresentationStyle,
+        enableBarCollapsing: config.enableBarCollapsing,
+        dismissButtonStyle: config.dismissButtonStyle,
+        showTitle: config.showTitle,
+        showInRecents: config.showInRecents,
+        readerMode: config.readerMode,
       });
 
       if (result.type === "opened" || result.type === "cancel") {
@@ -496,7 +510,7 @@ const MicroApp = () => {
           handleGetGoogleUserInfo();
           break;
         case TOPIC.OPEN_URL:
-          await handleOpenUrlFromBrowser(data.url);
+          await handleOpenUrlInBrowser(data.config);
           break;
         case TOPIC.CLOSE_WEBVIEW_FROM_MICROAPP:
           router.back();
