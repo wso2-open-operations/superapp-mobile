@@ -20,7 +20,10 @@ import {
   NOTIFICATION_CHANNEL_ID,
   NOTIFICATION_CHANNEL_NAME,
 } from "@/constants/Constants";
-import notifee, { AndroidImportance } from "@notifee/react-native";
+import notifee, {
+  AndroidImportance,
+  AndroidNotificationSetting,
+} from "@notifee/react-native";
 import {
   AuthorizationStatus,
   FirebaseMessagingTypes,
@@ -64,10 +67,20 @@ const requestNotificationPermissionIOS = async () => {
 
 // Request notification permission for Android
 const requestNotificationPermissionAndroid = async (): Promise<boolean> => {
-  const granted = await PermissionsAndroid.request(
+  const grantedNotificationPermission = await PermissionsAndroid.request(
     PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
   );
-  return granted === PermissionsAndroid.RESULTS.GRANTED;
+  const isGranted =
+    grantedNotificationPermission === PermissionsAndroid.RESULTS.GRANTED;
+  if (!isGranted) return false;
+
+  await notifee.openAlarmPermissionSettings();
+  const settings = await notifee.getNotificationSettings();
+  if (settings.android.alarm === AndroidNotificationSetting.DISABLED) {
+    await notifee.openAlarmPermissionSettings();
+  }
+
+  return isGranted;
 };
 
 // Request notification permission

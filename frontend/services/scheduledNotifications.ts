@@ -15,9 +15,7 @@
 // under the License.
 import {
   ANDROID_NOTIFICATION_SMALL_ICON_ACCENT_COLOR,
-  LOCAL_NOTIFICATIONS_KEY,
   NOTIFICATION_CHANNEL_ID,
-  NOTIFICATION_LEAD_TIME_MINUTES,
 } from "@/constants/Constants";
 import notifee, {
   AndroidCategory,
@@ -25,70 +23,50 @@ import notifee, {
   TimestampTrigger,
   TriggerType,
 } from "@notifee/react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-interface SessionData {
-  data: Array<{
-    id: string;
-    title: string;
-    startTime: string;
-  }>;
-  superapp_notification_title: string;
+export interface ScheduledNotificationIdentifiable {
+  id: string;
+}
+
+export interface ScheduledNotificationData
+  extends ScheduledNotificationIdentifiable {
+  title: string;
+  body: string;
+  time: Date;
 }
 
 // Schedule notifications for sessions
-export const scheduleSessionNotifications = async () => {
+export const scheduleSessionNotifications = async (
+  data: ScheduledNotificationData
+) => {
   try {
-    // Cancel all previously scheduled notifications
-    await notifee.cancelAllNotifications();
-
-    const sessionsData = await AsyncStorage.getItem(LOCAL_NOTIFICATIONS_KEY);
-    if (!sessionsData) return;
-
-    let sessionData: SessionData;
-    try {
-      const decodedData = atob(sessionsData);
-      sessionData = JSON.parse(decodedData);
-    } catch (parseError) {
-      console.error("Parse error:", parseError);
-      return;
-    }
     const now = new Date();
+    const triggerTime = new Date(data.time);
+    if (triggerTime.getTime() > now.getTime()) {
+      const trigger: TimestampTrigger = {
+        type: TriggerType.TIMESTAMP,
+        timestamp: triggerTime.getTime(),
+      };
 
-    for (const session of sessionData.data) {
-      const sessionStartTime = new Date(session.startTime);
-      const notificationTime = new Date(
-        sessionStartTime.getTime() - NOTIFICATION_LEAD_TIME_MINUTES * 60 * 1000
-      );
-
-      if (notificationTime.getTime() > now.getTime()) {
-        const trigger: TimestampTrigger = {
-          type: TriggerType.TIMESTAMP,
-          timestamp: notificationTime.getTime(),
-        };
-
-        await notifee.createTriggerNotification(
-          {
-            title: sessionData.superapp_notification_title,
-            body: `${session.title} starts in ${NOTIFICATION_LEAD_TIME_MINUTES} minutes`,
-            android: {
-              channelId: NOTIFICATION_CHANNEL_ID,
-              smallIcon: "ic_notification",
-              color: ANDROID_NOTIFICATION_SMALL_ICON_ACCENT_COLOR,
-              importance: AndroidImportance.HIGH,
-              sound: "default",
-              category: AndroidCategory.ALARM,
-              pressAction: {
-                id: "default",
-              },
-            },
-            data: {
-              sessionId: session.id,
+      await notifee.createTriggerNotification(
+        {
+          title: data.title,
+          body: data.body,
+          id: data.id,
+          android: {
+            channelId: NOTIFICATION_CHANNEL_ID,
+            smallIcon: "ic_notification",
+            color: ANDROID_NOTIFICATION_SMALL_ICON_ACCENT_COLOR,
+            importance: AndroidImportance.HIGH,
+            sound: "default",
+            category: AndroidCategory.ALARM,
+            pressAction: {
+              id: "default",
             },
           },
-          trigger
-        );
-      }
+        },
+        trigger
+      );
     }
   } catch (error) {
     console.error("Error scheduling notifications:", error);
@@ -99,8 +77,17 @@ export const scheduleSessionNotifications = async () => {
 export const clearNotifications = async () => {
   try {
     await notifee.cancelAllNotifications();
-    await AsyncStorage.removeItem(LOCAL_NOTIFICATIONS_KEY);
   } catch (error) {
     console.error("Error clearing notifications:", error);
+  }
+};
+
+export const cancelLocalNotification = async (
+  data: ScheduledNotificationIdentifiable
+) => {
+  try {
+    await notifee.cancelTriggerNotification(data.id);
+  } catch (error) {
+    console.error("Error cancelling notification:", error);
   }
 };
