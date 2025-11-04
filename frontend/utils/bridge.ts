@@ -32,6 +32,7 @@ export const TOPIC = {
   NATIVE_LOG: "native_log",
   DEVICE_SAFE_AREA_INSETS: "device_safe_area_insets",
   DELETE_LOCAL_DATA: "delete_local_data",
+  OPEN_URL: "open_url",
 };
 
 // JavaScript code injected into the WebView to enable communication between
@@ -86,4 +87,7 @@ export const injectedJavaScript = `window.nativebridge = {
     requestGoogleUserInfo: () => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "google_user_info" })),
     resolveGoogleUserInfo: (data) => console.log("Google User Info:", data),
     rejectGoogleUserInfo: (err) => console.error("Google User Info retrieval failed:", err)
+    requestOpenUrl: (url) => window.ReactNativeWebView.postMessage(JSON.stringify({ topic: "open_url", data: { url } })),
+    resolveOpenUrl: () => console.log("URL opened successfully"),
+    rejectOpenUrl: (err) => console.error("Failed to open URL:", err)
   };`;
