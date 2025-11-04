@@ -23,7 +23,10 @@ import { getVersions } from "@/context/slices/versionSlice";
 import { AppDispatch, persistor, store } from "@/context/store";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { usePushNotificationHandler } from "@/hooks/usePushNotificationHandler";
+import { runMigrations } from "@/migrations/migrator";
 import { scheduleSessionNotifications } from "@/services/scheduledNotifications";
+import { buildAppsWithTokens } from "@/utils/exchangedTokenRehydrator";
+import { handleFreshInstall } from "@/utils/freshInstall";
 import { performLogout } from "@/utils/performLogout";
 import {
   initializeNotifications,
@@ -38,14 +41,12 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { lockAsync, OrientationLock } from "expo-screen-orientation";
+import { getItemAsync } from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import { buildAppsWithTokens } from "@/utils/exchangedTokenRehydrator";
-import { handleFreshInstall } from "@/utils/freshInstall";
-import { getItemAsync } from "expo-secure-store";
 
 // Component to handle app initialization
 function AppInitializer({ onReady }: { onReady: () => void }) {
@@ -63,16 +64,20 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
     const initialize = async () => {
       try {
         await handleFreshInstall();
+        await runMigrations(); // Runs any migrations.
         const [savedApps, savedUserInfo] = await Promise.all([
           AsyncStorage.getItem(APPS),
           getItemAsync(USER_INFO),
         ]);
 
-        if (savedApps) dispatch(setApps(await buildAppsWithTokens(JSON.parse(savedApps))));
+        if (savedApps) {
+          dispatch(setApps(await buildAppsWithTokens(JSON.parse(savedApps))));
+        }
 
-        if (savedUserInfo) dispatch(setUserInfo(JSON.parse(savedUserInfo)));
+        if (savedUserInfo) {
+          dispatch(setUserInfo(JSON.parse(savedUserInfo)));
+        }
 
-        // Initialize notifications
         await scheduleSessionNotifications();
 
         dispatch(getVersions(handleLogout));
@@ -86,9 +91,10 @@ function AppInitializer({ onReady }: { onReady: () => void }) {
     };
 
     initialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
-  return null; // No UI rendering needed
+  return null;
 }
 
 // Main Root Layout
