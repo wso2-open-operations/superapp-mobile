@@ -392,12 +392,14 @@ const MicroApp = () => {
       );
 
       const result = await WebBrowser.openBrowserAsync(config.url, {
-        presentationStyle: webPresentationStyle,
-        enableBarCollapsing: config.enableBarCollapsing,
-        dismissButtonStyle: config.dismissButtonStyle,
-        showTitle: config.showTitle,
-        showInRecents: config.showInRecents,
-        readerMode: config.readerMode,
+        presentationStyle:
+          webPresentationStyle ??
+          WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+        enableBarCollapsing: config.enableBarCollapsing ?? false,
+        dismissButtonStyle: config.dismissButtonStyle ?? "close",
+        showTitle: config.showTitle ?? true,
+        showInRecents: config.showInRecents ?? false,
+        readerMode: config.readerMode ?? false,
       });
 
       if (result.type === "opened" || result.type === "cancel") {
