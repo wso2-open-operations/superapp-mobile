@@ -74,7 +74,6 @@ const requestNotificationPermissionAndroid = async (): Promise<boolean> => {
     grantedNotificationPermission === PermissionsAndroid.RESULTS.GRANTED;
   if (!isGranted) return false;
 
-  await notifee.openAlarmPermissionSettings();
   const settings = await notifee.getNotificationSettings();
   if (settings.android.alarm === AndroidNotificationSetting.DISABLED) {
     await notifee.openAlarmPermissionSettings();
