@@ -40,7 +40,10 @@ import {
   clearNotifications,
   scheduleSessionNotifications,
 } from "@/services/scheduledNotifications";
-import { BrowserConfig, mapToWebBrowserPresentationStyle } from "@/types/microApp.types";
+import {
+  BrowserConfig,
+  mapToWebBrowserPresentationStyle,
+} from "@/types/microApp.types";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript, TOPIC } from "@/utils/bridge";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -379,7 +382,7 @@ const MicroApp = () => {
   const handleOpenUrlInBrowser = async (config: BrowserConfig) => {
     try {
       if (!config) {
-        console.error("Missing configs.");
+        console.error("Missing Required WebBrowser configuration.");
         sendResponseToWeb("rejectOpenUrl", "Browser configuration is missing.");
         return;
       }
