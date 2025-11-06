@@ -16,14 +16,14 @@
 import { WebBrowserPresentationStyle } from "expo-web-browser";
 
 // Enum for dismiss button styles used in iOS browser modals
-enum DismissButtonStyle {
+export enum DismissButtonStyle {
   Close = "close",
   Done = "done",
   Cancel = "cancel",
 }
 
 // Enum for supported Web Browser presentation styles
-enum PresentationStyle {
+export enum PresentationStyle {
   FullScreen = "FullScreen",
   Automatic = "Automatic",
   FormSheet = "FormSheet",

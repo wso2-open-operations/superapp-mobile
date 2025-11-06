@@ -42,7 +42,9 @@ import {
 } from "@/services/scheduledNotifications";
 import {
   BrowserConfig,
+  DismissButtonStyle,
   mapToWebBrowserPresentationStyle,
+  PresentationStyle,
 } from "@/types/microApp.types";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript, TOPIC } from "@/utils/bridge";
@@ -392,11 +394,10 @@ const MicroApp = () => {
       );
 
       const result = await WebBrowser.openBrowserAsync(config.url, {
-        presentationStyle:
-          webPresentationStyle ??
-          WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+        presentationStyle: webPresentationStyle ?? PresentationStyle.FullScreen,
         enableBarCollapsing: config.enableBarCollapsing ?? false,
-        dismissButtonStyle: config.dismissButtonStyle ?? "close",
+        dismissButtonStyle:
+          config.dismissButtonStyle ?? DismissButtonStyle.Close,
         showTitle: config.showTitle ?? true,
         showInRecents: config.showInRecents ?? false,
         readerMode: config.readerMode ?? false,
