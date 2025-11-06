@@ -39,8 +39,11 @@ export const GOOGLE_USER_INFO_KEY =
   process.env.EXPO_PUBLIC_GOOGLE_USER_INFO_KEY ?? "";
 export const LIBRARY_ARTICLE_FALLBACK_IMAGE =
   process.env.EXPO_PUBLIC_LIBRARY_ARTICLE_FALLBACK_IMAGE ?? "";
-export const DEVELOPER_APP_DEFAULT_URL =
-  process.env.EXPO_PUBLIC_DEVELOPER_APP_DEFAULT_URL ?? "";
+// Please note that the developer app-related URL is required only for the WSO2 Super App. 
+export const DEVELOPER_APP_IOS_DEFAULT_URL =
+  process.env.EXPO_PUBLIC_DEVELOPER_APP_IOS_DEFAULT_URL ?? "";
+export const DEVELOPER_APP_ANDROID_DEFAULT_URL =
+  process.env.EXPO_PUBLIC_DEVELOPER_APP_ANDROID_DEFAULT_URL ?? "";
 export const GOOGLE_SCOPES = [
   "openid",
   "profile",
