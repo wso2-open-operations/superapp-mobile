@@ -17,7 +17,8 @@ import NotFound from "@/components/NotFound";
 import Scanner from "@/components/Scanner";
 import { Colors } from "@/constants/Colors";
 import {
-  DEVELOPER_APP_DEFAULT_URL,
+  DEVELOPER_APP_IOS_DEFAULT_URL,
+  DEVELOPER_APP_ANDROID_DEFAULT_URL,
   FULL_SCREEN_VIEWING_MODE,
   GOOGLE_ANDROID_CLIENT_ID,
   GOOGLE_IOS_CLIENT_ID,
@@ -31,7 +32,11 @@ import { logout, tokenExchange } from "@/services/authService";
 import googleAuthenticationService from "@/services/googleService";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript } from "@/utils/bridge";
-import { getBridgeHandler, getResolveMethod, getRejectMethod } from "@/utils/bridgeRegistry";
+import {
+  getBridgeHandler,
+  getResolveMethod,
+  getRejectMethod,
+} from "@/utils/bridgeRegistry";
 import { BridgeContext } from "@/types/bridge.types";
 import * as Google from "expo-auth-session/providers/google";
 import { documentDirectory } from "expo-file-system";
@@ -68,7 +73,9 @@ const MicroApp = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const pendingTokenRequestsRef = useRef<((token: string) => void)[]>([]);
-  const [webUri, setWebUri] = useState<string>(DEVELOPER_APP_DEFAULT_URL);
+  const [webUri, setWebUri] = useState<string>(
+    isIos ? DEVELOPER_APP_IOS_DEFAULT_URL : DEVELOPER_APP_ANDROID_DEFAULT_URL
+  );
   const qrScanCallbackRef = useRef<((qrCode: string) => void) | null>(null);
   const colorScheme = useColorScheme();
   const appScopes = useSelector(
@@ -161,9 +168,6 @@ const MicroApp = () => {
     }
   };
 
-
-
-
   // Handle messages from WebView
   const onMessage = async (event: WebViewMessageEvent) => {
     try {
@@ -187,7 +191,9 @@ const MicroApp = () => {
         sendResponseToWeb: (method: string, data?: any, reqId?: string) => {
           const idToUse = reqId || requestId;
           webviewRef.current?.injectJavaScript(
-            `window.nativebridge.${method}(${JSON.stringify(data)}, "${idToUse}");`
+            `window.nativebridge.${method}(${JSON.stringify(
+              data
+            )}, "${idToUse}");`
           );
         },
         pendingTokenRequests: pendingTokenRequestsRef.current,
@@ -196,7 +202,9 @@ const MicroApp = () => {
           const methodName = getResolveMethod(topic);
           const idToUse = reqId || requestId;
           webviewRef.current?.injectJavaScript(
-            `window.nativebridge.${methodName}(${JSON.stringify(data)}, "${idToUse}");`
+            `window.nativebridge.${methodName}(${JSON.stringify(
+              data
+            )}, "${idToUse}");`
           );
         },
         reject: (error: string, reqId?: string) => {
@@ -230,7 +238,6 @@ const MicroApp = () => {
       console.error("Error handling WebView message:", error);
     }
   };
-
 
   const handleError = (syntheticEvent: any) => {
     setHasError(true);
@@ -318,50 +325,50 @@ const MicroApp = () => {
                 onPressIn={() => {
                   isIos
                     ? Alert.prompt(
-                      "App URL",
-                      "Enter App URL",
-                      [
-                        {
-                          text: "Cancel",
-                          style: "cancel",
-                        },
-                        {
-                          text: "OK",
-                          onPress: (value) => {
-                            if (value) {
-                              setWebUri(value);
-                            }
+                        "App URL",
+                        "Enter App URL",
+                        [
+                          {
+                            text: "Cancel",
+                            style: "cancel",
                           },
-                        },
-                      ],
-                      "plain-text",
-                      webUri
-                    )
+                          {
+                            text: "OK",
+                            onPress: (value) => {
+                              if (value) {
+                                setWebUri(value);
+                              }
+                            },
+                          },
+                        ],
+                        "plain-text",
+                        webUri
+                      )
                     : prompt(
-                      "App URL",
-                      "Enter App URL",
-                      [
-                        {
-                          text: "Cancel",
-                          onPress: () => {},
-                          style: "cancel",
-                        },
-                        {
-                          text: "OK",
-                          onPress: (value) => {
-                            if (value) {
-                              setWebUri(value);
-                            }
+                        "App URL",
+                        "Enter App URL",
+                        [
+                          {
+                            text: "Cancel",
+                            onPress: () => {},
+                            style: "cancel",
                           },
-                          style: "default",
-                        },
-                      ],
-                      {
-                        type: "plain-text",
-                        cancelable: false,
-                        defaultValue: webUri,
-                      }
-                    );
+                          {
+                            text: "OK",
+                            onPress: (value) => {
+                              if (value) {
+                                setWebUri(value);
+                              }
+                            },
+                            style: "default",
+                          },
+                        ],
+                        {
+                          type: "plain-text",
+                          cancelable: false,
+                          defaultValue: webUri,
+                        }
+                      );
                 }}
                 hitSlop={20}
               >
