@@ -40,7 +40,7 @@ import {
   clearNotifications,
   scheduleSessionNotifications,
 } from "@/services/scheduledNotifications";
-import { BrowserConfig, mapToPresentationStyle } from "@/types/microApp.types";
+import { BrowserConfig, mapToWebBrowserPresentationStyle } from "@/types/microApp.types";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript, TOPIC } from "@/utils/bridge";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -384,7 +384,7 @@ const MicroApp = () => {
         return;
       }
 
-      const webPresentationStyle = mapToPresentationStyle(
+      const webPresentationStyle = mapToWebBrowserPresentationStyle(
         config.presentationStyle
       );
 

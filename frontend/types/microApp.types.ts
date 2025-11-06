@@ -47,7 +47,7 @@ export interface BrowserConfig {
 }
 
 // Utility function that maps PresentationStyle enum
-export const mapToPresentationStyle = (
+export const mapToWebBrowserPresentationStyle = (
   presentationStyle?: PresentationStyle
 ): WebBrowserPresentationStyle => {
   switch (presentationStyle) {
