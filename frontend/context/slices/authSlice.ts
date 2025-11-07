@@ -13,15 +13,15 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { removeGoogleAuthState } from "@/services/googleService";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getItemAsync, setItemAsync } from "expo-secure-store";
 import {
   AuthData,
   loadAuthData,
   logout,
   refreshAccessToken,
 } from "../../services/authService";
-import { getItemAsync, setItemAsync } from "expo-secure-store";
-import { removeGoogleAuthState } from "@/services/googleService";
 import { getAppConfigurations } from "./appConfigSlice";
 
 interface AuthState {
@@ -47,8 +47,8 @@ export const restoreAuth = createAsyncThunk(
     let authData = await loadAuthData();
 
     if (authData) {
+      dispatch(setAuth(authData));
       const isExpired = authData.expiresAt && Date.now() >= authData.expiresAt;
-
       if (isExpired) {
         authData = await refreshAccessToken(logout);
       }

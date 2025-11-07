@@ -18,7 +18,8 @@ import NotFound from "@/components/NotFound";
 import Scanner from "@/components/Scanner";
 import { Colors } from "@/constants/Colors";
 import {
-  DEVELOPER_APP_DEFAULT_URL,
+  DEVELOPER_APP_IOS_DEFAULT_URL,
+  DEVELOPER_APP_ANDROID_DEFAULT_URL,
   FULL_SCREEN_VIEWING_MODE,
   GOOGLE_ANDROID_CLIENT_ID,
   GOOGLE_IOS_CLIENT_ID,
@@ -87,7 +88,9 @@ const MicroApp = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const pendingTokenRequests: ((token: string) => void)[] = [];
-  const [webUri, setWebUri] = useState<string>(DEVELOPER_APP_DEFAULT_URL);
+  const [webUri, setWebUri] = useState<string>(
+    isIos ? DEVELOPER_APP_IOS_DEFAULT_URL : DEVELOPER_APP_ANDROID_DEFAULT_URL
+  );
   const colorScheme = useColorScheme();
   const appScopes = useSelector(
     (state: RootState) => state.appConfig.appScopes
