@@ -41,6 +41,12 @@ import {
   clearNotifications,
   scheduleSessionNotifications,
 } from "@/services/scheduledNotifications";
+import {
+  BrowserConfig,
+  DismissButtonStyle,
+  mapToWebBrowserPresentationStyle,
+  PresentationStyle,
+} from "@/types/microApp.types";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript, TOPIC } from "@/utils/bridge";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -377,6 +383,41 @@ const MicroApp = () => {
     }
   };
 
+  // Function to open a URL using the browser
+  const handleOpenUrlInBrowser = async (config: BrowserConfig) => {
+    try {
+      if (!config) {
+        console.error("Missing Required WebBrowser configuration.");
+        sendResponseToWeb("rejectOpenUrl", "Browser configuration is missing.");
+        return;
+      }
+
+      const webPresentationStyle = mapToWebBrowserPresentationStyle(
+        config.presentationStyle
+      );
+
+      const result = await WebBrowser.openBrowserAsync(config.url, {
+        presentationStyle: webPresentationStyle,
+        enableBarCollapsing: config.enableBarCollapsing ?? false,
+        dismissButtonStyle:
+          config.dismissButtonStyle ?? DismissButtonStyle.Close,
+        showTitle: config.showTitle ?? true,
+        showInRecents: config.showInRecents ?? false,
+        readerMode: config.readerMode ?? false,
+      });
+
+      if (result.type === "opened" || result.type === "cancel") {
+        sendResponseToWeb("resolveOpenUrl");
+      } else {
+        sendResponseToWeb("rejectOpenUrl", "Failed to open URL");
+      }
+    } catch (error) {
+      const errMessage =
+        error instanceof Error ? error.message : "Failed to open URL";
+      sendResponseToWeb("rejectOpenUrl", errMessage);
+    }
+  };
+
   // Function to schedule a local notification
   const handleScheduleLocalNotification = async (data: any) => {
     try {
@@ -476,6 +517,9 @@ const MicroApp = () => {
           break;
         case TOPIC.GOOGLE_USER_INFO:
           handleGetGoogleUserInfo();
+          break;
+        case TOPIC.OPEN_URL:
+          await handleOpenUrlInBrowser(data.config);
           break;
         case TOPIC.CLOSE_WEBVIEW_FROM_MICROAPP:
           router.back();
