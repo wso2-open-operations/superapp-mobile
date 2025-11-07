@@ -45,9 +45,9 @@ export const restoreAuth = createAsyncThunk(
   "auth/restoreAuth",
   async (_, { dispatch }) => {
     let authData = await loadAuthData();
-    dispatch(setAuth(authData));
 
     if (authData) {
+      dispatch(setAuth(authData));
       const isExpired = authData.expiresAt && Date.now() >= authData.expiresAt;
       if (isExpired) {
         authData = await refreshAccessToken(logout);
