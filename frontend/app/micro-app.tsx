@@ -394,7 +394,7 @@ const MicroApp = () => {
       );
 
       const result = await WebBrowser.openBrowserAsync(config.url, {
-        presentationStyle: webPresentationStyle ?? PresentationStyle.FullScreen,
+        presentationStyle: webPresentationStyle,
         enableBarCollapsing: config.enableBarCollapsing ?? false,
         dismissButtonStyle:
           config.dismissButtonStyle ?? DismissButtonStyle.Close,
