@@ -71,3 +71,16 @@ export const mapToWebBrowserPresentationStyle = (
       return WebBrowserPresentationStyle.AUTOMATIC;
   }
 };
+
+// Interface for ScheduledNotificationIdentifiable
+export interface ScheduledNotificationIdentifiable {
+  id: string;
+}
+
+// Interface for ScheduledNotificationData
+export interface ScheduledNotificationData
+  extends ScheduledNotificationIdentifiable {
+  title: string;
+  body: string;
+  time: Date;
+}
