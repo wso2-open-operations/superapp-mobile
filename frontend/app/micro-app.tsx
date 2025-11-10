@@ -39,14 +39,14 @@ import googleAuthenticationService, {
 import {
   cancelLocalNotification,
   clearNotifications,
-  ScheduledNotificationData,
-  ScheduledNotificationIdentifiable,
   scheduleSessionNotifications,
 } from "@/services/scheduledNotifications";
 import {
   BrowserConfig,
   DismissButtonStyle,
   mapToWebBrowserPresentationStyle,
+  ScheduledNotificationData,
+  ScheduledNotificationIdentifiable,
 } from "@/types/microApp.types";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript, TOPIC } from "@/utils/bridge";
