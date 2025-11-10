@@ -26,6 +26,7 @@ import {
   GOOGLE_WEB_CLIENT_ID,
   isAndroid,
   isIos,
+  FULL_SCREEN_VIEWING_MODE,
 } from "@/constants/Constants";
 import { RootState } from "@/context/store";
 import { logout, tokenExchange } from "@/services/authService";
@@ -98,7 +99,7 @@ const MicroApp = () => {
   const isDeveloper: boolean = appId.includes("developer");
   const isTotp: boolean = appId.includes("totp");
   const insets = useSafeAreaInsets();
-  const shouldShowHeader: boolean = false;
+  const shouldShowHeader: boolean = displayMode !== FULL_SCREEN_VIEWING_MODE;
   const { width, height } = useWindowDimensions();
 
   /**
