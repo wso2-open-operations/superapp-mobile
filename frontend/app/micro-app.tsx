@@ -20,7 +20,6 @@ import { Colors } from "@/constants/Colors";
 import {
   DEVELOPER_APP_IOS_DEFAULT_URL,
   DEVELOPER_APP_ANDROID_DEFAULT_URL,
-  FULL_SCREEN_VIEWING_MODE,
   GOOGLE_ANDROID_CLIENT_ID,
   GOOGLE_IOS_CLIENT_ID,
   GOOGLE_SCOPES,
@@ -39,13 +38,14 @@ import googleAuthenticationService, {
 import {
   cancelLocalNotification,
   clearNotifications,
+  ScheduledNotificationData,
+  ScheduledNotificationIdentifiable,
   scheduleSessionNotifications,
 } from "@/services/scheduledNotifications";
 import {
   BrowserConfig,
   DismissButtonStyle,
   mapToWebBrowserPresentationStyle,
-  PresentationStyle,
 } from "@/types/microApp.types";
 import { MicroAppParams } from "@/types/navigation";
 import { injectedJavaScript, TOPIC } from "@/utils/bridge";
@@ -98,7 +98,7 @@ const MicroApp = () => {
   const isDeveloper: boolean = appId.includes("developer");
   const isTotp: boolean = appId.includes("totp");
   const insets = useSafeAreaInsets();
-  const shouldShowHeader: boolean = displayMode !== FULL_SCREEN_VIEWING_MODE;
+  const shouldShowHeader: boolean = false;
   const { width, height } = useWindowDimensions();
 
   /**
@@ -419,7 +419,9 @@ const MicroApp = () => {
   };
 
   // Function to schedule a local notification
-  const handleScheduleLocalNotification = async (data: any) => {
+  const handleScheduleLocalNotification = async (
+    data: ScheduledNotificationData
+  ) => {
     try {
       await scheduleSessionNotifications(data);
       sendResponseToWeb("resolveSchedulingLocalNotification");
@@ -433,7 +435,9 @@ const MicroApp = () => {
   };
 
   // Function to cancel a local notification
-  const handleCancelLocalNotification = async (data: any) => {
+  const handleCancelLocalNotification = async (
+    data: ScheduledNotificationIdentifiable
+  ) => {
     try {
       cancelLocalNotification(data);
       sendResponseToWeb("resolveCancellingLocalNotification");
