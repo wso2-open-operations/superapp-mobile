@@ -17,23 +17,16 @@ import {
   ANDROID_NOTIFICATION_SMALL_ICON_ACCENT_COLOR,
   NOTIFICATION_CHANNEL_ID,
 } from "@/constants/Constants";
+import {
+  ScheduledNotificationData,
+  ScheduledNotificationIdentifiable,
+} from "@/types/microApp.types";
 import notifee, {
   AndroidCategory,
   AndroidImportance,
   TimestampTrigger,
   TriggerType,
 } from "@notifee/react-native";
-
-export interface ScheduledNotificationIdentifiable {
-  id: string;
-}
-
-export interface ScheduledNotificationData
-  extends ScheduledNotificationIdentifiable {
-  title: string;
-  body: string;
-  time: Date;
-}
 
 // Schedule notifications for sessions
 export const scheduleSessionNotifications = async (
