@@ -290,7 +290,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
                 }
             };
         }
-
+        log:printDebug("Fetched user configurations...", email = userInfo.email, configs = userConfigs);
         return userConfigs;
     }
 
@@ -321,6 +321,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
+        log:printDebug("Updating user configurations...", email = userInfo.email, configs = configuration);
         database:ExecutionSuccessResult|error result =
             database:updateUserConfigsByEmail(userInfo.email, configuration);
         if result is error {
@@ -396,6 +397,7 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
+        log:printDebug("Adding FCM token...", email = userInfo.email, fcmToken = fcmToken);
         database:ExecutionSuccessResult|error result = database:addFcmToken(userInfo.email, fcmToken);
         if result is error {
             string customError = "Error occurred while adding FCM token";
