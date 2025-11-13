@@ -95,6 +95,9 @@ service http:InterceptableService / on new http:Listener(9090, config = {request
             };
         }
 
+        log:printDebug("Fetching app configurations...", email = userInfo.email, configs = appConfigs, 
+            defaultMicroAppIds = defaultMicroAppIds, appScopes = appScopes);
+
         return <AppConfig>{
             appConfigs,
             defaultMicroAppIds,
