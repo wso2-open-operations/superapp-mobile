@@ -198,12 +198,11 @@ export default function HomeScreen() {
     initializeApp();
   }, [email]);
 
-  // Load saved app order from AsyncStorage on mount
-  useEffect(() => {
-    const syncApps = async () => {
-      setSyncing(true);
-      setProgress({ done: 0, total: 0 });
-      setCurrentAction(null);
+  // Reusable function to sync apps based on user configurations
+  const syncApps = useCallback(async () => {
+    if (isSyncingApps.current) {
+      return;
+    }
 
     isSyncingApps.current = true;
     setSyncing(true);
