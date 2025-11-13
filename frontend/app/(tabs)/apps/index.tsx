@@ -271,7 +271,7 @@ export default function HomeScreen() {
       setSyncing(false);
       isSyncingApps.current = false;
     }
-  }, [apps, userConfigurations, dispatch]);
+  }, [apps, userConfigurations, dispatch, logout]);
 
   // Check for configuration changes when screen is focused
   useFocusEffect(
