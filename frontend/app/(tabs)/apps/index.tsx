@@ -88,9 +88,6 @@ export default function HomeScreen() {
   });
   const [updatingApps, setUpdatingApps] = useState<string[]>([]);
   const isCheckingUpdates = useRef(false);
-  const isSyncingApps = useRef(false);
-  const lastSyncedConfigRef = useRef<string>("");
-
   useTrackActiveScreen(ScreenPaths.MY_APPS);
   const updateCheckInterval = useSelector(
     (state: RootState) =>
@@ -198,99 +195,75 @@ export default function HomeScreen() {
     initializeApp();
   }, [email]);
 
-  // Reusable function to sync apps based on user configurations
-  const syncApps = useCallback(async () => {
-    if (isSyncingApps.current) {
-      return;
-    }
+  // Load saved app order from AsyncStorage on mount
+  useEffect(() => {
+    const syncApps = async () => {
+      setSyncing(true);
+      setProgress({ done: 0, total: 0 });
+      setCurrentAction(null);
 
-    isSyncingApps.current = true;
-    setSyncing(true);
-    setProgress({ done: 0, total: 0 });
-    setCurrentAction(null);
+      try {
+        const userConfigAppIds = userConfigurations.find(
+          (config) => config.configKey === APP_LIST_CONFIG_KEY
+        );
 
-    try {
-      const userConfigAppIds = userConfigurations.find(
-        (config) => config.configKey === APP_LIST_CONFIG_KEY
-      );
+        const allowedApps = (userConfigAppIds?.configValue as string[]) || [];
 
-      const allowedApps = (userConfigAppIds?.configValue as string[]) || [];
+        const localApps: MicroApp[] = apps.filter(
+          (app) => app?.status === DOWNLOADED
+        );
 
-      const localApps: MicroApp[] = apps.filter(
-        (app) => app?.status === DOWNLOADED
-      );
+        const localAppIds = localApps.map((app) => app.appId);
+        const appsToRemove = localAppIds.filter(
+          (appId) => !allowedApps.includes(appId)
+        );
+        const appsToInstall = allowedApps.filter(
+          (appId) => !localAppIds.includes(appId)
+        );
 
-      const localAppIds = localApps.map((app) => app.appId);
-      const appsToRemove = localAppIds.filter(
-        (appId) => !allowedApps.includes(appId)
-      );
-      const appsToInstall = allowedApps.filter(
-        (appId) => !localAppIds.includes(appId)
-      );
+        const totalSteps = appsToRemove.length + appsToInstall.length;
+        setProgress({ done: 0, total: totalSteps });
 
-      const totalSteps = appsToRemove.length + appsToInstall.length;
-      setProgress({ done: 0, total: totalSteps });
-
-      // Remove apps
-      for (const appId of appsToRemove) {
-        const appData = apps.find((app) => app.appId === appId);
-        setCurrentAction(`Removing ${appData?.name || appId}`);
-        await removeMicroApp(dispatch, appId, logout);
-        setProgress((prev) => ({ ...prev, done: prev.done + 1 }));
-      }
-
-      let updatedApps = localApps.filter(
-        (app) => !appsToRemove.includes(app.appId)
-      );
-
-      // Install apps
-      for (const appId of appsToInstall) {
-        const appData = apps.find((app) => app.appId === appId);
-        if (appData) {
-          setCurrentAction(`Downloading ${appData.name}`);
-          await downloadMicroApp(
-            dispatch,
-            appId,
-            appData.versions?.[0]?.downloadUrl,
-            logout
-          );
-          updatedApps.push({
-            ...appData,
-            status: DOWNLOADED,
-          });
+        // Remove apps
+        for (const appId of appsToRemove) {
+          const appData = apps.find((app) => app.appId === appId);
+          setCurrentAction(`Removing ${appData?.name || appId}`);
+          await removeMicroApp(dispatch, appId, logout);
           setProgress((prev) => ({ ...prev, done: prev.done + 1 }));
         }
+
+        let updatedApps = localApps.filter(
+          (app) => !appsToRemove.includes(app.appId)
+        );
+
+        // Install apps
+        for (const appId of appsToInstall) {
+          const appData = apps.find((app) => app.appId === appId);
+          if (appData) {
+            setCurrentAction(`Downloading ${appData.name}`);
+            await downloadMicroApp(
+              dispatch,
+              appId,
+              appData.versions?.[0]?.downloadUrl,
+              logout
+            );
+            updatedApps.push({
+              ...appData,
+              status: DOWNLOADED,
+            });
+            setProgress((prev) => ({ ...prev, done: prev.done + 1 }));
+          }
+        }
+      } catch (error) {
+        console.error("App sync failed:", error);
+      } finally {
+        setCurrentAction(null);
+        setSyncing(false);
       }
+    };
 
-      const configSnapshot = JSON.stringify(userConfigurations);
-      lastSyncedConfigRef.current = configSnapshot;
-    } catch (error) {
-      console.error("App sync failed:", error);
-    } finally {
-      setCurrentAction(null);
-      setSyncing(false);
-      isSyncingApps.current = false;
-    }
-  }, [apps, userConfigurations, dispatch, logout]);
-
-  // Check for configuration changes when screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      const checkConfigChanges = async () => {
-        if (!userConfigurations || userConfigurations.length === 0) {
-          return;
-        }
-
-        const currentConfigSnapshot = JSON.stringify(userConfigurations);
-
-        if (lastSyncedConfigRef.current !== currentConfigSnapshot) {
-          await syncApps();
-        }
-      };
-
-      checkConfigChanges();
-    }, [userConfigurations, syncApps])
-  );
+    if (userConfigurations && userConfigurations.length > 0) syncApps();
+  }, [dispatch, userConfigurations]);
 
   // Filter apps based on search query
   useEffect(() => {
