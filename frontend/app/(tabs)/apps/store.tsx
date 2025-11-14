@@ -27,7 +27,7 @@ import {
   removeMicroApp,
 } from "@/services/appStoreService";
 import { logout } from "@/services/authService";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -61,11 +61,8 @@ const Store = () => {
       downloadUrl: string;
     }[]
   >([]);
-  const [isProcessingQueue, setIsProcessingQueue] = useState(false);
-
   const isMountedRef = useRef(true);
   const activeDownloadsRef = useRef(new Set<string>());
-
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme ?? "light");
 
@@ -93,6 +90,31 @@ const Store = () => {
 
     initializeApps();
   }, [dispatch, accessToken]);
+
+  // Modified download handler to create a serialized task queue
+  const handleDownload = useCallback((appId: string, downloadUrl: string) => {
+    //if not logged in, show signin
+    if (!accessToken) {
+      setShowModal(true);
+      return;
+    }
+
+    // Check if already in queue, downloading, or in the downloading state
+    const isAlreadyQueued = installationQueue.some(
+      (item) => item.appId === appId
+    );
+    const isCurrentlyDownloading = activeDownloadsRef.current.has(appId);
+    const isInDownloadingState = downloading.includes(appId);
+
+    if (!isAlreadyQueued && !isCurrentlyDownloading && !isInDownloadingState) {
+      dispatch({
+        type: "SET_DOWNLOAD_PROGRESS",
+        payload: { appId, progress: 0 },
+      });
+      setInstallationQueue((prev) => [...prev, { appId, downloadUrl }]);
+      dispatch({ type: "ADD_DOWNLOADING_APP", payload: appId });
+    }
+  }, [accessToken, installationQueue, downloading, dispatch]);
 
   const handleRemoveMicroApp = async (dispatch: AppDispatch, appId: string) => {
     Alert.alert(
@@ -181,31 +203,6 @@ const Store = () => {
 
     processQueue();
   }, [installationQueue, dispatch]);
-
-  // Modified download handler to create a serialized task queue
-  const handleDownload = (appId: string, downloadUrl: string) => {
-    //if not logged in, show signin
-    if (!accessToken) {
-      setShowModal(true);
-      return;
-    }
-
-    // Check if already in queue, downloading, or in the downloading state
-    const isAlreadyQueued = installationQueue.some(
-      (item) => item.appId === appId
-    );
-    const isCurrentlyDownloading = activeDownloadsRef.current.has(appId);
-    const isInDownloadingState = downloading.includes(appId);
-
-    if (!isAlreadyQueued && !isCurrentlyDownloading && !isInDownloadingState) {
-      dispatch({
-        type: "SET_DOWNLOAD_PROGRESS",
-        payload: { appId, progress: 0 },
-      });
-      setInstallationQueue((prev) => [...prev, { appId, downloadUrl }]);
-      dispatch({ type: "ADD_DOWNLOADING_APP", payload: appId });
-    }
-  };
 
   // When default apps added need to remove this logic
   if (!accessToken) {

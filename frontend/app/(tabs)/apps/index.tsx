@@ -88,6 +88,8 @@ export default function HomeScreen() {
   });
   const [updatingApps, setUpdatingApps] = useState<string[]>([]);
   const isCheckingUpdates = useRef(false);
+  const hasAutoDownloadedDefaultApps = useRef(false);
+
   useTrackActiveScreen(ScreenPaths.MY_APPS);
   const updateCheckInterval = useSelector(
     (state: RootState) =>
@@ -95,6 +97,10 @@ export default function HomeScreen() {
         (config) => config.configKey === "microappsUpdateCheckInterval"
       )?.value ?? 0
   );
+  const { defaultMicroAppIds } = useSelector(
+    (state: RootState) => state.appConfig
+  );
+  const { downloading } = useSelector((state: RootState) => state.apps);
   // Convert seconds to milliseconds (value from database is in seconds)
   const updateCheckIntervalMs = Number(updateCheckInterval) * 1000;
 
@@ -264,6 +270,60 @@ export default function HomeScreen() {
 
     if (userConfigurations && userConfigurations.length > 0) syncApps();
   }, [dispatch, userConfigurations]);
+
+  // Automatically download default apps on initialization
+  useEffect(() => {
+    const autoDownloadDefaultApps = async () => {
+      // Only run once after apps and configs are loaded
+      if (
+        !email ||
+        apps.length === 0 ||
+        userConfigurations.length === 0 ||
+        !defaultMicroAppIds ||
+        hasAutoDownloadedDefaultApps.current ||
+        syncing
+      ) {
+        return;
+      }
+
+      // Mark as processed to avoid repeated auto-downloads
+      hasAutoDownloadedDefaultApps.current = true;
+
+      // Get the allowed apps from user config
+      const userConfigAppIds = userConfigurations.find(
+        (config) => config.configKey === APP_LIST_CONFIG_KEY
+      );
+      const allowedApps = (userConfigAppIds?.configValue as string[]) || [];
+
+      // Find default apps that should be downloaded
+      const defaultAppsToDownload = apps.filter(
+        (app) =>
+          defaultMicroAppIds?.includes(app.appId) &&
+          allowedApps.includes(app.appId) &&
+          app.status !== DOWNLOADED &&
+          !downloading.includes(app.appId)
+      );
+
+      // Download default apps
+      if (defaultAppsToDownload.length > 0) {
+        for (const app of defaultAppsToDownload) {
+          const downloadUrl = app.versions?.[0]?.downloadUrl;
+          if (downloadUrl) {
+            try {
+              await downloadMicroApp(dispatch, app.appId, downloadUrl, logout);
+            } catch (error) {
+              console.error(`Failed to download ${app.name}:`, error);
+            }
+          }
+        }
+      }
+    };
+
+    // Trigger auto-download after initial sync completes
+    if (!syncing && apps.length > 0 && userConfigurations.length > 0) {
+      autoDownloadDefaultApps();
+    }
+  }, [syncing, apps, userConfigurations, defaultMicroAppIds, email, downloading, dispatch]);
 
   // Filter apps based on search query
   useEffect(() => {
