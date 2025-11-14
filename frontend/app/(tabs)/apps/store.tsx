@@ -61,11 +61,8 @@ const Store = () => {
       downloadUrl: string;
     }[]
   >([]);
-  const [isProcessingQueue, setIsProcessingQueue] = useState(false);
-
   const isMountedRef = useRef(true);
   const activeDownloadsRef = useRef(new Set<string>());
-
   const colorScheme = useColorScheme();
   const styles = createStyles(colorScheme ?? "light");
 
